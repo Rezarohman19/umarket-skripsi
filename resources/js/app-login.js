@@ -1,9 +1,10 @@
 import './bootstrap';
 import { createApp } from 'vue';
-import App from './App.vue';
+import Login from './views/Login.vue';
 
-// Mount Vue app jika ada element dengan id="app"
+// Mount Vue app untuk halaman login
 const appElement = document.getElementById('app');
 if (appElement) {
-    createApp(App).mount('#app');
+    createApp(Login).mount('#app');
 }
+
