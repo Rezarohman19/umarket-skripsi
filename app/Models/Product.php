@@ -15,7 +15,14 @@ class Product extends Model
         'price',
         'stock',
         'image',
+        'user_id', // penjual
     ];
+
+    // Relasi ke user (penjual)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     // Relasi ke keranjang
     public function cartItems()
