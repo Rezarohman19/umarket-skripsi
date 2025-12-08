@@ -1,65 +1,93 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController;
 
-Route::get('/', function () {
-    // Jika user belum login, redirect ke halaman login
-    if (!Auth::check()) {
-        return redirect()->route('login');
-    }
-    return view('welcome');
+/*
+|--------------------------------------------------------------------------
+| Auth Routes
+|--------------------------------------------------------------------------
+*/
+
+// Halaman login & register
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+/*
+|--------------------------------------------------------------------------
+| Routes untuk Pengguna yang sudah login
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+
+    // Dashboard berdasarkan role
+    Route::get('/dashboard', function () {
+        return view('dashboard.index');
+    })->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/profile', [ProfileController::class, 'index']);
+    Route::post('/profile/update', [ProfileController::class, 'update']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Produk (User hanya bisa lihat)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/{id}', [ProductController::class, 'show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cart Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart/add/{product_id}', [CartController::class, 'add']);
+    Route::post('/cart/remove/{item_id}', [CartController::class, 'remove']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transactions Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::post('/checkout', [TransactionController::class, 'checkout']);
 });
 
-// Login page - Frontend only, tidak mengubah backend
-Route::get('/login', function () {
-    // Jika sudah login, redirect ke dashboard atau home
-    if (Auth::check()) {
-        return redirect('/dashboard');
-    }
-    return view('login');
-})->name('login');
 
-// Authentication routes - Form submission tradisional Laravel (langsung ke database)
-Route::post('/login', function (Request $request) {
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
 
-    $remember = $request->boolean('remember', false);
+Route::middleware(['auth', 'admin'])->group(function () {
 
-    if (Auth::attempt($credentials, $remember)) {
-        $request->session()->regenerate();
-        return redirect()->intended('/dashboard');
-    }
+    // Dashboard admin
+    Route::get('/admin/dashboard', [ProductController::class, 'adminIndex'])
+        ->name('admin.dashboard');
 
-    return back()->withErrors([
-        'email' => 'Email atau kata sandi salah.',
-    ])->onlyInput('email');
+    // CRUD Produk
+    Route::resource('/admin/products', ProductController::class);
+
+    // Lihat daftar transaksi
+    Route::get('/admin/transactions', [TransactionController::class, 'adminIndex']);
+
+    // Manage Users
+    Route::get('/admin/users', [ProfileController::class, 'listUsers']);
 });
-
-// Dashboard - sementara menggunakan blade, nanti bisa diganti dengan halaman dashboard Vue.js
-Route::get('/dashboard', function () {
-    if (!Auth::check()) {
-        return redirect()->route('login');
-    }
-    
-    return view('dashboard');
-})->name('dashboard');
-
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect('/login');
-})->name('logout');
-
-// Route untuk logout via GET (untuk memudahkan testing)
-Route::get('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect('/login');
-})->name('logout');
