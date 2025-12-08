@@ -24,15 +24,21 @@ class Product extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relasi ke keranjang
+    // Relasi ke item keranjang
     public function cartItems()
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(CartItem::class);
     }
 
     // Relasi ke item transaksi
     public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    // URL gambar
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? \Illuminate\Support\Facades\Storage::url($this->image) : null;
     }
 }

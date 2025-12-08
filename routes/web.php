@@ -81,6 +81,38 @@ Route::post('/register', function (Request $request) {
     return redirect('/login?registered=success');
 });
 
+// Orders page - membutuhkan login
+Route::get('/orders', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return view('orders');
+})->name('orders');
+
+// Open Shop page - membutuhkan login
+Route::get('/open-shop', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return view('open-shop');
+})->name('open-shop');
+
+// Cart page - membutuhkan login
+Route::get('/cart', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return view('cart');
+})->name('cart');
+
+// Profile page - membutuhkan login
+Route::get('/profile', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return view('profile');
+})->name('profile');
+
 // Dashboard - sementara menggunakan blade, nanti bisa diganti dengan halaman dashboard Vue.js
 Route::get('/dashboard', function () {
     if (!Auth::check()) {
@@ -110,8 +142,12 @@ Route::get('/api/products', function () {
     $products = \App\Models\Product::with('user:id,name')
         ->where('stock', '>', 0)
         ->orderBy('created_at', 'desc')
-        ->get();
-    
+        ->get()
+        ->map(function ($p) {
+            $p->image_url = $p->image ? Storage::url($p->image) : null;
+            return $p;
+        });
+
     return response()->json($products);
 });
 
@@ -121,6 +157,104 @@ Route::get('/api/user', function () {
     }
     
     return response()->json(Auth::user());
+});
+
+// Produk milik penjual (auth)
+Route::middleware('auth')->group(function () {
+    Route::get('/api/my-products', function () {
+        $products = \App\Models\Product::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($p) {
+                $p->image_url = $p->image ? Storage::url($p->image) : null;
+                return $p;
+            });
+
+        return response()->json($products);
+    });
+
+    Route::post('/api/products', function (Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
+        $product = \App\Models\Product::create([
+            'user_id' => Auth::id(),
+            'name' => $validated['name'],
+            'description' => $validated['category'] ?? '',
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+            'image' => $imagePath,
+        ]);
+
+        $product->image_url = $imagePath ? Storage::url($imagePath) : null;
+
+        return response()->json($product, 201);
+    });
+
+    Route::post('/api/products/{product}', function (Request $request, \App\Models\Product $product) {
+        if ($product->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
+            'remove_image' => 'nullable|boolean',
+        ]);
+
+        // Handle image
+        if (!empty($validated['remove_image'])) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $product->image = null;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $product->image = $request->file('image')->store('products', 'public');
+        }
+
+        $product->update([
+            'name' => $validated['name'],
+            'description' => $validated['category'] ?? '',
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+        ]);
+
+        $product->image_url = $product->image ? Storage::url($product->image) : null;
+
+        return response()->json($product);
+    });
+
+    Route::delete('/api/products/{product}', function (\App\Models\Product $product) {
+        if ($product->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $product->delete();
+
+        return response()->json(['message' => 'Deleted']);
+    });
 });
 
 Route::post('/api/cart/add', function (Request $request) {

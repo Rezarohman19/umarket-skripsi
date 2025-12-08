@@ -11,7 +11,11 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/app-login.js',
                 'resources/js/app-register.js',
-                'resources/js/app-landing.js'
+                'resources/js/app-landing.js',
+                'resources/js/app-orders.js',
+                'resources/js/app-open-shop.js',
+                'resources/js/app-cart.js',
+                'resources/js/app-profile.js'
             ],
             refresh: true,
         }),

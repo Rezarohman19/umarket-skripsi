@@ -526,8 +526,7 @@ const handleMyOrders = () => {
         showLoginModal.value = true;
         return;
     }
-    // TODO: Navigate to orders page
-    alert('Halaman Pesanan Saya akan segera tersedia');
+    window.location.href = '/orders';
 };
 
 const handleOpenShop = () => {
@@ -535,8 +534,7 @@ const handleOpenShop = () => {
         showLoginModal.value = true;
         return;
     }
-    // TODO: Navigate to open shop page
-    alert('Halaman Buka Toko akan segera tersedia');
+    window.location.href = '/open-shop';
 };
 
 const handleCart = () => {
@@ -544,8 +542,7 @@ const handleCart = () => {
         showLoginModal.value = true;
         return;
     }
-    // TODO: Navigate to cart page
-    alert('Halaman Keranjang akan segera tersedia');
+    window.location.href = '/cart';
 };
 
 const handleProfile = () => {
@@ -553,8 +550,7 @@ const handleProfile = () => {
         showLoginModal.value = true;
         return;
     }
-    // TODO: Navigate to profile page
-    alert('Halaman Profil akan segera tersedia');
+    window.location.href = '/profile';
 };
 
 const handleLogout = () => {
