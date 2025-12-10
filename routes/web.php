@@ -28,10 +28,10 @@ Route::get('/', function () {
 | AUTH ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -78,7 +78,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| API ROUTES (PUBLIC & AUTH)
+| API ROUTES (PUBLIC)
 |--------------------------------------------------------------------------
 */
 
@@ -152,7 +152,7 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| API — CART (TANPA CONTROLLER)
+| API — CART MANUAL
 |--------------------------------------------------------------------------
 */
 Route::post('/api/cart/add', function (Request $request) {
@@ -185,4 +185,3 @@ Route::get('/api/cart/count', function () {
     $count = \App\Models\CartItem::where('cart_id', $cart->id)->sum('qty');
     return response()->json(['count' => $count]);
 });
-

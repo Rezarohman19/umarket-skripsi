@@ -14,7 +14,7 @@ class AuthController extends Controller
      */
     public function loginForm()
     {
-        return view('auth.login');
+        return view('login');
     }
 
     /**
@@ -35,10 +35,11 @@ class AuthController extends Controller
 
             // Redirect berdasarkan role
             if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+            return redirect('/admin/products');
             }
 
-            return redirect()->route('pengguna.dashboard');
+            return redirect()->route('dashboard');
+
         }
 
         return back()->withErrors([
@@ -51,7 +52,7 @@ class AuthController extends Controller
      */
     public function registerForm()
     {
-        return view('auth.register');
+        return view('register');
     }
 
     /**
