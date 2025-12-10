@@ -108,8 +108,11 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span v-if="cartCount > 0" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {{ cartCount }}
+                            <span v-if="cartCount > 0" :class="[
+                                'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
+                                cartCount > 9 ? 'w-6 h-6 -mt-1 -mr-1' : 'w-5 h-5'
+                            ]">
+                                {{ cartCount > 99 ? '99+' : cartCount }}
                             </span>
                         </button>
 
@@ -139,14 +142,15 @@
                         <div
                             v-for="product in filteredProducts"
                             :key="product.id"
-                            class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                            class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+                            @click="goToProductDetail(product.id)"
                         >
                             <!-- Product Image -->
                             <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center overflow-hidden">
-                                <svg v-if="!product.image" class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg v-if="!product.image_url" class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <img v-else :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
+                                <img v-else :src="product.image_url" :alt="product.name" class="w-full h-full object-cover" />
                             </div>
 
                             <!-- Product Info -->
@@ -158,10 +162,10 @@
                                 </p>
 
                                 <!-- Quantity Selector & Add to Cart -->
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-3" @click.stop>
                                     <div class="flex items-center border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
                                         <button
-                                            @click="decreaseQuantity(product.id)"
+                                            @click.stop="decreaseQuantity(product.id)"
                                             class="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,7 +176,7 @@
                                             {{ getQuantity(product.id) }}
                                         </span>
                                         <button
-                                            @click="increaseQuantity(product.id)"
+                                            @click.stop="increaseQuantity(product.id)"
                                             class="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +186,7 @@
                                     </div>
 
                                     <button
-                                        @click="handleAddToCart(product)"
+                                        @click.stop="handleAddToCart(product)"
                                         class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
                                     >
                                         Tambah Keranjang
@@ -270,7 +274,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 
 const sidebarCollapsed = ref(false);
@@ -337,6 +341,11 @@ const checkAuth = async () => {
         const response = await axios.get('/api/user');
         user.value = response.data;
     } catch (error) {
+        // 401 adalah expected jika user belum login (halaman landing bisa diakses tanpa login)
+        // Jadi kita tidak perlu log error untuk 401
+        if (error.response?.status !== 401) {
+            console.error('Error checking auth:', error);
+        }
         user.value = null;
     }
 };
@@ -345,12 +354,13 @@ const fetchProducts = async () => {
     try {
         loading.value = true;
         const response = await axios.get('/api/products');
-        products.value = response.data;
+        const apiProducts = response.data || [];
         
-        // Jika tidak ada produk dari API, gunakan dummy data untuk testing
-        if (products.value.length === 0) {
-            products.value = getDummyProducts();
-        }
+        // Gabungkan produk dari API dengan dummy products
+        const dummyProducts = getDummyProducts();
+        products.value = [...apiProducts, ...dummyProducts];
+        
+        console.log('Fetched products from API:', apiProducts);
     } catch (error) {
         console.error('Error fetching products:', error);
         // Gunakan dummy data jika API error
@@ -363,76 +373,94 @@ const fetchProducts = async () => {
 const getDummyProducts = () => {
     return [
         {
-            id: 1,
+            id: -1, // Gunakan ID negatif untuk dummy products
             name: 'Mochi Coklat',
             description: 'Mochi lembut dengan isian coklat yang lumer',
             price: 2500,
             stock: 50,
             image: null,
+            user_id: null, // Pastikan tidak punya user_id
+            user: null,
         },
         {
-            id: 2,
+            id: -2, // Gunakan ID negatif untuk dummy products
             name: 'Risol Ayam Suwir',
             description: 'Risol goreng dengan isian ayam suwir yang gurih',
             price: 1500,
             stock: 30,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 3,
+            id: -3, // Gunakan ID negatif untuk dummy products
             name: 'Pie Coklat',
             description: 'Pie dengan isian coklat yang manis dan lezat',
             price: 3500,
             stock: 25,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 4,
+            id: -4, // Gunakan ID negatif untuk dummy products
             name: 'Mochi Stroberi',
             description: 'Mochi dengan isian stroberi yang segar',
             price: 2500,
             stock: 40,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 5,
+            id: -5, // Gunakan ID negatif untuk dummy products
             name: 'Risol Sayur',
             description: 'Risol goreng dengan isian sayuran yang sehat',
             price: 1500,
             stock: 35,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 6,
+            id: -6, // Gunakan ID negatif untuk dummy products
             name: 'Pie Keju',
             description: 'Pie dengan isian keju yang gurih dan lezat',
             price: 3500,
             stock: 20,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 7,
+            id: -7, // Gunakan ID negatif untuk dummy products
             name: 'Mochi Matcha',
             description: 'Mochi dengan rasa matcha yang khas',
             price: 3000,
             stock: 30,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 8,
+            id: -8, // Gunakan ID negatif untuk dummy products
             name: 'Risol Daging',
             description: 'Risol goreng dengan isian daging yang lezat',
             price: 2000,
             stock: 25,
             image: null,
+            user_id: null,
+            user: null,
         },
         {
-            id: 9,
+            id: -9, // Gunakan ID negatif untuk dummy products
             name: 'Pie Apel',
             description: 'Pie dengan isian apel yang manis dan segar',
             price: 4000,
             stock: 15,
             image: null,
+            user_id: null,
+            user: null,
         },
     ];
 };
@@ -446,8 +474,11 @@ const handleAddToCart = async (product) => {
     const quantity = getQuantity(product.id);
     
     try {
-        // Cek apakah ini dummy product (id < 100 untuk dummy)
-        if (product.id < 100) {
+        // Cek apakah ini dummy product (tidak punya user_id atau user relationship)
+        // Real product dari API pasti punya user atau user_id
+        const isDummyProduct = !product.user_id && !product.user;
+        
+        if (isDummyProduct) {
             // Untuk dummy product, simpan di localStorage sebagai fallback
             const cartData = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
             const existingItem = cartData.find(item => item.product_id === product.id);
@@ -458,8 +489,11 @@ const handleAddToCart = async (product) => {
                 cartData.push({
                     product_id: product.id,
                     product_name: product.name,
+                    product_description: product.description || '',
                     quantity: quantity,
-                    price: product.price
+                    price: product.price,
+                    store_name: product.user?.name || 'Toko',
+                    category: product.description || '',
                 });
             }
             
@@ -472,12 +506,12 @@ const handleAddToCart = async (product) => {
             // Reset quantity
             quantities.value[product.id] = 1;
             
-            showNotification('Produk berhasil ditambahkan ke keranjang!', 'success');
+            // Produk langsung ditambahkan tanpa notifikasi
             return;
         }
         
         // Untuk produk dari API (real product)
-        await axios.post('/api/cart/add', {
+        const response = await axios.post('/api/cart/add', {
             product_id: product.id,
             quantity: quantity
         });
@@ -488,8 +522,7 @@ const handleAddToCart = async (product) => {
         // Update cart count
         await fetchCartCount();
         
-        // Show success notification
-        showNotification('Produk berhasil ditambahkan ke keranjang!', 'success');
+        // Produk langsung ditambahkan tanpa notifikasi
     } catch (error) {
         console.error('Error adding to cart:', error);
         const message = error.response?.data?.message || 'Gagal menambahkan produk ke keranjang';
@@ -498,26 +531,29 @@ const handleAddToCart = async (product) => {
 };
 
 const fetchCartCount = async () => {
+    // Cek dummy cart dari localStorage dulu (bisa diakses tanpa login)
+    const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
+    const dummyCount = dummyCart.reduce((sum, item) => sum + item.quantity, 0);
+    
     if (!user.value) {
-        cartCount.value = 0;
+        // Jika belum login, hanya gunakan dummy cart
+        cartCount.value = dummyCount;
         return;
     }
 
     try {
-        // Cek dummy cart dari localStorage dulu
-        const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-        const dummyCount = dummyCart.reduce((sum, item) => sum + item.quantity, 0);
-        
-        // Cek real cart dari API
+        // Cek real cart dari API (hanya jika sudah login)
         const response = await axios.get('/api/cart/count');
         const apiCount = response.data.count || 0;
         
         // Total dari kedua sumber
         cartCount.value = dummyCount + apiCount;
     } catch (error) {
-        // Jika API error, gunakan dummy cart saja
-        const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-        cartCount.value = dummyCart.reduce((sum, item) => sum + item.quantity, 0);
+        // Jika API error (termasuk 401), gunakan dummy cart saja
+        if (error.response?.status !== 401) {
+            console.error('Error fetching cart count:', error);
+        }
+        cartCount.value = dummyCount;
     }
 };
 
@@ -551,6 +587,10 @@ const handleProfile = () => {
         return;
     }
     window.location.href = '/profile';
+};
+
+const goToProductDetail = (productId) => {
+    window.location.href = `/product/${productId}`;
 };
 
 const handleLogout = () => {
@@ -588,6 +628,13 @@ onMounted(async () => {
     await checkAuth();
     await fetchProducts();
     await fetchCartCount();
+    
+    // Listen untuk cart update event
+    window.addEventListener('cartUpdated', fetchCartCount);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('cartUpdated', fetchCartCount);
 });
 </script>
 

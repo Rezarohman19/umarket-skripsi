@@ -102,8 +102,11 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span v-if="cartCount > 0" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {{ cartCount }}
+                            <span v-if="cartCount > 0" :class="[
+                                'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
+                                cartCount > 9 ? 'w-6 h-6 -mt-1 -mr-1' : 'w-5 h-5'
+                            ]">
+                                {{ cartCount > 99 ? '99+' : cartCount }}
                             </span>
                         </button>
 
@@ -297,6 +300,8 @@ const form = ref({
     imagePreview: null,
 });
 
+const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
+
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
@@ -314,7 +319,7 @@ const handleCart = () => {
         window.location.href = '/login';
         return;
     }
-    alert('Halaman Keranjang akan segera tersedia');
+    window.location.href = '/cart';
 };
 
 const handleProfile = () => {
@@ -322,7 +327,7 @@ const handleProfile = () => {
         window.location.href = '/login';
         return;
     }
-    alert('Halaman Profil akan segera tersedia');
+    window.location.href = '/profile';
 };
 
 const toggleForm = () => {
@@ -387,16 +392,39 @@ const submitForm = async () => {
     }
 
     try {
+        let response;
         if (form.value.id) {
-            await axios.post(`/api/products/${form.value.id}`, payload);
+            response = await axios.post(`/api/products/${form.value.id}`, payload);
         } else {
-            await axios.post('/api/products', payload);
+            response = await axios.post('/api/products', payload);
         }
+        console.log('Product saved:', response.data);
+        
+        // Tambahkan produk baru ke array langsung (untuk immediate update)
+        if (!form.value.id && response.data) {
+            const newProduct = {
+                ...response.data,
+                image_url: response.data.image_url || null,
+            };
+            products.value.unshift(newProduct);
+        } else if (form.value.id && response.data) {
+            // Update produk yang sudah ada
+            const index = products.value.findIndex(p => p.id === form.value.id);
+            if (index !== -1) {
+                products.value[index] = {
+                    ...response.data,
+                    image_url: response.data.image_url || null,
+                };
+            }
+        }
+        
+        // Refresh produk setelah save untuk memastikan data terbaru
         await fetchProducts();
         resetForm();
         showForm.value = false;
     } catch (error) {
-        alert('Gagal menyimpan produk');
+        console.error('Error saving product:', error);
+        alert('Gagal menyimpan produk: ' + (error.response?.data?.message || error.message));
     }
 };
 
@@ -414,11 +442,31 @@ const removeImage = () => {
 };
 
 const fetchProducts = async () => {
-    if (!user.value) return;
+    if (!user.value) {
+        console.log('User not authenticated, cannot fetch products');
+        products.value = [];
+        return;
+    }
     try {
         const response = await axios.get('/api/my-products');
-        products.value = response.data;
+        console.log('Fetched products response:', response);
+        console.log('Fetched products data:', response.data);
+        
+        const fetchedProducts = Array.isArray(response.data) ? response.data : [];
+        console.log('Products count:', fetchedProducts.length);
+        
+        // Update products dengan data baru
+        products.value = fetchedProducts;
+        
+        // Force reactivity update dengan reassign
+        if (fetchedProducts.length === 0) {
+            console.warn('No products found for user:', user.value.id);
+        } else {
+            console.log('Products successfully loaded:', fetchedProducts.map(p => ({ id: p.id, name: p.name })));
+        }
     } catch (error) {
+        console.error('Error fetching products:', error);
+        console.error('Error details:', error.response?.data);
         products.value = [];
     }
 };
@@ -449,8 +497,10 @@ const fetchCartCount = async () => {
 
 onMounted(async () => {
     await checkAuth();
-    await fetchCartCount();
-    await fetchProducts();
+    if (user.value) {
+        await fetchCartCount();
+        await fetchProducts();
+    }
 });
 </script>
 

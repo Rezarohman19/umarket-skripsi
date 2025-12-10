@@ -145,6 +145,42 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Success Modal -->
+        <transition name="modal">
+            <div
+                v-if="showSuccessModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                @click.self="showSuccessModal = false"
+            >
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+                    <div class="flex flex-col items-center text-center">
+                        <!-- Success Icon -->
+                        <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Message -->
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                            Berhasil!
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">
+                            Perubahan profil Anda telah berhasil disimpan.
+                        </p>
+                        
+                        <!-- OK Button -->
+                        <button
+                            @click="showSuccessModal = false"
+                            class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                        >
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -165,6 +201,7 @@ const isEditing = ref(false);
 const imagePreview = ref(null);
 const photoFile = ref(null);
 const notification = ref({ show: false, message: '', type: 'success' });
+const showSuccessModal = ref(false);
 
 const goBack = () => window.history.back();
 
@@ -204,23 +241,53 @@ const cancelEdit = () => {
 
 const saveProfile = async () => {
     try {
-        // TODO: Sambungkan ke endpoint update profil jika tersedia.
-        // const payload = new FormData();
-        // payload.append('name', form.value.name);
-        // payload.append('description', form.value.description);
-        // payload.append('phone', form.value.phone);
-        // payload.append('email', form.value.email);
-        // payload.append('address', form.value.address);
-        // if (form.value.password) payload.append('password', form.value.password);
-        // if (photoFile.value) payload.append('photo', photoFile.value);
-        // await axios.post('/api/profile', payload);
+        const payload = new FormData();
+        payload.append('name', form.value.name);
+        payload.append('description', form.value.description || '');
+        payload.append('phone', form.value.phone || '');
+        payload.append('email', form.value.email);
+        payload.append('address', form.value.address || '');
+        if (form.value.password) {
+            payload.append('password', form.value.password);
+        }
+        if (photoFile.value) {
+            payload.append('photo', photoFile.value);
+        }
+        if (!imagePreview.value && profile.value.photo_url) {
+            payload.append('remove_photo', '1');
+        }
 
-        // Untuk sekarang, simpan ke state lokal
-        profile.value = { ...form.value };
+        const response = await axios.post('/api/profile', payload);
+        
+        // Update profile dengan data terbaru
+        const updatedUser = response.data.user;
+        profile.value = {
+            name: updatedUser.name,
+            description: updatedUser.description || '',
+            phone: updatedUser.phone || '',
+            email: updatedUser.email,
+            address: updatedUser.address || '',
+            photo_url: updatedUser.photo_url,
+        };
+        
+        if (updatedUser.photo_url) {
+            imagePreview.value = updatedUser.photo_url;
+        }
+        
+        form.value = { ...profile.value, password: '' };
+        photoFile.value = null;
         isEditing.value = false;
-        showNotification('Profil berhasil diperbarui', 'success');
+        
+        // Tampilkan modal sukses
+        showSuccessModal.value = true;
+        
+        // Reload halaman setelah 1.5 detik untuk update nama di header
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
     } catch (error) {
-        showNotification('Gagal memperbarui profil', 'error');
+        const message = error.response?.data?.message || 'Gagal memperbarui profil';
+        showNotification(message, 'error');
     }
 };
 
