@@ -20,6 +20,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role', // TAMBAHAN: role untuk admin / pengguna
+        'description',
+        'phone',
+        'address',
+        'photo',
     ];
 
     /**
@@ -63,9 +67,15 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class);
     }
 
-    // 3. Jika nanti user bisa menjadi penjual (opsional)
-    // public function products()
-    // {
-    //     return $this->hasMany(Product::class);
-    // }
+    // 3. User bisa menjadi penjual (products)
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    // Accessor untuk photo URL
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? \Illuminate\Support\Facades\Storage::url($this->photo) : null;
+    }
 }
