@@ -122,8 +122,13 @@
                     </div>
                 </header>
 
+                <!-- Loading -->
+                <div v-if="loading" class="p-6 text-center">
+                    <p class="text-gray-500 dark:text-gray-400">Memuat pesanan...</p>
+                </div>
+
                 <!-- Orders Sections -->
-                <div class="p-6 space-y-8">
+                <div v-else class="p-6 space-y-8">
                     <section v-for="section in sections" :key="section.key" class="space-y-4">
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ section.title }}</h2>
 
@@ -203,56 +208,8 @@ const sections = [
     { key: 'riwayat', title: 'Riwayat' },
 ];
 
-const orders = ref([
-    {
-        id: 1,
-        status: 'belum_bayar',
-        store: 'Nama Toko',
-        product: 'Nama Produk',
-        category: 'Kategori',
-        qty: 1,
-        price: 3000,
-        total: 3000,
-        actions: [],
-    },
-    {
-        id: 2,
-        status: 'dikemas',
-        store: 'Nama Toko',
-        product: 'Nama Produk',
-        category: 'Kategori',
-        qty: 1,
-        price: 3000,
-        total: 3000,
-        actions: [
-            { label: 'Hubungi Penjual', type: 'contact', variant: 'secondary' },
-        ],
-    },
-    {
-        id: 3,
-        status: 'dikirim',
-        store: 'Nama Toko',
-        product: 'Nama Produk',
-        category: 'Kategori',
-        qty: 1,
-        price: 3000,
-        total: 3000,
-        actions: [
-            { label: 'Hubungi Penjual', type: 'contact', variant: 'secondary' },
-        ],
-    },
-    {
-        id: 4,
-        status: 'riwayat',
-        store: 'Nama Toko',
-        product: 'Nama Produk',
-        category: 'Kategori',
-        qty: 1,
-        price: 3000,
-        total: 3000,
-        actions: [],
-    },
-]);
+const orders = ref([]);
+const loading = ref(true);
 
 const filteredOrdersByStatus = (status) => {
     return orders.value
@@ -269,6 +226,58 @@ const filteredOrdersByStatus = (status) => {
 };
 
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
+
+const fetchTransactions = async () => {
+    if (!user.value) {
+        loading.value = false;
+        return;
+    }
+    
+    try {
+        loading.value = true;
+        const response = await axios.get('/api/transactions');
+        const transactions = response.data || [];
+        
+        // Map transactions ke format yang diharapkan oleh UI
+        orders.value = transactions.map(transaction => {
+            // Tentukan status berdasarkan status transaction
+            let status = 'riwayat';
+            if (transaction.status === 'pending' || transaction.status === 'unpaid') {
+                status = 'belum_bayar';
+            } else if (transaction.status === 'processing' || transaction.status === 'packing') {
+                status = 'dikemas';
+            } else if (transaction.status === 'shipping' || transaction.status === 'sent') {
+                status = 'dikirim';
+            } else if (transaction.status === 'completed' || transaction.status === 'delivered') {
+                status = 'riwayat';
+            }
+            
+            // Tentukan actions berdasarkan status
+            const actions = [];
+            if (status === 'dikemas' || status === 'dikirim') {
+                actions.push({ label: 'Hubungi Penjual', type: 'contact', variant: 'secondary' });
+            }
+            
+            return {
+                id: transaction.id,
+                status: status,
+                store: transaction.store_name || transaction.seller_name || 'Toko',
+                product: transaction.product_name || 'Produk',
+                category: transaction.product_description || transaction.category || 'Kategori',
+                qty: transaction.quantity || transaction.qty || 1,
+                price: transaction.price || 0,
+                total: transaction.total_price || transaction.total || (transaction.price * (transaction.quantity || 1)),
+                actions: actions,
+                transaction: transaction, // Simpan data asli untuk referensi
+            };
+        });
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        orders.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
 
 const handleAction = (type, order) => {
     if (!user.value) {
@@ -304,12 +313,22 @@ const handleProfile = () => {
     window.location.href = '/profile';
 };
 
-const handleLogout = () => {
+const handleLogout = async () => {
     if (!user.value) {
         window.location.href = '/login';
         return;
     }
-    window.location.href = '/logout';
+    
+    if (confirm('Apakah Anda yakin ingin keluar?')) {
+        try {
+            await axios.post('/logout');
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Error logging out:', error);
+            // Tetap redirect meskipun ada error
+            window.location.href = '/login';
+        }
+    }
 };
 
 const checkAuth = async () => {
@@ -327,9 +346,13 @@ const fetchCartCount = async () => {
         return;
     }
     try {
-        const response = await axios.get('/api/cart/count');
-        cartCount.value = response.data.count || 0;
+        const response = await axios.get('/api/cart');
+        const apiItems = response.data.items || [];
+        cartCount.value = apiItems.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
     } catch (error) {
+        if (error.response?.status !== 401) {
+            console.error('Error fetching cart count:', error);
+        }
         cartCount.value = 0;
     }
 };
@@ -337,6 +360,7 @@ const fetchCartCount = async () => {
 onMounted(async () => {
     await checkAuth();
     await fetchCartCount();
+    await fetchTransactions();
 });
 </script>
 

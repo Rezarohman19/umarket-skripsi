@@ -178,46 +178,21 @@ const fetchCartItems = async () => {
     try {
         loading.value = true;
         
-        // Ambil dummy cart dari localStorage (semua dummy products, baik ID negatif maupun positif)
-        const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
+        // Ambil cart dari API
+        const response = await axios.get('/api/cart');
+        const apiItems = response.data.items || [];
         
-        // Ambil real cart dari API jika user sudah login
-        let apiItems = [];
-        try {
-            const response = await axios.get('/api/cart');
-            apiItems = response.data.items || [];
-        } catch (error) {
-            // Jika tidak login atau error, gunakan dummy cart saja
-            console.log('API cart error, using dummy cart only');
-        }
-        
-        // Gabungkan dummy cart dengan API cart
-        const allItems = [];
-        
-        // Tambahkan dummy items (semua dummy products)
-        dummyCart.forEach((item, index) => {
-            allItems.push({
-                id: `dummy_${item.product_id}_${index}`,
-                product_id: item.product_id,
-                product_name: item.product_name,
-                product_description: item.product_description || item.category || '',
-                price: item.price,
-                qty: item.quantity,
-                store_name: item.store_name || 'Toko',
-                image_url: null,
-                is_dummy: true,
-            });
-        });
-        
-        // Tambahkan API items (produk real dari database)
-        apiItems.forEach((item) => {
-            allItems.push({
-                ...item,
-                is_dummy: false,
-            });
-        });
-        
-        cartItems.value = allItems;
+        // Map items ke format yang diharapkan
+        cartItems.value = apiItems.map((item) => ({
+            id: item.id,
+            product_id: item.product_id,
+            product_name: item.product?.name || item.product_name || 'Produk',
+            product_description: item.product?.description || item.product_description || '',
+            price: item.product?.price || item.price || 0,
+            qty: item.qty || item.quantity || 0,
+            store_name: item.store_name || item.product?.user?.name || 'Toko',
+            image_url: item.product?.image_url || item.image_url || null,
+        }));
     } catch (error) {
         console.error('Error fetching cart items:', error);
         cartItems.value = [];
@@ -227,48 +202,49 @@ const fetchCartItems = async () => {
 };
 
 const increase = async (item) => {
-    if (item.is_dummy) {
-        // Update dummy cart di localStorage
-        const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-        const cartItem = dummyCart.find(i => i.product_id === item.product_id);
-        if (cartItem) {
-            cartItem.quantity += 1;
-            localStorage.setItem('dummy_cart', JSON.stringify(dummyCart));
-            item.qty += 1;
-        }
-    } else {
-        // Update via API
-        try {
-            // TODO: Buat endpoint untuk update quantity
-            // Untuk sekarang, update lokal dulu
-            item.qty += 1;
-        } catch (error) {
-            console.error('Error updating quantity:', error);
-        }
+    try {
+        // Tambahkan produk lagi ke cart (akan menambah quantity)
+        await axios.post('/api/cart/add', {
+            product_id: item.product_id,
+            quantity: 1
+        });
+        
+        // Refresh cart items
+        await fetchCartItems();
+        
+        // Trigger cart update event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+        console.error('Error updating quantity:', error);
+        alert('Gagal menambah jumlah produk');
     }
 };
 
 const decrease = async (item) => {
     if (item.qty <= 1) return;
     
-    if (item.is_dummy) {
-        // Update dummy cart di localStorage
-        const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-        const cartItem = dummyCart.find(i => i.product_id === item.product_id);
-        if (cartItem && cartItem.quantity > 1) {
-            cartItem.quantity -= 1;
-            localStorage.setItem('dummy_cart', JSON.stringify(dummyCart));
-            item.qty -= 1;
+    try {
+        // Kurangi quantity dengan cara hapus dan tambah lagi dengan qty-1
+        // Atau bisa juga dengan endpoint update jika ada
+        // Untuk sekarang, kita hapus dulu lalu tambah lagi dengan qty-1
+        await axios.post(`/api/cart/remove/${item.id}`);
+        
+        // Tambah lagi dengan quantity yang dikurangi 1
+        if (item.qty > 1) {
+            await axios.post('/api/cart/add', {
+                product_id: item.product_id,
+                quantity: item.qty - 1
+            });
         }
-    } else {
-        // Update via API
-        try {
-            // TODO: Buat endpoint untuk update quantity
-            // Untuk sekarang, update lokal dulu
-            item.qty -= 1;
-        } catch (error) {
-            console.error('Error updating quantity:', error);
-        }
+        
+        // Refresh cart items
+        await fetchCartItems();
+        
+        // Trigger cart update event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+        console.error('Error updating quantity:', error);
+        alert('Gagal mengurangi jumlah produk');
     }
 };
 
@@ -278,29 +254,8 @@ const removeItem = async (item) => {
     }
 
     try {
-        if (item.is_dummy) {
-            // Hapus dari localStorage untuk dummy products
-            // Gunakan index untuk menghapus item yang tepat (karena bisa ada beberapa item dengan product_id sama)
-            const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-            // Extract index dari item.id (format: dummy_productId_index)
-            const match = item.id.match(/dummy_(-?\d+)_(\d+)/);
-            if (match) {
-                const productId = parseInt(match[1]);
-                const itemIndex = parseInt(match[2]);
-                // Hapus item berdasarkan index di array
-                dummyCart.splice(itemIndex, 1);
-                localStorage.setItem('dummy_cart', JSON.stringify(dummyCart));
-            } else {
-                // Fallback: hapus berdasarkan product_id
-                const filteredCart = dummyCart.filter(cartItem => 
-                    cartItem.product_id !== item.product_id
-                );
-                localStorage.setItem('dummy_cart', JSON.stringify(filteredCart));
-            }
-        } else {
-            // Hapus dari database untuk real products
-            await axios.delete(`/api/cart/remove/${item.id}`);
-        }
+        // Hapus dari database via API
+        await axios.post(`/api/cart/remove/${item.id}`);
 
         // Hapus dari selectedItems jika sedang terpilih
         const index = selectedItems.value.indexOf(item.id);
@@ -325,10 +280,9 @@ const handleCheckout = () => {
         return;
     }
     
-    // TODO: Implementasi checkout
-    const selectedProducts = cartItems.value.filter(item => selectedItems.value.includes(item.id));
-    console.log('Checkout items:', selectedProducts);
-    alert(`Checkout ${selectedItems.value.length} produk dengan total Rp. ${formatPrice(totalPrice.value)}`);
+    // Redirect ke halaman checkout dengan item IDs sebagai query parameter
+    const itemIds = selectedItems.value.join(',');
+    window.location.href = `/checkout?items=${itemIds}`;
 };
 
 onMounted(async () => {

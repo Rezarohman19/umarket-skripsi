@@ -215,23 +215,7 @@ const fetchProduct = async () => {
         loading.value = true;
         const productId = getProductId();
         
-        // Cek apakah ini dummy product (ID negatif)
-        if (productId && productId.startsWith('-')) {
-            // Untuk dummy products, ambil dari localStorage atau hardcode
-            const dummyProducts = getDummyProducts();
-            const foundProduct = dummyProducts.find(p => p.id.toString() === productId);
-            if (foundProduct) {
-                product.value = {
-                    ...foundProduct,
-                    store_name: 'Toko',
-                    category: foundProduct.description,
-                };
-                loading.value = false;
-                return;
-            }
-        }
-        
-        // Untuk real products, ambil dari API
+        // Ambil produk dari API
         const response = await axios.get(`/api/products/${productId}`);
         product.value = response.data;
     } catch (error) {
@@ -240,20 +224,6 @@ const fetchProduct = async () => {
     } finally {
         loading.value = false;
     }
-};
-
-const getDummyProducts = () => {
-    return [
-        { id: -1, name: 'Mochi Coklat', description: 'Mochi lembut dengan isian coklat yang lumer', price: 2500, stock: 50, image_url: null, user_id: null, user: null },
-        { id: -2, name: 'Risol Ayam Suwir', description: 'Risol goreng dengan isian ayam suwir yang gurih', price: 1500, stock: 30, image_url: null, user_id: null, user: null },
-        { id: -3, name: 'Pie Coklat', description: 'Pie dengan isian coklat yang manis dan lezat', price: 3500, stock: 25, image_url: null, user_id: null, user: null },
-        { id: -4, name: 'Mochi Stroberi', description: 'Mochi dengan isian stroberi yang segar', price: 2500, stock: 40, image_url: null, user_id: null, user: null },
-        { id: -5, name: 'Risol Sayur', description: 'Risol goreng dengan isian sayuran yang sehat', price: 1500, stock: 35, image_url: null, user_id: null, user: null },
-        { id: -6, name: 'Pie Keju', description: 'Pie dengan isian keju yang gurih dan lezat', price: 3500, stock: 20, image_url: null, user_id: null, user: null },
-        { id: -7, name: 'Mochi Matcha', description: 'Mochi dengan rasa matcha yang khas', price: 3000, stock: 30, image_url: null, user_id: null, user: null },
-        { id: -8, name: 'Risol Daging', description: 'Risol goreng dengan isian daging yang lezat', price: 2000, stock: 25, image_url: null, user_id: null, user: null },
-        { id: -9, name: 'Pie Apel', description: 'Pie dengan isian apel yang manis dan segar', price: 4000, stock: 15, image_url: null, user_id: null, user: null },
-    ];
 };
 
 const increaseQuantity = () => {
@@ -277,35 +247,11 @@ const handleAddToCart = async () => {
     if (!product.value) return;
 
     try {
-        const isDummyProduct = !product.value.user_id && !product.value.user;
-        
-        if (isDummyProduct) {
-            // Untuk dummy product, simpan di localStorage
-            const cartData = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-            const existingItem = cartData.find(item => item.product_id === product.value.id);
-            
-            if (existingItem) {
-                existingItem.quantity += quantity.value;
-            } else {
-                cartData.push({
-                    product_id: product.value.id,
-                    product_name: product.value.name,
-                    product_description: product.value.description || '',
-                    quantity: quantity.value,
-                    price: product.value.price,
-                    store_name: product.value.store_name || 'Toko',
-                    category: product.value.description || '',
-                });
-            }
-            
-            localStorage.setItem('dummy_cart', JSON.stringify(cartData));
-        } else {
-            // Untuk produk dari API (real product)
-            await axios.post('/api/cart/add', {
-                product_id: product.value.id,
-                quantity: quantity.value
-            });
-        }
+        // Tambahkan produk ke cart via API
+        await axios.post('/api/cart/add', {
+            product_id: product.value.id,
+            quantity: quantity.value
+        });
 
         // Trigger cart update event
         window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -330,33 +276,13 @@ const handleCheckout = async () => {
 
     try {
         // Tambahkan ke cart dulu
-        const isDummyProduct = !product.value.user_id && !product.value.user;
-        
-        if (isDummyProduct) {
-            const cartData = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-            const existingItem = cartData.find(item => item.product_id === product.value.id);
-            
-            if (existingItem) {
-                existingItem.quantity += quantity.value;
-            } else {
-                cartData.push({
-                    product_id: product.value.id,
-                    product_name: product.value.name,
-                    product_description: product.value.description || '',
-                    quantity: quantity.value,
-                    price: product.value.price,
-                    store_name: product.value.store_name || 'Toko',
-                    category: product.value.description || '',
-                });
-            }
-            
-            localStorage.setItem('dummy_cart', JSON.stringify(cartData));
-        } else {
-            await axios.post('/api/cart/add', {
-                product_id: product.value.id,
-                quantity: quantity.value
-            });
-        }
+        await axios.post('/api/cart/add', {
+            product_id: product.value.id,
+            quantity: quantity.value
+        });
+
+        // Trigger cart update event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
 
         // Redirect ke cart untuk checkout
         window.location.href = '/cart';

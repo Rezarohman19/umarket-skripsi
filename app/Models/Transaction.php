@@ -13,6 +13,12 @@ class Transaction extends Model
         'user_id',
         'total_price',
         'status',
+        'shipping_name',
+        'shipping_phone',
+        'shipping_address',
+        'payment_method',
+        'tracking_number',
+        'shipping_courier',
     ];
 
     public function user()

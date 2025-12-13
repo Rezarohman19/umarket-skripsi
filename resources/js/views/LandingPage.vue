@@ -1,8 +1,9 @@
 <template>
     <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
         <div class="flex">
-            <!-- Left Sidebar -->
+            <!-- Left Sidebar - Hanya muncul jika user sudah login -->
             <aside 
+                v-if="user"
                 :class="[
                     'bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64'
@@ -69,7 +70,7 @@
             </aside>
 
             <!-- Main Content -->
-            <main :class="['flex-1 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+            <main :class="['flex-1 transition-all duration-300', user && sidebarCollapsed ? 'ml-16' : user ? 'ml-64' : 'ml-0']">
                 <!-- Header -->
                 <header class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10">
                     <div class="flex items-center justify-between">
@@ -100,8 +101,9 @@
                             </div>
                         </div>
 
-                        <!-- Cart Icon -->
+                        <!-- Cart Icon - Hanya muncul jika user sudah login -->
                         <button
+                            v-if="user"
                             @click="handleCart"
                             class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
@@ -116,14 +118,22 @@
                             </span>
                         </button>
 
-                        <!-- Profile Icon -->
+                        <!-- Profile Icon / Login Button -->
                         <button
+                            v-if="user"
                             @click="handleProfile"
                             class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                         >
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
+                        </button>
+                        <button
+                            v-else
+                            @click="goToLogin"
+                            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
+                            Login
                         </button>
                     </div>
                 </header>
@@ -156,6 +166,7 @@
                             <!-- Product Info -->
                             <div class="p-4">
                                 <p class="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1 uppercase tracking-wide">{{ getProductCategory(product.name) }}</p>
+                                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ product.store_name || product.user?.name || 'Toko' }}</p>
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ product.name }}</h3>
                                 <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
                                     Rp. {{ formatPrice(product.price) }}
@@ -354,115 +365,15 @@ const fetchProducts = async () => {
     try {
         loading.value = true;
         const response = await axios.get('/api/products');
-        const apiProducts = response.data || [];
+        products.value = response.data || [];
         
-        // Gabungkan produk dari API dengan dummy products
-        const dummyProducts = getDummyProducts();
-        products.value = [...apiProducts, ...dummyProducts];
-        
-        console.log('Fetched products from API:', apiProducts);
+        console.log('Fetched products from API:', products.value);
     } catch (error) {
         console.error('Error fetching products:', error);
-        // Gunakan dummy data jika API error
-        products.value = getDummyProducts();
+        products.value = [];
     } finally {
         loading.value = false;
     }
-};
-
-const getDummyProducts = () => {
-    return [
-        {
-            id: -1, // Gunakan ID negatif untuk dummy products
-            name: 'Mochi Coklat',
-            description: 'Mochi lembut dengan isian coklat yang lumer',
-            price: 2500,
-            stock: 50,
-            image: null,
-            user_id: null, // Pastikan tidak punya user_id
-            user: null,
-        },
-        {
-            id: -2, // Gunakan ID negatif untuk dummy products
-            name: 'Risol Ayam Suwir',
-            description: 'Risol goreng dengan isian ayam suwir yang gurih',
-            price: 1500,
-            stock: 30,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -3, // Gunakan ID negatif untuk dummy products
-            name: 'Pie Coklat',
-            description: 'Pie dengan isian coklat yang manis dan lezat',
-            price: 3500,
-            stock: 25,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -4, // Gunakan ID negatif untuk dummy products
-            name: 'Mochi Stroberi',
-            description: 'Mochi dengan isian stroberi yang segar',
-            price: 2500,
-            stock: 40,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -5, // Gunakan ID negatif untuk dummy products
-            name: 'Risol Sayur',
-            description: 'Risol goreng dengan isian sayuran yang sehat',
-            price: 1500,
-            stock: 35,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -6, // Gunakan ID negatif untuk dummy products
-            name: 'Pie Keju',
-            description: 'Pie dengan isian keju yang gurih dan lezat',
-            price: 3500,
-            stock: 20,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -7, // Gunakan ID negatif untuk dummy products
-            name: 'Mochi Matcha',
-            description: 'Mochi dengan rasa matcha yang khas',
-            price: 3000,
-            stock: 30,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -8, // Gunakan ID negatif untuk dummy products
-            name: 'Risol Daging',
-            description: 'Risol goreng dengan isian daging yang lezat',
-            price: 2000,
-            stock: 25,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-        {
-            id: -9, // Gunakan ID negatif untuk dummy products
-            name: 'Pie Apel',
-            description: 'Pie dengan isian apel yang manis dan segar',
-            price: 4000,
-            stock: 15,
-            image: null,
-            user_id: null,
-            user: null,
-        },
-    ];
 };
 
 const handleAddToCart = async (product) => {
@@ -474,44 +385,8 @@ const handleAddToCart = async (product) => {
     const quantity = getQuantity(product.id);
     
     try {
-        // Cek apakah ini dummy product (tidak punya user_id atau user relationship)
-        // Real product dari API pasti punya user atau user_id
-        const isDummyProduct = !product.user_id && !product.user;
-        
-        if (isDummyProduct) {
-            // Untuk dummy product, simpan di localStorage sebagai fallback
-            const cartData = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-            const existingItem = cartData.find(item => item.product_id === product.id);
-            
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cartData.push({
-                    product_id: product.id,
-                    product_name: product.name,
-                    product_description: product.description || '',
-                    quantity: quantity,
-                    price: product.price,
-                    store_name: product.user?.name || 'Toko',
-                    category: product.description || '',
-                });
-            }
-            
-            localStorage.setItem('dummy_cart', JSON.stringify(cartData));
-            
-            // Update cart count dari localStorage
-            const totalQty = cartData.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.value = totalQty;
-            
-            // Reset quantity
-            quantities.value[product.id] = 1;
-            
-            // Produk langsung ditambahkan tanpa notifikasi
-            return;
-        }
-        
-        // Untuk produk dari API (real product)
-        const response = await axios.post('/api/cart/add', {
+        // Tambahkan produk ke cart via API
+        await axios.post('/api/cart/add', {
             product_id: product.id,
             quantity: quantity
         });
@@ -522,7 +397,11 @@ const handleAddToCart = async (product) => {
         // Update cart count
         await fetchCartCount();
         
-        // Produk langsung ditambahkan tanpa notifikasi
+        // Trigger cart update event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+        
+        // Tampilkan notifikasi sukses
+        showNotification('Produk berhasil ditambahkan ke keranjang', 'success');
     } catch (error) {
         console.error('Error adding to cart:', error);
         const message = error.response?.data?.message || 'Gagal menambahkan produk ke keranjang';
@@ -531,29 +410,22 @@ const handleAddToCart = async (product) => {
 };
 
 const fetchCartCount = async () => {
-    // Cek dummy cart dari localStorage dulu (bisa diakses tanpa login)
-    const dummyCart = JSON.parse(localStorage.getItem('dummy_cart') || '[]');
-    const dummyCount = dummyCart.reduce((sum, item) => sum + item.quantity, 0);
-    
     if (!user.value) {
-        // Jika belum login, hanya gunakan dummy cart
-        cartCount.value = dummyCount;
+        cartCount.value = 0;
         return;
     }
 
     try {
-        // Cek real cart dari API (hanya jika sudah login)
-        const response = await axios.get('/api/cart/count');
-        const apiCount = response.data.count || 0;
-        
-        // Total dari kedua sumber
-        cartCount.value = dummyCount + apiCount;
+        // Ambil cart dari API
+        const response = await axios.get('/api/cart');
+        const apiItems = response.data.items || [];
+        cartCount.value = apiItems.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
     } catch (error) {
-        // Jika API error (termasuk 401), gunakan dummy cart saja
+        // Jika API error (termasuk 401), set ke 0
         if (error.response?.status !== 401) {
             console.error('Error fetching cart count:', error);
         }
-        cartCount.value = dummyCount;
+        cartCount.value = 0;
     }
 };
 
@@ -593,14 +465,21 @@ const goToProductDetail = (productId) => {
     window.location.href = `/product/${productId}`;
 };
 
-const handleLogout = () => {
+const handleLogout = async () => {
     if (!user.value) {
         showLoginModal.value = true;
         return;
     }
     
     if (confirm('Apakah Anda yakin ingin keluar?')) {
-        window.location.href = '/logout';
+        try {
+            await axios.post('/logout');
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Error logging out:', error);
+            // Tetap redirect meskipun ada error
+            window.location.href = '/login';
+        }
     }
 };
 

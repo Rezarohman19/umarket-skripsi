@@ -15,6 +15,7 @@ export default defineConfig({
                 'resources/js/app-orders.js',
                 'resources/js/app-open-shop.js',
                 'resources/js/app-cart.js',
+                'resources/js/app-checkout.js',
                 'resources/js/app-profile.js',
                 'resources/js/app-product-detail.js'
             ],

@@ -137,21 +137,173 @@
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
+                            <button
+                                @click="showOrdersSection('paid')"
+                                :class="[
+                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    activeOrderSection === 'paid' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                ]"
+                            >
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.incoming }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Pesanan Masuk</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
+                            </button>
+                            <button
+                                @click="showOrdersSection('processing')"
+                                :class="[
+                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    activeOrderSection === 'processing' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                ]"
+                            >
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.needShip }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Perlu Dikirim</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
+                            </button>
+                            <button
+                                @click="showOrdersSection('shipping')"
+                                :class="[
+                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    activeOrderSection === 'shipping' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                ]"
+                            >
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.shipped }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Dikirim</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
+                            </button>
+                            <button
+                                @click="showOrdersSection('history')"
+                                :class="[
+                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    activeOrderSection === 'history' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                ]"
+                            >
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.history }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Riwayat Penjualan</p>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Pesanan Section (Muncul saat statistik diklik) -->
+                    <section
+                        v-if="activeOrderSection"
+                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6 space-y-4"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ getSectionTitle(activeOrderSection) }}</h2>
+                                <button
+                                    @click="activeOrderSection = null"
+                                    class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                                    title="Tutup"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Loading -->
+                        <div v-if="ordersLoading" class="text-center py-8">
+                            <p class="text-gray-500 dark:text-gray-400">Memuat pesanan...</p>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div v-else-if="filteredOrdersBySection.length === 0" class="text-center py-8">
+                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-gray-600 dark:text-gray-400">Belum ada pesanan di kategori ini</p>
+                        </div>
+
+                        <!-- Orders List -->
+                        <div v-else class="space-y-4">
+                            <div
+                                v-for="order in filteredOrdersBySection"
+                                :key="order.id"
+                                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="px-2 py-1 rounded-full text-xs font-semibold" :class="getStatusClass(order.status)">
+                                                {{ getStatusLabel(order.status) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID: #{{ order.id }}</span>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                                            Pesanan dari: {{ order.buyer_name }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            {{ formatDate(order.created_at) }}
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-gray-900 dark:text-white">Rp. {{ formatPrice(order.total_price) }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ order.items.length }} item</p>
+                                    </div>
+                                </div>
+
+                                <!-- Order Items -->
+                                <div class="space-y-2 mb-3">
+                                    <div
+                                        v-for="item in order.items"
+                                        :key="item.id"
+                                        class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded"
+                                    >
+                                        <div class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                                            <img
+                                                v-if="item.product?.image_url"
+                                                :src="item.product.image_url"
+                                                :alt="item.product.name"
+                                                class="w-full h-full object-cover"
+                                            />
+                                            <svg v-else class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ item.product?.name || 'Produk' }}</p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-400">{{ item.qty }} pcs × Rp. {{ formatPrice(item.price) }}</p>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp. {{ formatPrice(item.price * item.qty) }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Shipping Address -->
+                                <div v-if="order.shipping_address" class="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
+                                    <p class="font-semibold text-blue-700 dark:text-blue-400 mb-1">Alamat Pengiriman:</p>
+                                    <p class="text-gray-700 dark:text-gray-300">{{ order.shipping_address.name }} - {{ order.shipping_address.phone }}</p>
+                                    <p class="text-gray-600 dark:text-gray-400">{{ order.shipping_address.address }}</p>
+                                </div>
+
+                                <!-- Tracking Number -->
+                                <div v-if="order.tracking_number" class="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs">
+                                    <p class="font-semibold text-green-700 dark:text-green-400 mb-1">Nomor Resi:</p>
+                                    <p class="font-mono text-gray-900 dark:text-white">{{ order.tracking_number }}</p>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="flex flex-wrap gap-2">
+                                    <button
+                                        v-if="order.status === 'paid'"
+                                        @click="updateOrderStatus(order.id, 'processing')"
+                                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition-colors"
+                                    >
+                                        Mulai Kemas
+                                    </button>
+                                    <button
+                                        v-if="order.status === 'processing'"
+                                        @click="showShippingModal(order)"
+                                        class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition-colors"
+                                    >
+                                        Kirim Paket
+                                    </button>
+                                    <button
+                                        v-if="order.status === 'shipping'"
+                                        @click="updateOrderStatus(order.id, 'delivered')"
+                                        class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition-colors"
+                                    >
+                                        Tandai Diterima
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -266,11 +418,67 @@
                 </div>
             </main>
         </div>
+
+        <!-- Shipping Modal -->
+        <transition name="modal">
+            <div
+                v-if="showShippingForm"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                @click.self="showShippingForm = false"
+            >
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Kirim Paket</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Nomor Resi / Tracking Number
+                            </label>
+                            <input
+                                v-model="trackingNumber"
+                                type="text"
+                                placeholder="Masukkan nomor resi"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Kurir / Jasa Pengiriman
+                            </label>
+                            <select
+                                v-model="shippingCourier"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="jne">JNE</option>
+                                <option value="tiki">TIKI</option>
+                                <option value="pos">POS Indonesia</option>
+                                <option value="jnt">J&T Express</option>
+                                <option value="sicepat">SiCepat</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-3">
+                            <button
+                                @click="showShippingForm = false; trackingNumber = ''; shippingCourier = 'jne'; selectedOrderId = null"
+                                class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                @click="confirmShipping"
+                                class="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition"
+                            >
+                                Konfirmasi Kirim
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 
 const sidebarCollapsed = ref(false);
@@ -300,18 +508,120 @@ const form = ref({
     imagePreview: null,
 });
 
+// Orders
+const incomingOrders = ref([]);
+const ordersLoading = ref(false);
+const orderFilterStatus = ref('');
+const showShippingForm = ref(false);
+const trackingNumber = ref('');
+const shippingCourier = ref('jne');
+const selectedOrderId = ref(null);
+const activeOrderSection = ref(null); // 'paid', 'processing', 'shipping', 'history', atau null
+
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
+
+const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const getStatusLabel = (status) => {
+    const labels = {
+        'pending': 'Menunggu Pembayaran',
+        'paid': 'Sudah Dibayar',
+        'processing': 'Sedang Dikemas',
+        'shipping': 'Sedang Dikirim',
+        'delivered': 'Sudah Diterima',
+        'completed': 'Selesai',
+        'cancelled': 'Dibatalkan',
+    };
+    return labels[status] || status;
+};
+
+const getStatusClass = (status) => {
+    const classes = {
+        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+        'paid': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        'processing': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+        'shipping': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
+        'delivered': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+        'completed': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+        'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+};
+
+const filteredIncomingOrders = computed(() => {
+    let filtered = incomingOrders.value;
+    if (orderFilterStatus.value) {
+        filtered = filtered.filter(order => order.status === orderFilterStatus.value);
+    }
+    return filtered;
+});
+
+const filteredOrdersBySection = computed(() => {
+    if (!activeOrderSection.value) return [];
+    
+    let filtered = incomingOrders.value;
+    
+    if (activeOrderSection.value === 'paid') {
+        // Pesanan Masuk: status pending (menunggu pembayaran) atau paid (sudah dibayar)
+        filtered = filtered.filter(order => order.status === 'pending' || order.status === 'paid');
+    } else if (activeOrderSection.value === 'processing') {
+        // Perlu Dikirim: status processing (sedang dikemas)
+        filtered = filtered.filter(order => order.status === 'processing');
+    } else if (activeOrderSection.value === 'shipping') {
+        // Dikirim: status shipping (sedang dikirim)
+        filtered = filtered.filter(order => order.status === 'shipping');
+    } else if (activeOrderSection.value === 'history') {
+        // Riwayat: status completed atau delivered (selesai/diterima)
+        filtered = filtered.filter(order => order.status === 'completed' || order.status === 'delivered');
+    }
+    
+    return filtered;
+});
+
+const getSectionTitle = (section) => {
+    const titles = {
+        'paid': 'Pesanan Masuk',
+        'processing': 'Perlu Dikirim',
+        'shipping': 'Dikirim',
+        'history': 'Riwayat Penjualan',
+    };
+    return titles[section] || 'Pesanan';
+};
+
+const showOrdersSection = (section) => {
+    activeOrderSection.value = activeOrderSection.value === section ? null : section;
+};
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
-const handleLogout = () => {
+const handleLogout = async () => {
     if (!user.value) {
         window.location.href = '/login';
         return;
     }
-    window.location.href = '/logout';
+    
+    if (confirm('Apakah Anda yakin ingin keluar?')) {
+        try {
+            await axios.post('/logout');
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Error logging out:', error);
+            // Tetap redirect meskipun ada error
+            window.location.href = '/login';
+        }
+    }
 };
 
 const handleCart = () => {
@@ -448,17 +758,15 @@ const fetchProducts = async () => {
         return;
     }
     try {
+        // Gunakan endpoint /api/my-products yang sudah ada di web.php
         const response = await axios.get('/api/my-products');
-        console.log('Fetched products response:', response);
-        console.log('Fetched products data:', response.data);
-        
         const fetchedProducts = Array.isArray(response.data) ? response.data : [];
-        console.log('Products count:', fetchedProducts.length);
+        
+        console.log('Fetched products count:', fetchedProducts.length);
         
         // Update products dengan data baru
         products.value = fetchedProducts;
         
-        // Force reactivity update dengan reassign
         if (fetchedProducts.length === 0) {
             console.warn('No products found for user:', user.value.id);
         } else {
@@ -488,10 +796,107 @@ const fetchCartCount = async () => {
         return;
     }
     try {
-        const response = await axios.get('/api/cart/count');
-        cartCount.value = response.data.count || 0;
+        const response = await axios.get('/api/cart');
+        const apiItems = response.data.items || [];
+        cartCount.value = apiItems.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
     } catch (error) {
         cartCount.value = 0;
+    }
+};
+
+const fetchIncomingOrders = async () => {
+    if (!user.value) {
+        ordersLoading.value = false;
+        return;
+    }
+
+    try {
+        ordersLoading.value = true;
+        // Endpoint untuk mengambil pesanan yang masuk ke toko penjual
+        // Akan dibuat di backend: GET /api/seller/orders
+        const response = await axios.get('/api/seller/orders');
+        const orders = response.data || [];
+        
+        incomingOrders.value = orders;
+        
+        // Update stats berdasarkan data real
+        // Pesanan Masuk: status pending (menunggu pembayaran) atau paid (sudah dibayar)
+        store.value.stats = {
+            incoming: orders.filter(o => o.status === 'pending' || o.status === 'paid').length,
+            needShip: orders.filter(o => o.status === 'processing').length,
+            shipped: orders.filter(o => o.status === 'shipping').length,
+            history: orders.filter(o => o.status === 'completed' || o.status === 'delivered').length,
+        };
+    } catch (error) {
+        console.error('Error fetching incoming orders:', error);
+        incomingOrders.value = [];
+        // Jika endpoint belum ada, set stats ke 0
+        store.value.stats = {
+            incoming: 0,
+            needShip: 0,
+            shipped: 0,
+            history: 0,
+        };
+    } finally {
+        ordersLoading.value = false;
+    }
+};
+
+const updateOrderStatus = async (orderId, newStatus) => {
+    if (!confirm(`Ubah status pesanan menjadi "${getStatusLabel(newStatus)}"?`)) {
+        return;
+    }
+
+    try {
+        // Endpoint untuk update status pesanan
+        // Akan dibuat di backend: POST /api/seller/orders/{id}/update-status
+        await axios.post(`/api/seller/orders/${orderId}/update-status`, {
+            status: newStatus,
+        });
+
+        // Refresh orders
+        await fetchIncomingOrders();
+        alert('Status pesanan berhasil diupdate');
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        const message = error.response?.data?.message || 'Gagal mengupdate status';
+        alert(message);
+    }
+};
+
+const showShippingModal = (order) => {
+    selectedOrderId.value = order.id;
+    trackingNumber.value = order.tracking_number || '';
+    shippingCourier.value = order.shipping_courier || 'jne';
+    showShippingForm.value = true;
+};
+
+const confirmShipping = async () => {
+    if (!trackingNumber.value.trim()) {
+        alert('Masukkan nomor resi terlebih dahulu');
+        return;
+    }
+
+    try {
+        // Endpoint untuk update status ke shipping dengan tracking number
+        await axios.post(`/api/seller/orders/${selectedOrderId.value}/update-status`, {
+            status: 'shipping',
+            tracking_number: trackingNumber.value,
+            shipping_courier: shippingCourier.value,
+        });
+
+        showShippingForm.value = false;
+        trackingNumber.value = '';
+        shippingCourier.value = 'jne';
+        selectedOrderId.value = null;
+
+        // Refresh orders
+        await fetchIncomingOrders();
+        alert('Paket berhasil dikonfirmasi dikirim');
+    } catch (error) {
+        console.error('Error confirming shipping:', error);
+        const message = error.response?.data?.message || 'Gagal mengkonfirmasi pengiriman';
+        alert(message);
     }
 };
 
@@ -500,6 +905,7 @@ onMounted(async () => {
     if (user.value) {
         await fetchCartCount();
         await fetchProducts();
+        await fetchIncomingOrders();
     }
 });
 </script>
