@@ -133,28 +133,49 @@
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ section.title }}</h2>
 
                         <div
-                            v-for="order in filteredOrdersByStatus(section.key)"
+                            v-for="order in getFilteredOrders(section.key)"
                             :key="order.id"
                             class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-4 md:p-5"
                         >
                             <div class="flex items-start gap-4">
-                                <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-md flex items-center justify-center">
-                                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    <img
+                                        v-if="order.image_url"
+                                        :src="order.image_url"
+                                        :alt="order.product"
+                                        class="w-full h-full object-cover"
+                                    />
+                                    <svg v-else class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
 
                                 <div class="flex-1 space-y-1">
-                                    <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ order.store }}</p>
-                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                {{ order.store }}
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                                Dari Toko
+                                            </p>
+                                        </div>
+                                        <span :class="[
+                                            'px-2 py-1 rounded-full text-xs font-medium',
+                                            getStatusBadgeClass(order.status)
+                                        ]">
+                                            {{ getStatusLabel(order.status) }}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-2">
                                         <div>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ order.product }}</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-500">{{ order.category }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">{{ order.product }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ order.category || '' }}</p>
                                         </div>
                                         <div class="flex flex-col md:items-end text-sm text-gray-700 dark:text-gray-300">
                                             <span>{{ order.qty }} pcs</span>
                                             <span class="font-semibold">Rp. {{ formatPrice(order.price) }}</span>
-                                            <span class="font-semibold">Total Harga : Rp. {{ formatPrice(order.total) }}</span>
+                                            <span class="font-semibold text-blue-600 dark:text-blue-400">Total: Rp. {{ formatPrice(order.total) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +199,7 @@
                             </div>
                         </div>
 
-                        <div v-if="filteredOrdersByStatus(section.key).length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+                        <div v-if="getFilteredOrders(section.key).length === 0" class="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                             Tidak ada pesanan di status ini.
                         </div>
                     </section>
@@ -208,21 +229,53 @@ const sections = [
     { key: 'riwayat', title: 'Riwayat' },
 ];
 
-const orders = ref([]);
+const orders = ref([]); // Pembelian saja
 const loading = ref(true);
 
-const filteredOrdersByStatus = (status) => {
+const getFilteredOrders = (status) => {
     return orders.value
         .filter((order) => order.status === status)
         .filter((order) => {
             if (!searchQuery.value) return true;
             const q = searchQuery.value.toLowerCase();
             return (
-                order.store.toLowerCase().includes(q) ||
-                order.product.toLowerCase().includes(q) ||
-                order.category.toLowerCase().includes(q)
+                (order.store || '').toLowerCase().includes(q) ||
+                (order.product || '').toLowerCase().includes(q) ||
+                (order.category || '').toLowerCase().includes(q)
             );
         });
+};
+
+const getStatusLabel = (status) => {
+    const statusMap = {
+        'belum_bayar': 'Belum Bayar',
+        'dikemas': 'Dikemas',
+        'dikirim': 'Dikirim',
+        'riwayat': 'Selesai',
+        'pending': 'Menunggu Pembayaran',
+        'paid': 'Sudah Dibayar',
+        'processing': 'Diproses',
+        'shipping': 'Dikirim',
+        'completed': 'Selesai',
+        'failed': 'Gagal'
+    };
+    return statusMap[status] || status;
+};
+
+const getStatusBadgeClass = (status) => {
+    const classMap = {
+        'belum_bayar': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+        'dikemas': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+        'dikirim': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
+        'riwayat': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+        'pending': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+        'paid': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+        'processing': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+        'shipping': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
+        'completed': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+        'failed': 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+    };
+    return classMap[status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300';
 };
 
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
@@ -235,42 +288,56 @@ const fetchTransactions = async () => {
     
     try {
         loading.value = true;
-        const response = await axios.get('/api/transactions');
-        const transactions = response.data || [];
         
-        // Map transactions ke format yang diharapkan oleh UI
-        orders.value = transactions.map(transaction => {
-            // Tentukan status berdasarkan status transaction
-            let status = 'riwayat';
-            if (transaction.status === 'pending' || transaction.status === 'unpaid') {
-                status = 'belum_bayar';
-            } else if (transaction.status === 'processing' || transaction.status === 'packing') {
-                status = 'dikemas';
-            } else if (transaction.status === 'shipping' || transaction.status === 'sent') {
-                status = 'dikirim';
-            } else if (transaction.status === 'completed' || transaction.status === 'delivered') {
-                status = 'riwayat';
+        // Fetch pembelian (transaksi sebagai pembeli)
+        const purchaseResponse = await axios.get('/api/transactions');
+        const purchaseTransactions = purchaseResponse.data || [];
+        
+        // Map transactions pembelian ke format yang diharapkan oleh UI
+        orders.value = purchaseTransactions.flatMap(transaction => {
+            // Jika transaction punya items, map setiap item
+            if (transaction.items && transaction.items.length > 0) {
+                return transaction.items.map(item => {
+                    const status = mapTransactionStatus(transaction.status);
+                    const actions = getPurchaseActions(status);
+                    
+                    return {
+                        id: `${transaction.id}-${item.id}`,
+                        transaction_id: transaction.id,
+                        status: status,
+                        store: item.product?.user?.name || transaction.store_name || 'Toko',
+                        product: item.product?.name || 'Produk',
+                        category: item.product?.description || '',
+                        qty: item.qty || 1,
+                        price: item.price || item.product?.price || 0,
+                        total: (item.price || item.product?.price || 0) * (item.qty || 1),
+                        image_url: item.product?.image_url || null,
+                        actions: actions,
+                        transaction: transaction,
+                    };
+                });
+            } else {
+                // Fallback jika tidak ada items
+                const status = mapTransactionStatus(transaction.status);
+                const actions = getPurchaseActions(status);
+                
+                return [{
+                    id: transaction.id,
+                    transaction_id: transaction.id,
+                    status: status,
+                    store: transaction.store_name || 'Toko',
+                    product: 'Produk',
+                    category: '',
+                    qty: 1,
+                    price: transaction.total_price || 0,
+                    total: transaction.total_price || 0,
+                    image_url: null,
+                    actions: actions,
+                    transaction: transaction,
+                }];
             }
-            
-            // Tentukan actions berdasarkan status
-            const actions = [];
-            if (status === 'dikemas' || status === 'dikirim') {
-                actions.push({ label: 'Hubungi Penjual', type: 'contact', variant: 'secondary' });
-            }
-            
-            return {
-                id: transaction.id,
-                status: status,
-                store: transaction.store_name || transaction.seller_name || 'Toko',
-                product: transaction.product_name || 'Produk',
-                category: transaction.product_description || transaction.category || 'Kategori',
-                qty: transaction.quantity || transaction.qty || 1,
-                price: transaction.price || 0,
-                total: transaction.total_price || transaction.total || (transaction.price * (transaction.quantity || 1)),
-                actions: actions,
-                transaction: transaction, // Simpan data asli untuk referensi
-            };
         });
+        
     } catch (error) {
         console.error('Error fetching transactions:', error);
         orders.value = [];
@@ -279,11 +346,37 @@ const fetchTransactions = async () => {
     }
 };
 
+const mapTransactionStatus = (status) => {
+    const statusMap = {
+        'pending': 'belum_bayar',
+        'unpaid': 'belum_bayar',
+        'paid': 'dikemas',
+        'processing': 'dikemas',
+        'packing': 'dikemas',
+        'shipping': 'dikirim',
+        'sent': 'dikirim',
+        'completed': 'riwayat',
+        'delivered': 'riwayat',
+        'failed': 'riwayat'
+    };
+    return statusMap[status] || 'riwayat';
+};
+
+const getPurchaseActions = (status) => {
+    const actions = [];
+    if (status === 'dikemas' || status === 'dikirim') {
+        actions.push({ label: 'Hubungi Penjual', type: 'contact', variant: 'secondary' });
+    }
+    return actions;
+};
+
+
 const handleAction = (type, order) => {
     if (!user.value) {
         window.location.href = '/login';
         return;
     }
+    
     if (type === 'contact') {
         alert(`Hubungi penjual untuk pesanan ${order.product}`);
     }

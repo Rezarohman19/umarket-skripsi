@@ -374,9 +374,31 @@ const handleConfirmPayment = async () => {
             // Hapus checkout items dari localStorage
             localStorage.removeItem('checkout_items');
             
-            // Redirect ke halaman sukses atau orders
-            alert('Pembayaran berhasil! Pesanan Anda sedang diproses.');
-            window.location.href = '/orders';
+            // Simpan data konfirmasi ke localStorage untuk halaman konfirmasi
+            const transactionId = response.data.transaction?.id || response.data.transaction_id;
+            const confirmationData = {
+                transactionId: transactionId,
+                orderId: `ORDER-${transactionId}`,
+                totalPrice: response.data.transaction?.total_price || checkoutData.items.reduce((sum, item) => {
+                    const cartItem = checkoutItems.value.find(ci => ci.id === item.cart_item_id);
+                    return sum + (cartItem?.price * cartItem?.qty || 0);
+                }, 0),
+                paymentMethod: checkoutData.payment_method,
+                paymentStatus: response.data.transaction?.status || 'pending',
+                orderItems: checkoutItems.value,
+                shippingAddress: checkoutData.shipping_address,
+                orderDate: new Date().toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            localStorage.setItem('order_confirmation', JSON.stringify(confirmationData));
+            
+            // Redirect ke halaman konfirmasi pesanan
+            window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
         }
     } catch (error) {
         console.error('Error during checkout:', error);

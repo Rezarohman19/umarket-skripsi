@@ -17,9 +17,6 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    if (Auth::check() && Auth::user()->role === 'admin') {
-        return redirect('/dashboard');
-    }
     return view('landing');
 });
 
@@ -83,6 +80,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', function () {
         return view('checkout');
     })->name('checkout');
+    
+    // Order Confirmation (Vue page)
+    Route::get('/order-confirmation', function () {
+        return view('order-confirmation');
+    })->name('order-confirmation');
 });
 
 /*
@@ -90,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('/products', ProductController::class);
     Route::get('/transactions', [TransactionController::class, 'adminIndex']);
     Route::get('/users', [ProfileController::class, 'listUsers']);
