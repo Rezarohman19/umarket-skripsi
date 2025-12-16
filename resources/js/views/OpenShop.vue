@@ -331,6 +331,10 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
                                         <input v-model="form.category" type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                                     </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Produk</label>
+                                        <textarea v-model="form.description" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="Masukkan deskripsi produk yang detail..."></textarea>
+                                    </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Harga</label>
                                         <input v-model.number="form.price" type="number" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
@@ -502,6 +506,7 @@ const form = ref({
     id: null,
     name: '',
     category: '',
+    description: '',
     price: 0,
     stock: 0,
     imageFile: null,
@@ -650,6 +655,7 @@ const resetForm = () => {
         id: null,
         name: '',
         category: '',
+        description: '',
         price: 0,
         stock: 0,
         imageFile: null,
@@ -666,7 +672,8 @@ const editProduct = (p) => {
     form.value = {
         id: p.id,
         name: p.name,
-        category: p.description || '',
+        category: p.category || '',
+        description: p.description || '',
         price: p.price,
         stock: p.stock,
         imageFile: null,
@@ -693,6 +700,7 @@ const submitForm = async () => {
     const payload = new FormData();
     payload.append('name', form.value.name);
     payload.append('category', form.value.category || '');
+    payload.append('description', form.value.description || '');
     payload.append('price', form.value.price);
     payload.append('stock', form.value.stock);
     if (form.value.imageFile) {

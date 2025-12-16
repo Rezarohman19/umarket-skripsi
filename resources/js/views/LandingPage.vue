@@ -168,6 +168,9 @@
                                 <p class="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1 uppercase tracking-wide">{{ getProductCategory(product.name) }}</p>
                                 <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ product.store_name || product.user?.name || 'Toko' }}</p>
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ product.name }}</h3>
+                                <p v-if="product.description" class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                                    {{ product.description }}
+                                </p>
                                 <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
                                     Rp. {{ formatPrice(product.price) }}
                                 </p>

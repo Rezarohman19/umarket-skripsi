@@ -28,6 +28,10 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/admin/login', function () {
+    return view('admin-login');
+})->name('admin.login');
+
 Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -93,6 +97,10 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin-dashboard');
+    })->name('admin.dashboard');
+    
     Route::resource('/products', ProductController::class);
     Route::get('/transactions', [TransactionController::class, 'adminIndex']);
     Route::get('/users', [ProfileController::class, 'listUsers']);
@@ -152,6 +160,27 @@ Route::get('/product/{id}', function ($id) {
 Route::middleware('auth')->group(function () {
 
     Route::get('/api/user', fn() => response()->json(Auth::user()));
+
+    // Admin API endpoints
+    Route::get('/api/admin/users', function () {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        return response()->json(\App\Models\User::all());
+    });
+
+    Route::get('/api/admin/transactions', function () {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        $transactions = \App\Models\Transaction::with('user')->get();
+        return response()->json($transactions->map(fn($t) => [
+            'id' => $t->id,
+            'total' => $t->total_price,
+            'status' => $t->status,
+            'user' => $t->user,
+        ]));
+    });
 
     // Produk milik user
     Route::get('/api/my-products', function () {
