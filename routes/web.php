@@ -49,10 +49,14 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     // Profile (Vue page)
-    Route::get('/profile', function () {
+   Route::middleware('auth')->get('/profile', function () {
         return view('profile');
     })->name('profile');
-    Route::post('/profile/update', [ProfileController::class, 'update']);
+
+    // Tambahkan: route untuk update profil via web (aksi edit profil)
+    Route::middleware('auth')->post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
+});
 
     // Produk
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -89,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/order-confirmation', function () {
         return view('order-confirmation');
     })->name('order-confirmation');
-});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -159,7 +163,16 @@ Route::get('/product/{id}', function ($id) {
 */
 Route::middleware('auth')->group(function () {
 
-    Route::get('/api/user', fn() => response()->json(Auth::user()));
+    Route::get('/api/user', function() {
+        $user = Auth::user();
+        $userData = $user->toArray();
+        $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
+        return response()->json($userData);
+    });
+
+    // Profile API (dipanggil dari frontend Vue)
+    Route::get('/api/profile', [ProfileController::class, 'show']);
+    Route::post('/api/profile', [ProfileController::class, 'update']);
 
     // Admin API endpoints
     Route::get('/api/admin/users', function () {

@@ -73,6 +73,12 @@ class User extends Authenticatable
         return $this->hasMany(Product::class);
     }
 
+    // 4. Relasi ke Profile (opsional)
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
     // Accessor untuk photo URL
     public function getPhotoUrlAttribute()
     {
