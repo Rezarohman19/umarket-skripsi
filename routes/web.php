@@ -104,10 +104,26 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin-dashboard');
     })->name('admin.dashboard');
-    
-    Route::resource('/products', ProductController::class);
-    Route::get('/transactions', [TransactionController::class, 'adminIndex']);
-    Route::get('/users', [ProfileController::class, 'listUsers']);
+
+    // Halaman profil admin
+    Route::get('/profile', function () {
+        return view('admin-profile');
+    })->name('admin.profile');
+
+    // Halaman produk admin (SPA Vue)
+    Route::get('/products', function () {
+        return view('admin-products');
+    })->name('admin.products');
+
+    // Halaman penjualan admin (SPA Vue)
+    Route::get('/transactions', function () {
+        return view('admin-sales');
+    })->name('admin.sales');
+
+    // Halaman pengguna admin (SPA Vue)
+    Route::get('/users', function () {
+        return view('admin-users');
+    })->name('admin.users');
 });
 
 /*
@@ -156,6 +172,28 @@ Route::get('/product/{id}', function ($id) {
     return view('product-detail');
 });
 
+// Route untuk serve file storage (fallback jika symbolic link tidak bekerja)
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    
+    // Security: pastikan path tidak keluar dari storage/app/public
+    $realPath = realpath($filePath);
+    $storagePath = realpath(storage_path('app/public'));
+    
+    if (!$realPath || strpos($realPath, $storagePath) !== 0) {
+        abort(404);
+    }
+    
+    if (!file_exists($realPath) || !is_file($realPath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($realPath);
+    return response()->file($realPath, [
+        'Content-Type' => $mimeType,
+    ]);
+})->where('path', '.*');
+
 /*
 |--------------------------------------------------------------------------
 | API ROUTES — USER AUTH
@@ -164,9 +202,13 @@ Route::get('/product/{id}', function ($id) {
 Route::middleware('auth')->group(function () {
 
     Route::get('/api/user', function() {
-        $user = Auth::user();
+        // Refresh user data untuk memastikan data terbaru dari database
+        $user = Auth::user()->fresh();
         $userData = $user->toArray();
+        
+        // Generate photo_url (timestamp akan ditambahkan di frontend untuk cache busting)
         $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
+        
         return response()->json($userData);
     });
 
@@ -176,22 +218,120 @@ Route::middleware('auth')->group(function () {
 
     // Admin API endpoints
     Route::get('/api/admin/users', function () {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
         if (Auth::user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-        return response()->json(\App\Models\User::all());
+
+        $currentId = Auth::id();
+        $users = \App\Models\User::withCount('products')->get()->map(function ($u) use ($currentId) {
+            return [
+                'id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email,
+                'role' => $u->role,
+                'status' => $u->id === $currentId ? 'online' : 'offline',
+                'products_count' => $u->products_count ?? 0,
+                'is_current' => $u->id === $currentId,
+            ];
+        });
+
+        return response()->json($users);
+    });
+
+    Route::post('/api/admin/users', function (Request $request) {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role' => 'nullable|string',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'role' => $validated['role'] ?? 'pengguna',
+        ]);
+
+        return response()->json($user, 201);
+    });
+
+    Route::post('/api/admin/users/{id}', function (Request $request, $id) {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $user = \App\Models\User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'nullable|string',
+        ]);
+
+        $updateData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'] ?? $user->role,
+        ];
+
+        if (!empty($validated['password'])) {
+            $updateData['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
+        }
+
+        $user->update($updateData);
+
+        return response()->json($user);
+    });
+
+    Route::delete('/api/admin/users/{id}', function ($id) {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if (Auth::id() == $id) {
+            return response()->json(['message' => 'Tidak dapat menghapus akun yang sedang digunakan'], 400);
+        }
+
+        $user = \App\Models\User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['message' => 'Pengguna berhasil dihapus']);
     });
 
     Route::get('/api/admin/transactions', function () {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
         if (Auth::user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-        $transactions = \App\Models\Transaction::with('user')->get();
+
+        $transactions = \App\Models\Transaction::with(['user', 'items'])->orderBy('created_at', 'desc')->get();
         return response()->json($transactions->map(fn($t) => [
             'id' => $t->id,
             'total' => $t->total_price,
             'status' => $t->status,
             'user' => $t->user,
+            'products_sold' => $t->items->sum('qty'),
+            'created_at' => $t->created_at,
         ]));
     });
 

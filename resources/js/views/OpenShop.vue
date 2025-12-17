@@ -97,7 +97,7 @@
 
                         <button
                             @click="handleCart"
-                            class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mr-1"
                         >
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -110,11 +110,19 @@
                             </span>
                         </button>
 
+                        <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all ml-2"
+                            :class="user?.photo_url ? 'ring-2 ring-blue-500' : 'bg-gray-200 dark:bg-gray-700'"
                         >
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <img
+                                v-if="user?.photo_url"
+                                :src="getPhotoUrl(user.photo_url)"
+                                :alt="user.name"
+                                class="w-full h-full object-cover"
+                            />
+                            <svg v-else class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </button>
@@ -482,7 +490,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 
 const sidebarCollapsed = ref(false);
@@ -787,15 +795,33 @@ const fetchProducts = async () => {
     }
 };
 
+const getPhotoUrl = (photoUrl) => {
+    if (!photoUrl) return null;
+    // Tambahkan cache busting jika belum ada
+    if (photoUrl.includes('?')) {
+        return photoUrl.split('?')[0] + '?t=' + Date.now();
+    }
+    return photoUrl + '?t=' + Date.now();
+};
+
 const checkAuth = async () => {
     try {
-        const response = await axios.get('/api/user');
+        // Tambahkan cache busting untuk memastikan data terbaru
+        const response = await axios.get('/api/user', {
+            params: { _t: Date.now() }
+        });
         user.value = response.data;
         store.value.name = response.data.name || 'Nama Toko';
     } catch (error) {
         user.value = null;
         window.location.href = '/login';
     }
+};
+
+// Handler untuk update user data (setelah edit profil)
+const handleUserUpdated = async (event) => {
+    // Refresh user data untuk update foto profil
+    await checkAuth();
 };
 
 const fetchCartCount = async () => {
@@ -915,6 +941,13 @@ onMounted(async () => {
         await fetchProducts();
         await fetchIncomingOrders();
     }
+    
+    // Listen untuk user update event (setelah edit profil)
+    window.addEventListener('userUpdated', handleUserUpdated);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('userUpdated', handleUserUpdated);
 });
 </script>
 

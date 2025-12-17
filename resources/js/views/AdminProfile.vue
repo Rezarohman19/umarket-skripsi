@@ -39,7 +39,7 @@
                         />
                         <span v-else>Foto</span>
                     </div>
-                    
+
                     <!-- Teks Edit (Hanya muncul saat mode editing) -->
                     <button
                         v-if="isEditing"
@@ -49,7 +49,7 @@
                     >
                         Edit
                     </button>
-                    
+
                     <!-- Card Menu Edit Foto (Muncul saat klik Edit) -->
                     <div
                         v-if="showPhotoMenu && isEditing"
@@ -80,6 +80,7 @@
                 <div
                     class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-sm"
                 >
+                    <!-- Nama -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-gray-700 dark:text-gray-300 w-32"
                             >Nama</span
@@ -95,36 +96,8 @@
                             profile.name
                         }}</span>
                     </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Deskripsi</span
-                        >
-                        <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <textarea
-                            v-if="isEditing"
-                            v-model="form.description"
-                            rows="2"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        ></textarea>
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.description
-                        }}</span>
-                    </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Telepon</span
-                        >
-                        <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <input
-                            v-if="isEditing"
-                            v-model="form.phone"
-                            type="text"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.phone
-                        }}</span>
-                    </div>
+
+                    <!-- Email -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-gray-700 dark:text-gray-300 w-32"
                             >Email</span
@@ -140,21 +113,25 @@
                             profile.email
                         }}</span>
                     </div>
+
+                    <!-- Telepon -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Alamat Lengkap</span
+                            >Telepon</span
                         >
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <textarea
+                        <input
                             v-if="isEditing"
-                            v-model="form.address"
-                            rows="2"
+                            v-model="form.phone"
+                            type="text"
                             class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        ></textarea>
+                        />
                         <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.address
+                            profile.phone
                         }}</span>
                     </div>
+
+                    <!-- Password -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-gray-700 dark:text-gray-300 w-32"
                             >Password</span
@@ -198,103 +175,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Notification Toast -->
-        <transition name="fade">
-            <div
-                v-if="notification.show"
-                :class="[
-                    'fixed bottom-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 max-w-sm',
-                    notification.type === 'success'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white',
-                ]"
-            >
-                <div class="flex items-center gap-3">
-                    <svg
-                        v-if="notification.type === 'success'"
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5 13l4 4L19 7"
-                        />
-                    </svg>
-                    <svg
-                        v-else
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-                    <p class="font-medium">{{ notification.message }}</p>
-                </div>
-            </div>
-        </transition>
-
-        <!-- Success Modal -->
-        <transition name="modal">
-            <div
-                v-if="showSuccessModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-                @click.self="showSuccessModal = false"
-            >
-                <div
-                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
-                >
-                    <div class="flex flex-col items-center text-center">
-                        <!-- Success Icon -->
-                        <div
-                            class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4"
-                        >
-                            <svg
-                                class="w-8 h-8 text-green-600 dark:text-green-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M5 13l4 4L19 7"
-                                />
-                            </svg>
-                        </div>
-
-                        <!-- Message -->
-                        <h3
-                            class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
-                        >
-                            Berhasil!
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Perubahan profil Anda telah berhasil disimpan.
-                        </p>
-
-                        <!-- OK Button -->
-                        <button
-                            @click="showSuccessModal = false"
-                            class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
-                        >
-                            OK
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </transition>
     </div>
 </template>
 
@@ -304,31 +184,26 @@ import axios from "axios";
 
 const profile = ref({
     name: "Nama",
-    description: "Deskripsi",
-    phone: "",
     email: "",
-    address: "",
+    phone: "",
+    photo_url: null,
 });
 
 const form = ref({ ...profile.value, password: "" });
 const isEditing = ref(false);
 const imagePreview = ref(null);
 const photoFile = ref(null);
-const notification = ref({ show: false, message: "", type: "success" });
-const showSuccessModal = ref(false);
 const showPhotoMenu = ref(false);
 
 const goBack = () => window.history.back();
 
 const fetchProfile = async () => {
     try {
-        // Tambahkan cache busting untuk memastikan data terbaru
         const response = await axios.get("/api/user", {
-            params: { _t: Date.now() }
+            params: { _t: Date.now() },
         });
         const user = response.data;
 
-        // Gunakan photo_url dari API jika ada, atau generate dari photo path
         let photoUrl = user.photo_url || null;
         if (!photoUrl && user.photo) {
             photoUrl = user.photo.startsWith("/")
@@ -336,64 +211,45 @@ const fetchProfile = async () => {
                 : "/storage/" + user.photo;
         }
 
-        // Tambahkan cache busting ke URL foto
-        if (photoUrl && !photoUrl.includes('?')) {
-            photoUrl = photoUrl + "?t=" + Date.now();
-        } else if (photoUrl && photoUrl.includes('?')) {
-            photoUrl = photoUrl.split('?')[0] + "?t=" + Date.now();
+        if (photoUrl) {
+            photoUrl = photoUrl.split("?")[0] + "?t=" + Date.now();
         }
 
         profile.value = {
             name: user.name || "Nama",
-            description: user.description || "Deskripsi",
-            phone: user.phone || "",
             email: user.email || "",
-            address: user.address || "",
+            phone: user.phone || "",
             photo_url: photoUrl,
         };
         form.value = { ...profile.value, password: "" };
-        if (photoUrl) {
-            imagePreview.value = photoUrl;
-        }
+        imagePreview.value = photoUrl;
     } catch (error) {
-        window.location.href = "/login";
+        window.location.href = "/admin/login";
     }
 };
 
 const startEdit = () => {
     form.value = { ...profile.value, password: "" };
     photoFile.value = null;
-    showPhotoMenu.value = false; // Reset menu saat mulai edit
-    // Set imagePreview dari foto profil yang ada
-    if (profile.value.photo_url) {
-        imagePreview.value = profile.value.photo_url;
-    } else {
-        imagePreview.value = null;
-    }
+    showPhotoMenu.value = false;
+    imagePreview.value = profile.value.photo_url || null;
     isEditing.value = true;
 };
 
 const cancelEdit = () => {
     isEditing.value = false;
-    showPhotoMenu.value = false; // Tutup menu saat cancel
+    showPhotoMenu.value = false;
     form.value = { ...profile.value, password: "" };
     photoFile.value = null;
-    // Reset imagePreview ke foto profil yang ada
-    if (profile.value.photo_url) {
-        imagePreview.value = profile.value.photo_url;
-    } else {
-        imagePreview.value = null;
-    }
+    imagePreview.value = profile.value.photo_url || null;
 };
 
 const saveProfile = async () => {
     try {
         const payload = new FormData();
         payload.append("name", form.value.name);
-        payload.append("description", form.value.description || "");
         payload.append("phone", form.value.phone || "");
         payload.append("email", form.value.email);
-        payload.append("address", form.value.address || "");
         if (form.value.password) {
             payload.append("password", form.value.password);
         }
@@ -410,58 +266,44 @@ const saveProfile = async () => {
             },
         });
 
-        // Update profile dengan data terbaru
         const updatedUser = response.data.user;
         let photoUrl = updatedUser.photo_url;
 
-        // Generate photo_url jika belum ada dari API
         if (!photoUrl && updatedUser.photo) {
             photoUrl = updatedUser.photo.startsWith("/")
                 ? updatedUser.photo
                 : "/storage/" + updatedUser.photo;
         }
 
-        // Cache busting: tambah timestamp agar browser reload gambar
         if (photoUrl) {
-            // Hapus query string lama jika ada, lalu tambah timestamp baru
-            photoUrl = photoUrl.split('?')[0] + "?t=" + Date.now();
+            photoUrl = photoUrl.split("?")[0] + "?t=" + Date.now();
         }
 
         profile.value = {
             name: updatedUser.name,
-            description: updatedUser.description || "",
-            phone: updatedUser.phone || "",
             email: updatedUser.email,
-            address: updatedUser.address || "",
+            phone: updatedUser.phone || "",
             photo_url: photoUrl,
         };
 
-        if (photoUrl) {
-            imagePreview.value = photoUrl;
-        } else {
-            imagePreview.value = null;
-        }
-
-        form.value = { ...profile.value, password: "" };
-        photoFile.value = null;
+        imagePreview.value = photoUrl || null;
         isEditing.value = false;
 
         // Trigger event untuk refresh data user di halaman lain
-        window.dispatchEvent(new CustomEvent('userUpdated', { 
-            detail: { user: updatedUser, photoUrl: photoUrl } 
-        }));
+        window.dispatchEvent(
+            new CustomEvent("userUpdated", {
+                detail: { user: updatedUser, photoUrl: photoUrl },
+            })
+        );
 
-        // Tampilkan modal sukses
-        showSuccessModal.value = true;
-
-        // Reload halaman setelah 1.5 detik untuk update nama di header dan foto di semua halaman
+        // Reload untuk update foto di semua halaman admin
         setTimeout(() => {
             window.location.reload();
         }, 1500);
     } catch (error) {
         const message =
             error.response?.data?.message || "Gagal memperbarui profil";
-        showNotification(message, "error");
+        alert(message);
     }
 };
 
@@ -470,29 +312,22 @@ const onPhotoChange = (event) => {
     if (file) {
         photoFile.value = file;
         imagePreview.value = URL.createObjectURL(file);
-        showPhotoMenu.value = false; // Tutup menu setelah memilih foto
+        showPhotoMenu.value = false;
     }
 };
 
 const removePhoto = () => {
     photoFile.value = null;
     imagePreview.value = null;
-    showPhotoMenu.value = false; // Tutup menu setelah menghapus foto
+    showPhotoMenu.value = false;
 };
 
-const showNotification = (message, type = "success") => {
-    notification.value = { show: true, message, type };
-    setTimeout(() => {
-        notification.value.show = false;
-    }, 3000);
-};
-
-// Fungsi untuk menutup menu saat klik di luar
+// Tutup menu foto saat klik di luar
 const handleClickOutside = (event) => {
     const target = event.target;
-    const photoMenu = document.querySelector('[data-photo-menu]');
-    const editButton = document.querySelector('[data-edit-button]');
-    
+    const photoMenu = document.querySelector("[data-photo-menu]");
+    const editButton = document.querySelector("[data-edit-button]");
+
     if (showPhotoMenu.value && photoMenu && editButton) {
         if (!photoMenu.contains(target) && !editButton.contains(target)) {
             showPhotoMenu.value = false;
@@ -502,22 +337,12 @@ const handleClickOutside = (event) => {
 
 onMounted(async () => {
     await fetchProfile();
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s, transform 0.3s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-    transform: translateY(10px);
-}
-</style>
+
