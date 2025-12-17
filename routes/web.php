@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('profile');
 
     // Tambahkan: route untuk update profil via web (aksi edit profil)
-    Route::middleware('auth')->post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::middleware('auth')->post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 });
 
