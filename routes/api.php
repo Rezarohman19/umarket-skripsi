@@ -17,6 +17,11 @@ Route::middleware('auth')->group(function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
+// Public API
+Route::get('/categories', function () {
+    return \App\Models\Category::all();
+});
+
 // API dengan token sanctum
 Route::middleware('auth:sanctum')->group(function () {
 

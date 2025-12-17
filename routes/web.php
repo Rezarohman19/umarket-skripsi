@@ -142,6 +142,7 @@ Route::get('/api/products', function () {
             'id' => $p->id,
             'name' => $p->name,
             'description' => $p->description,
+            'category' => $p->category,
             'price' => $p->price,
             'stock' => $p->stock,
             'image_url' => $p->image ? Storage::url($p->image) : null,
@@ -337,7 +338,8 @@ Route::middleware('auth')->group(function () {
 
     // Produk milik user
     Route::get('/api/my-products', function () {
-        $products = \App\Models\Product::where('user_id', Auth::id())
+        $products = \App\Models\Product::with('category')
+            ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn($p) => [
@@ -347,6 +349,7 @@ Route::middleware('auth')->group(function () {
                 'price' => $p->price,
                 'stock' => $p->stock,
                 'image_url' => $p->image ? Storage::url($p->image) : null,
+                'category' => $p->category ? ['id' => $p->category->id, 'name' => $p->category->name] : null,
             ]);
 
         return response()->json($products);

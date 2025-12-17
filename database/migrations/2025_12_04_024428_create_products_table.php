@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // penjual
             $table->string('name');
+            $table->string('category_id');
             $table->text('description')->nullable();
             $table->decimal('price', 12, 2);
             $table->integer('stock');

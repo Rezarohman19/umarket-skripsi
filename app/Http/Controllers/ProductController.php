@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -20,11 +22,29 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
+            'category'    => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
             'image'       => 'nullable|image|max:2048',
         ]);
+
+        // Jika ada input kategori, auto-create jika belum ada
+        $categoryId = null;
+        if ($request->filled('category')) {
+            $catName = trim($request->input('category'));
+            if ($catName) {
+                $category = Category::firstOrCreate(
+                    ['name' => $catName],
+                    ['slug' => Str::slug($catName)]
+                );
+                $categoryId = $category->id;
+            }
+        }
+        
+        // Unset string category, set category_id
+        unset($validated['category']);
+        $validated['category_id'] = $categoryId;
 
         // Upload image jika ada
         if ($request->hasFile('image')) {
@@ -54,11 +74,27 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name'        => 'sometimes|required|string|max:255',
+            'category'    => 'sometimes|nullable|string|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
             'image'       => 'nullable|image|max:2048',
         ]);
+
+        // Jika ada input kategori, auto-create jika belum ada
+        if ($request->filled('category')) {
+            $catName = trim($request->input('category'));
+            if ($catName) {
+                $category = Category::firstOrCreate(
+                    ['name' => $catName],
+                    ['slug' => Str::slug($catName)]
+                );
+                $validated['category_id'] = $category->id;
+            }
+        }
+        
+        // Unset string category
+        unset($validated['category']);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');

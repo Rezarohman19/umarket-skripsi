@@ -5,7 +5,7 @@
             <aside
                 :class="[
                     'bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
-                    sidebarCollapsed ? 'w-16' : 'w-64'
+                    sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
                 <div class="p-4 flex items-center justify-between">
@@ -13,8 +13,18 @@
                         @click="toggleSidebar"
                         class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        <svg
+                            class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            />
                         </svg>
                     </button>
                 </div>
@@ -24,8 +34,18 @@
                         href="/"
                         class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        <svg
+                            class="w-5 h-5 mr-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                            />
                         </svg>
                         <span v-if="!sidebarCollapsed">Beranda</span>
                     </a>
@@ -34,8 +54,18 @@
                         href="/orders"
                         class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        <svg
+                            class="w-5 h-5 mr-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            />
                         </svg>
                         <span v-if="!sidebarCollapsed">Pesanan Saya</span>
                     </a>
@@ -44,8 +74,18 @@
                         href="#"
                         class="flex items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium border border-blue-200 dark:border-blue-800"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        <svg
+                            class="w-5 h-5 mr-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                            />
                         </svg>
                         <span v-if="!sidebarCollapsed">Buka Toko</span>
                     </a>
@@ -58,8 +98,18 @@
                     >
                         <span v-if="!sidebarCollapsed">Keluar</span>
                         <span v-else class="flex justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            <svg
+                                class="w-5 h-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                />
                             </svg>
                         </span>
                     </button>
@@ -67,17 +117,29 @@
             </aside>
 
             <!-- Main Content -->
-            <main :class="['flex-1 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+            <main
+                :class="[
+                    'flex-1 transition-all duration-300',
+                    sidebarCollapsed ? 'ml-16' : 'ml-64',
+                ]"
+            >
                 <!-- Header -->
-                <header class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10">
+                <header
+                    class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10"
+                >
                     <div class="flex items-center justify-between">
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center"
+                        >
                             <span class="text-white font-bold">U</span>
                         </div>
 
                         <div class="flex-1 mx-6">
                             <p class="text-gray-700 dark:text-gray-300">
-                                Halo, <span class="font-semibold">{{ user?.name || 'Pengunjung' }}</span>
+                                Halo,
+                                <span class="font-semibold">{{
+                                    user?.name || "Pengunjung"
+                                }}</span>
                             </p>
                         </div>
 
@@ -89,8 +151,18 @@
                                     placeholder="Cari"
                                     class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
-                                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                <svg
+                                    class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                    />
                                 </svg>
                             </div>
                         </div>
@@ -99,14 +171,29 @@
                             @click="handleCart"
                             class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mr-1"
                         >
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                                />
                             </svg>
-                            <span v-if="cartCount > 0" :class="[
-                                'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
-                                cartCount > 9 ? 'w-6 h-6 -mt-1 -mr-1' : 'w-5 h-5'
-                            ]">
-                                {{ cartCount > 99 ? '99+' : cartCount }}
+                            <span
+                                v-if="cartCount > 0"
+                                :class="[
+                                    'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
+                                    cartCount > 9
+                                        ? 'w-6 h-6 -mt-1 -mr-1'
+                                        : 'w-5 h-5',
+                                ]"
+                            >
+                                {{ cartCount > 99 ? "99+" : cartCount }}
                             </span>
                         </button>
 
@@ -114,7 +201,11 @@
                         <button
                             @click="handleProfile"
                             class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all ml-2"
-                            :class="user?.photo_url ? 'ring-2 ring-blue-500' : 'bg-gray-200 dark:bg-gray-700'"
+                            :class="
+                                user?.photo_url
+                                    ? 'ring-2 ring-blue-500'
+                                    : 'bg-gray-200 dark:bg-gray-700'
+                            "
                         >
                             <img
                                 v-if="user?.photo_url"
@@ -122,8 +213,19 @@
                                 :alt="user.name"
                                 class="w-full h-full object-cover"
                             />
-                            <svg v-else class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <svg
+                                v-else
+                                class="w-6 h-6 text-gray-600 dark:text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
                             </svg>
                         </button>
                     </div>
@@ -132,14 +234,24 @@
                 <!-- Store Overview -->
                 <div class="p-6 space-y-8">
                     <!-- Store Overview -->
-                    <section class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6">
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                    <section
+                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6"
+                    >
+                        <div
+                            class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+                        >
                             <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300">
+                                <div
+                                    class="w-16 h-16 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300"
+                                >
                                     Foto
                                 </div>
                                 <div>
-                                    <p class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ store.name }}</p>
+                                    <p
+                                        class="text-lg font-semibold text-gray-800 dark:text-gray-100"
+                                    >
+                                        {{ store.name }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -149,41 +261,81 @@
                                 @click="showOrdersSection('paid')"
                                 :class="[
                                     'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
-                                    activeOrderSection === 'paid' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                    activeOrderSection === 'paid'
+                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        : '',
                                 ]"
                             >
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.incoming }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Pesanan Masuk</p>
+                                <p
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                >
+                                    {{ store.stats.incoming }}
+                                </p>
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                >
+                                    Pesanan Masuk
+                                </p>
                             </button>
                             <button
                                 @click="showOrdersSection('processing')"
                                 :class="[
                                     'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
-                                    activeOrderSection === 'processing' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                    activeOrderSection === 'processing'
+                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        : '',
                                 ]"
                             >
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.needShip }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Perlu Dikirim</p>
+                                <p
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                >
+                                    {{ store.stats.needShip }}
+                                </p>
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                >
+                                    Perlu Dikirim
+                                </p>
                             </button>
                             <button
                                 @click="showOrdersSection('shipping')"
                                 :class="[
                                     'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
-                                    activeOrderSection === 'shipping' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                    activeOrderSection === 'shipping'
+                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        : '',
                                 ]"
                             >
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.shipped }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Dikirim</p>
+                                <p
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                >
+                                    {{ store.stats.shipped }}
+                                </p>
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                >
+                                    Dikirim
+                                </p>
                             </button>
                             <button
                                 @click="showOrdersSection('history')"
                                 :class="[
                                     'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
-                                    activeOrderSection === 'history' ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                                    activeOrderSection === 'history'
+                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        : '',
                                 ]"
                             >
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.history }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Riwayat Penjualan</p>
+                                <p
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                >
+                                    {{ store.stats.history }}
+                                </p>
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                >
+                                    Riwayat Penjualan
+                                </p>
                             </button>
                         </div>
                     </section>
@@ -195,14 +347,28 @@
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ getSectionTitle(activeOrderSection) }}</h2>
+                                <h2
+                                    class="text-lg font-semibold text-gray-800 dark:text-gray-100"
+                                >
+                                    {{ getSectionTitle(activeOrderSection) }}
+                                </h2>
                                 <button
                                     @click="activeOrderSection = null"
                                     class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                                     title="Tutup"
                                 >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <svg
+                                        class="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
                                     </svg>
                                 </button>
                             </div>
@@ -210,15 +376,32 @@
 
                         <!-- Loading -->
                         <div v-if="ordersLoading" class="text-center py-8">
-                            <p class="text-gray-500 dark:text-gray-400">Memuat pesanan...</p>
+                            <p class="text-gray-500 dark:text-gray-400">
+                                Memuat pesanan...
+                            </p>
                         </div>
 
                         <!-- Empty State -->
-                        <div v-else-if="filteredOrdersBySection.length === 0" class="text-center py-8">
-                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <div
+                            v-else-if="filteredOrdersBySection.length === 0"
+                            class="text-center py-8"
+                        >
+                            <svg
+                                class="w-16 h-16 mx-auto text-gray-400 mb-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                />
                             </svg>
-                            <p class="text-gray-600 dark:text-gray-400">Belum ada pesanan di kategori ini</p>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Belum ada pesanan di kategori ini
+                            </p>
                         </div>
 
                         <!-- Orders List -->
@@ -228,24 +411,51 @@
                                 :key="order.id"
                                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
-                                <div class="flex items-start justify-between mb-3">
+                                <div
+                                    class="flex items-start justify-between mb-3"
+                                >
                                     <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="px-2 py-1 rounded-full text-xs font-semibold" :class="getStatusClass(order.status)">
-                                                {{ getStatusLabel(order.status) }}
+                                        <div
+                                            class="flex items-center gap-2 mb-1"
+                                        >
+                                            <span
+                                                class="px-2 py-1 rounded-full text-xs font-semibold"
+                                                :class="
+                                                    getStatusClass(order.status)
+                                                "
+                                            >
+                                                {{
+                                                    getStatusLabel(order.status)
+                                                }}
                                             </span>
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID: #{{ order.id }}</span>
+                                            <span
+                                                class="text-xs text-gray-500 dark:text-gray-400"
+                                                >ID: #{{ order.id }}</span
+                                            >
                                         </div>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                                        <p
+                                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                                        >
                                             Pesanan dari: {{ order.buyer_name }}
                                         </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <p
+                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+                                        >
                                             {{ formatDate(order.created_at) }}
                                         </p>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-lg font-bold text-gray-900 dark:text-white">Rp. {{ formatPrice(order.total_price) }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ order.items.length }} item</p>
+                                        <p
+                                            class="text-lg font-bold text-gray-900 dark:text-white"
+                                        >
+                                            Rp.
+                                            {{ formatPrice(order.total_price) }}
+                                        </p>
+                                        <p
+                                            class="text-xs text-gray-500 dark:text-gray-400"
+                                        >
+                                            {{ order.items.length }} item
+                                        </p>
                                     </div>
                                 </div>
 
@@ -256,43 +466,105 @@
                                         :key="item.id"
                                         class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded"
                                     >
-                                        <div class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+                                        <div
+                                            class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded flex items-center justify-center overflow-hidden flex-shrink-0"
+                                        >
                                             <img
                                                 v-if="item.product?.image_url"
                                                 :src="item.product.image_url"
                                                 :alt="item.product.name"
                                                 class="w-full h-full object-cover"
                                             />
-                                            <svg v-else class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            <svg
+                                                v-else
+                                                class="w-6 h-6 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                />
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ item.product?.name || 'Produk' }}</p>
-                                            <p class="text-xs text-gray-600 dark:text-gray-400">{{ item.qty }} pcs × Rp. {{ formatPrice(item.price) }}</p>
+                                            <p
+                                                class="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                                            >
+                                                {{
+                                                    item.product?.name ||
+                                                    "Produk"
+                                                }}
+                                            </p>
+                                            <p
+                                                class="text-xs text-gray-600 dark:text-gray-400"
+                                            >
+                                                {{ item.qty }} pcs × Rp.
+                                                {{ formatPrice(item.price) }}
+                                            </p>
                                         </div>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp. {{ formatPrice(item.price * item.qty) }}</p>
+                                        <p
+                                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                                        >
+                                            Rp.
+                                            {{
+                                                formatPrice(
+                                                    item.price * item.qty
+                                                )
+                                            }}
+                                        </p>
                                     </div>
                                 </div>
 
                                 <!-- Shipping Address -->
-                                <div v-if="order.shipping_address" class="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
-                                    <p class="font-semibold text-blue-700 dark:text-blue-400 mb-1">Alamat Pengiriman:</p>
-                                    <p class="text-gray-700 dark:text-gray-300">{{ order.shipping_address.name }} - {{ order.shipping_address.phone }}</p>
-                                    <p class="text-gray-600 dark:text-gray-400">{{ order.shipping_address.address }}</p>
+                                <div
+                                    v-if="order.shipping_address"
+                                    class="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs"
+                                >
+                                    <p
+                                        class="font-semibold text-blue-700 dark:text-blue-400 mb-1"
+                                    >
+                                        Alamat Pengiriman:
+                                    </p>
+                                    <p class="text-gray-700 dark:text-gray-300">
+                                        {{ order.shipping_address.name }} -
+                                        {{ order.shipping_address.phone }}
+                                    </p>
+                                    <p class="text-gray-600 dark:text-gray-400">
+                                        {{ order.shipping_address.address }}
+                                    </p>
                                 </div>
 
                                 <!-- Tracking Number -->
-                                <div v-if="order.tracking_number" class="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs">
-                                    <p class="font-semibold text-green-700 dark:text-green-400 mb-1">Nomor Resi:</p>
-                                    <p class="font-mono text-gray-900 dark:text-white">{{ order.tracking_number }}</p>
+                                <div
+                                    v-if="order.tracking_number"
+                                    class="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs"
+                                >
+                                    <p
+                                        class="font-semibold text-green-700 dark:text-green-400 mb-1"
+                                    >
+                                        Nomor Resi:
+                                    </p>
+                                    <p
+                                        class="font-mono text-gray-900 dark:text-white"
+                                    >
+                                        {{ order.tracking_number }}
+                                    </p>
                                 </div>
 
                                 <!-- Action Buttons -->
                                 <div class="flex flex-wrap gap-2">
                                     <button
                                         v-if="order.status === 'paid'"
-                                        @click="updateOrderStatus(order.id, 'processing')"
+                                        @click="
+                                            updateOrderStatus(
+                                                order.id,
+                                                'processing'
+                                            )
+                                        "
                                         class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition-colors"
                                     >
                                         Mulai Kemas
@@ -306,7 +578,12 @@
                                     </button>
                                     <button
                                         v-if="order.status === 'shipping'"
-                                        @click="updateOrderStatus(order.id, 'delivered')"
+                                        @click="
+                                            updateOrderStatus(
+                                                order.id,
+                                                'delivered'
+                                            )
+                                        "
                                         class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition-colors"
                                     >
                                         Tandai Diterima
@@ -317,9 +594,15 @@
                     </section>
 
                     <!-- Product Table -->
-                    <section class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6 space-y-4">
+                    <section
+                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6 space-y-4"
+                    >
                         <div class="flex items-center justify-between">
-                            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Produk</h2>
+                            <h2
+                                class="text-lg font-semibold text-gray-800 dark:text-gray-100"
+                            >
+                                Produk
+                            </h2>
                             <button
                                 class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
                                 @click="toggleForm"
@@ -329,38 +612,109 @@
                         </div>
 
                         <transition name="fade">
-                            <div v-if="showForm" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3 border border-dashed border-gray-300 dark:border-gray-700">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div
+                                v-if="showForm"
+                                class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3 border border-dashed border-gray-300 dark:border-gray-700"
+                            >
+                                <div
+                                    class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                                >
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Produk</label>
-                                        <input v-model="form.name" type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Nama Produk</label
+                                        >
+                                        <input
+                                            v-model="form.name"
+                                            type="text"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
-                                        <input v-model="form.category" type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Kategori</label
+                                        >
+                                        <input
+                                            v-model="form.category"
+                                            type="text"
+                                            list="category-suggestions"
+                                            placeholder="Ketik nama kategori (atau pilih dari saran)..."
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
+                                        <datalist id="category-suggestions">
+                                            <option
+                                                v-for="cat in categories"
+                                                :key="cat.id"
+                                                :value="cat.name"
+                                            ></option>
+                                        </datalist>
                                     </div>
                                     <div class="sm:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Produk</label>
-                                        <textarea v-model="form.description" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" placeholder="Masukkan deskripsi produk yang detail..."></textarea>
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Deskripsi Produk</label
+                                        >
+                                        <textarea
+                                            v-model="form.description"
+                                            rows="3"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                            placeholder="Masukkan deskripsi produk yang detail..."
+                                        ></textarea>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Harga</label>
-                                        <input v-model.number="form.price" type="number" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Harga</label
+                                        >
+                                        <input
+                                            v-model.number="form.price"
+                                            type="number"
+                                            min="0"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stok</label>
-                                        <input v-model.number="form.stock" type="number" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Stok</label
+                                        >
+                                        <input
+                                            v-model.number="form.stock"
+                                            type="number"
+                                            min="0"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
                                     </div>
                                     <div class="sm:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto Produk</label>
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Foto Produk</label
+                                        >
                                         <div class="flex items-center gap-3">
-                                            <label class="w-28 h-28 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center bg-white dark:bg-gray-900 cursor-pointer hover:border-blue-500">
-                                                <input type="file" accept="image/*" class="hidden" @change="onImageChange" />
-                                                <template v-if="form.imagePreview">
-                                                    <img :src="form.imagePreview" alt="preview" class="w-full h-full object-cover rounded-lg" />
+                                            <label
+                                                class="w-28 h-28 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center bg-white dark:bg-gray-900 cursor-pointer hover:border-blue-500"
+                                            >
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    class="hidden"
+                                                    @change="onImageChange"
+                                                />
+                                                <template
+                                                    v-if="form.imagePreview"
+                                                >
+                                                    <img
+                                                        :src="form.imagePreview"
+                                                        alt="preview"
+                                                        class="w-full h-full object-cover rounded-lg"
+                                                    />
                                                 </template>
                                                 <template v-else>
-                                                    <span class="text-xs text-gray-500 dark:text-gray-400">Upload</span>
+                                                    <span
+                                                        class="text-xs text-gray-500 dark:text-gray-400"
+                                                        >Upload</span
+                                                    >
                                                 </template>
                                             </label>
                                             <button
@@ -374,11 +728,21 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-end gap-2">
-                                    <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition" @click="cancelForm">
+                                    <button
+                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                                        @click="cancelForm"
+                                    >
                                         Batal
                                     </button>
-                                    <button class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition" @click="submitForm">
-                                        {{ form.id ? 'Simpan Perubahan' : 'Simpan Produk' }}
+                                    <button
+                                        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition"
+                                        @click="submitForm"
+                                    >
+                                        {{
+                                            form.id
+                                                ? "Simpan Perubahan"
+                                                : "Simpan Produk"
+                                        }}
                                     </button>
                                 </div>
                             </div>
@@ -386,7 +750,9 @@
 
                         <div class="overflow-x-auto">
                             <div class="min-w-full">
-                                <div class="grid grid-cols-6 bg-gray-100 dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 rounded-lg px-4 py-3">
+                                <div
+                                    class="grid grid-cols-6 bg-gray-100 dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 rounded-lg px-4 py-3"
+                                >
                                     <div>Nama Toko</div>
                                     <div>Nama</div>
                                     <div>Kategori</div>
@@ -395,17 +761,40 @@
                                     <div class="text-right">Aksi</div>
                                 </div>
 
-                                <div class="space-y-2 mt-2" v-if="products.length">
+                                <div
+                                    class="space-y-2 mt-2"
+                                    v-if="products.length"
+                                >
                                     <div
                                         v-for="p in products"
                                         :key="p.id"
                                         class="grid grid-cols-6 items-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-4 gap-2"
                                     >
-                                        <div class="text-sm text-gray-700 dark:text-gray-300">{{ store.name }}</div>
-                                        <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">{{ p.name }}</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ p.description || '-' }}</div>
-                                        <div class="text-sm text-gray-700 dark:text-gray-300">{{ p.stock }}</div>
-                                        <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">Rp. {{ formatPrice(p.price) }}</div>
+                                        <div
+                                            class="text-sm text-gray-700 dark:text-gray-300"
+                                        >
+                                            {{ store.name }}
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-800 dark:text-gray-100 font-semibold"
+                                        >
+                                            {{ p.name }}
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-600 dark:text-gray-400"
+                                        >
+                                            {{ p.category?.name || "-" }}
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-700 dark:text-gray-300"
+                                        >
+                                            {{ p.stock }}
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-800 dark:text-gray-100 font-semibold"
+                                        >
+                                            Rp. {{ formatPrice(p.price) }}
+                                        </div>
                                         <div class="flex justify-end gap-2">
                                             <button
                                                 class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -423,7 +812,12 @@
                                     </div>
                                 </div>
 
-                                <div v-else class="text-sm text-gray-500 dark:text-gray-400 mt-3">Belum ada produk.</div>
+                                <div
+                                    v-else
+                                    class="text-sm text-gray-500 dark:text-gray-400 mt-3"
+                                >
+                                    Belum ada produk.
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -438,11 +832,19 @@
                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
                 @click.self="showShippingForm = false"
             >
-                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Kirim Paket</h3>
+                <div
+                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
+                >
+                    <h3
+                        class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                    >
+                        Kirim Paket
+                    </h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                            >
                                 Nomor Resi / Tracking Number
                             </label>
                             <input
@@ -453,7 +855,9 @@
                             />
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                            >
                                 Kurir / Jasa Pengiriman
                             </label>
                             <select
@@ -470,7 +874,12 @@
                         </div>
                         <div class="flex gap-3">
                             <button
-                                @click="showShippingForm = false; trackingNumber = ''; shippingCourier = 'jne'; selectedOrderId = null"
+                                @click="
+                                    showShippingForm = false;
+                                    trackingNumber = '';
+                                    shippingCourier = 'jne';
+                                    selectedOrderId = null;
+                                "
                                 class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                             >
                                 Batal
@@ -490,16 +899,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import axios from 'axios';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import axios from "axios";
 
 const sidebarCollapsed = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
-const searchQuery = ref('');
+const searchQuery = ref("");
 
 const store = ref({
-    name: 'Nama Toko',
+    name: "Nama Toko",
     stats: {
         incoming: 0,
         needShip: 0,
@@ -509,12 +918,13 @@ const store = ref({
 });
 
 const products = ref([]);
+const categories = ref([]);
 const showForm = ref(false);
 const form = ref({
     id: null,
-    name: '',
-    category: '',
-    description: '',
+    name: "",
+    category: "",
+    description: "",
     price: 0,
     stock: 0,
     imageFile: null,
@@ -524,95 +934,112 @@ const form = ref({
 // Orders
 const incomingOrders = ref([]);
 const ordersLoading = ref(false);
-const orderFilterStatus = ref('');
+const orderFilterStatus = ref("");
 const showShippingForm = ref(false);
-const trackingNumber = ref('');
-const shippingCourier = ref('jne');
+const trackingNumber = ref("");
+const shippingCourier = ref("jne");
 const selectedOrderId = ref(null);
 const activeOrderSection = ref(null); // 'paid', 'processing', 'shipping', 'history', atau null
 
-const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
+const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
 const formatDate = (date) => {
-    if (!date) return '';
+    if (!date) return "";
     const d = new Date(date);
-    return d.toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+    return d.toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
     });
 };
 
 const getStatusLabel = (status) => {
     const labels = {
-        'pending': 'Menunggu Pembayaran',
-        'paid': 'Sudah Dibayar',
-        'processing': 'Sedang Dikemas',
-        'shipping': 'Sedang Dikirim',
-        'delivered': 'Sudah Diterima',
-        'completed': 'Selesai',
-        'cancelled': 'Dibatalkan',
+        pending: "Menunggu Pembayaran",
+        paid: "Sudah Dibayar",
+        processing: "Sedang Dikemas",
+        shipping: "Sedang Dikirim",
+        delivered: "Sudah Diterima",
+        completed: "Selesai",
+        cancelled: "Dibatalkan",
     };
     return labels[status] || status;
 };
 
 const getStatusClass = (status) => {
     const classes = {
-        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-        'paid': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-        'processing': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-        'shipping': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
-        'delivered': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-        'completed': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-        'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+        pending:
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+        paid: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+        processing:
+            "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+        shipping:
+            "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
+        delivered:
+            "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        completed:
+            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+        cancelled:
+            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
     };
-    return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    return (
+        classes[status] ||
+        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+    );
 };
 
 const filteredIncomingOrders = computed(() => {
     let filtered = incomingOrders.value;
     if (orderFilterStatus.value) {
-        filtered = filtered.filter(order => order.status === orderFilterStatus.value);
+        filtered = filtered.filter(
+            (order) => order.status === orderFilterStatus.value
+        );
     }
     return filtered;
 });
 
 const filteredOrdersBySection = computed(() => {
     if (!activeOrderSection.value) return [];
-    
+
     let filtered = incomingOrders.value;
-    
-    if (activeOrderSection.value === 'paid') {
+
+    if (activeOrderSection.value === "paid") {
         // Pesanan Masuk: status pending (menunggu pembayaran) atau paid (sudah dibayar)
-        filtered = filtered.filter(order => order.status === 'pending' || order.status === 'paid');
-    } else if (activeOrderSection.value === 'processing') {
+        filtered = filtered.filter(
+            (order) => order.status === "pending" || order.status === "paid"
+        );
+    } else if (activeOrderSection.value === "processing") {
         // Perlu Dikirim: status processing (sedang dikemas)
-        filtered = filtered.filter(order => order.status === 'processing');
-    } else if (activeOrderSection.value === 'shipping') {
+        filtered = filtered.filter((order) => order.status === "processing");
+    } else if (activeOrderSection.value === "shipping") {
         // Dikirim: status shipping (sedang dikirim)
-        filtered = filtered.filter(order => order.status === 'shipping');
-    } else if (activeOrderSection.value === 'history') {
+        filtered = filtered.filter((order) => order.status === "shipping");
+    } else if (activeOrderSection.value === "history") {
         // Riwayat: status completed atau delivered (selesai/diterima)
-        filtered = filtered.filter(order => order.status === 'completed' || order.status === 'delivered');
+        filtered = filtered.filter(
+            (order) =>
+                order.status === "completed" || order.status === "delivered"
+        );
     }
-    
+
     return filtered;
 });
 
 const getSectionTitle = (section) => {
     const titles = {
-        'paid': 'Pesanan Masuk',
-        'processing': 'Perlu Dikirim',
-        'shipping': 'Dikirim',
-        'history': 'Riwayat Penjualan',
+        paid: "Pesanan Masuk",
+        processing: "Perlu Dikirim",
+        shipping: "Dikirim",
+        history: "Riwayat Penjualan",
     };
-    return titles[section] || 'Pesanan';
+    return titles[section] || "Pesanan";
 };
 
 const showOrdersSection = (section) => {
-    activeOrderSection.value = activeOrderSection.value === section ? null : section;
+    activeOrderSection.value =
+        activeOrderSection.value === section ? null : section;
 };
 
 const toggleSidebar = () => {
@@ -621,36 +1048,36 @@ const toggleSidebar = () => {
 
 const handleLogout = async () => {
     if (!user.value) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
     }
-    
-    if (confirm('Apakah Anda yakin ingin keluar?')) {
+
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
         try {
-            await axios.post('/logout');
-            window.location.href = '/login';
+            await axios.post("/logout");
+            window.location.href = "/login";
         } catch (error) {
-            console.error('Error logging out:', error);
+            console.error("Error logging out:", error);
             // Tetap redirect meskipun ada error
-            window.location.href = '/login';
+            window.location.href = "/login";
         }
     }
 };
 
 const handleCart = () => {
     if (!user.value) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
     }
-    window.location.href = '/cart';
+    window.location.href = "/cart";
 };
 
 const handleProfile = () => {
     if (!user.value) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
     }
-    window.location.href = '/profile';
+    window.location.href = "/profile";
 };
 
 const toggleForm = () => {
@@ -661,9 +1088,9 @@ const toggleForm = () => {
 const resetForm = () => {
     form.value = {
         id: null,
-        name: '',
-        category: '',
-        description: '',
+        name: "",
+        category: "",
+        description: "",
         price: 0,
         stock: 0,
         imageFile: null,
@@ -680,8 +1107,8 @@ const editProduct = (p) => {
     form.value = {
         id: p.id,
         name: p.name,
-        category: p.category || '',
-        description: p.description || '',
+        category: p.category?.name || "",
+        description: p.description || "",
         price: p.price,
         stock: p.stock,
         imageFile: null,
@@ -691,41 +1118,44 @@ const editProduct = (p) => {
 };
 
 const deleteProduct = async (id) => {
-    if (!confirm('Hapus produk ini?')) return;
+    if (!confirm("Hapus produk ini?")) return;
     try {
         await axios.delete(`/api/products/${id}`);
         await fetchProducts();
     } catch (error) {
-        alert('Gagal menghapus produk');
+        alert("Gagal menghapus produk");
     }
 };
 
 const submitForm = async () => {
     if (!form.value.name || form.value.price < 0 || form.value.stock < 0) {
-        alert('Nama, harga, dan stok wajib diisi dengan benar');
+        alert("Nama, harga, dan stok wajib diisi dengan benar");
         return;
     }
     const payload = new FormData();
-    payload.append('name', form.value.name);
-    payload.append('category', form.value.category || '');
-    payload.append('description', form.value.description || '');
-    payload.append('price', form.value.price);
-    payload.append('stock', form.value.stock);
+    payload.append("name", form.value.name);
+    payload.append("category", form.value.category || "");
+    payload.append("description", form.value.description || "");
+    payload.append("price", form.value.price);
+    payload.append("stock", form.value.stock);
     if (form.value.imageFile) {
-        payload.append('image', form.value.imageFile);
+        payload.append("image", form.value.imageFile);
     } else if (form.value.imagePreview === null && form.value.id) {
-        payload.append('remove_image', '1');
+        payload.append("remove_image", "1");
     }
 
     try {
         let response;
         if (form.value.id) {
-            response = await axios.post(`/api/products/${form.value.id}`, payload);
+            response = await axios.post(
+                `/api/products/${form.value.id}`,
+                payload
+            );
         } else {
-            response = await axios.post('/api/products', payload);
+            response = await axios.post("/api/products", payload);
         }
-        console.log('Product saved:', response.data);
-        
+        console.log("Product saved:", response.data);
+
         // Tambahkan produk baru ke array langsung (untuk immediate update)
         if (!form.value.id && response.data) {
             const newProduct = {
@@ -735,7 +1165,9 @@ const submitForm = async () => {
             products.value.unshift(newProduct);
         } else if (form.value.id && response.data) {
             // Update produk yang sudah ada
-            const index = products.value.findIndex(p => p.id === form.value.id);
+            const index = products.value.findIndex(
+                (p) => p.id === form.value.id
+            );
             if (index !== -1) {
                 products.value[index] = {
                     ...response.data,
@@ -743,14 +1175,17 @@ const submitForm = async () => {
                 };
             }
         }
-        
+
         // Refresh produk setelah save untuk memastikan data terbaru
         await fetchProducts();
         resetForm();
         showForm.value = false;
     } catch (error) {
-        console.error('Error saving product:', error);
-        alert('Gagal menyimpan produk: ' + (error.response?.data?.message || error.message));
+        console.error("Error saving product:", error);
+        alert(
+            "Gagal menyimpan produk: " +
+                (error.response?.data?.message || error.message)
+        );
     }
 };
 
@@ -769,28 +1204,33 @@ const removeImage = () => {
 
 const fetchProducts = async () => {
     if (!user.value) {
-        console.log('User not authenticated, cannot fetch products');
+        console.log("User not authenticated, cannot fetch products");
         products.value = [];
         return;
     }
     try {
         // Gunakan endpoint /api/my-products yang sudah ada di web.php
-        const response = await axios.get('/api/my-products');
-        const fetchedProducts = Array.isArray(response.data) ? response.data : [];
-        
-        console.log('Fetched products count:', fetchedProducts.length);
-        
+        const response = await axios.get("/api/my-products");
+        const fetchedProducts = Array.isArray(response.data)
+            ? response.data
+            : [];
+
+        console.log("Fetched products count:", fetchedProducts.length);
+
         // Update products dengan data baru
         products.value = fetchedProducts;
-        
+
         if (fetchedProducts.length === 0) {
-            console.warn('No products found for user:', user.value.id);
+            console.warn("No products found for user:", user.value.id);
         } else {
-            console.log('Products successfully loaded:', fetchedProducts.map(p => ({ id: p.id, name: p.name })));
+            console.log(
+                "Products successfully loaded:",
+                fetchedProducts.map((p) => ({ id: p.id, name: p.name }))
+            );
         }
     } catch (error) {
-        console.error('Error fetching products:', error);
-        console.error('Error details:', error.response?.data);
+        console.error("Error fetching products:", error);
+        console.error("Error details:", error.response?.data);
         products.value = [];
     }
 };
@@ -798,23 +1238,34 @@ const fetchProducts = async () => {
 const getPhotoUrl = (photoUrl) => {
     if (!photoUrl) return null;
     // Tambahkan cache busting jika belum ada
-    if (photoUrl.includes('?')) {
-        return photoUrl.split('?')[0] + '?t=' + Date.now();
+    if (photoUrl.includes("?")) {
+        return photoUrl.split("?")[0] + "?t=" + Date.now();
     }
-    return photoUrl + '?t=' + Date.now();
+    return photoUrl + "?t=" + Date.now();
 };
 
 const checkAuth = async () => {
     try {
         // Tambahkan cache busting untuk memastikan data terbaru
-        const response = await axios.get('/api/user', {
-            params: { _t: Date.now() }
+        const response = await axios.get("/api/user", {
+            params: { _t: Date.now() },
         });
         user.value = response.data;
-        store.value.name = response.data.name || 'Nama Toko';
+        store.value.name = response.data.name || "Nama Toko";
     } catch (error) {
         user.value = null;
-        window.location.href = '/login';
+        window.location.href = "/login";
+    }
+};
+
+const fetchCategories = async () => {
+    try {
+        const response = await axios.get("/api/categories");
+        categories.value = Array.isArray(response.data) ? response.data : [];
+        console.log("Categories loaded:", categories.value.length);
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        categories.value = [];
     }
 };
 
@@ -830,9 +1281,12 @@ const fetchCartCount = async () => {
         return;
     }
     try {
-        const response = await axios.get('/api/cart');
+        const response = await axios.get("/api/cart");
         const apiItems = response.data.items || [];
-        cartCount.value = apiItems.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
+        cartCount.value = apiItems.reduce(
+            (sum, item) => sum + (item.qty || item.quantity || 0),
+            0
+        );
     } catch (error) {
         cartCount.value = 0;
     }
@@ -848,21 +1302,25 @@ const fetchIncomingOrders = async () => {
         ordersLoading.value = true;
         // Endpoint untuk mengambil pesanan yang masuk ke toko penjual
         // Akan dibuat di backend: GET /api/seller/orders
-        const response = await axios.get('/api/seller/orders');
+        const response = await axios.get("/api/seller/orders");
         const orders = response.data || [];
-        
+
         incomingOrders.value = orders;
-        
+
         // Update stats berdasarkan data real
         // Pesanan Masuk: status pending (menunggu pembayaran) atau paid (sudah dibayar)
         store.value.stats = {
-            incoming: orders.filter(o => o.status === 'pending' || o.status === 'paid').length,
-            needShip: orders.filter(o => o.status === 'processing').length,
-            shipped: orders.filter(o => o.status === 'shipping').length,
-            history: orders.filter(o => o.status === 'completed' || o.status === 'delivered').length,
+            incoming: orders.filter(
+                (o) => o.status === "pending" || o.status === "paid"
+            ).length,
+            needShip: orders.filter((o) => o.status === "processing").length,
+            shipped: orders.filter((o) => o.status === "shipping").length,
+            history: orders.filter(
+                (o) => o.status === "completed" || o.status === "delivered"
+            ).length,
         };
     } catch (error) {
-        console.error('Error fetching incoming orders:', error);
+        console.error("Error fetching incoming orders:", error);
         incomingOrders.value = [];
         // Jika endpoint belum ada, set stats ke 0
         store.value.stats = {
@@ -877,7 +1335,9 @@ const fetchIncomingOrders = async () => {
 };
 
 const updateOrderStatus = async (orderId, newStatus) => {
-    if (!confirm(`Ubah status pesanan menjadi "${getStatusLabel(newStatus)}"?`)) {
+    if (
+        !confirm(`Ubah status pesanan menjadi "${getStatusLabel(newStatus)}"?`)
+    ) {
         return;
     }
 
@@ -890,46 +1350,51 @@ const updateOrderStatus = async (orderId, newStatus) => {
 
         // Refresh orders
         await fetchIncomingOrders();
-        alert('Status pesanan berhasil diupdate');
+        alert("Status pesanan berhasil diupdate");
     } catch (error) {
-        console.error('Error updating order status:', error);
-        const message = error.response?.data?.message || 'Gagal mengupdate status';
+        console.error("Error updating order status:", error);
+        const message =
+            error.response?.data?.message || "Gagal mengupdate status";
         alert(message);
     }
 };
 
 const showShippingModal = (order) => {
     selectedOrderId.value = order.id;
-    trackingNumber.value = order.tracking_number || '';
-    shippingCourier.value = order.shipping_courier || 'jne';
+    trackingNumber.value = order.tracking_number || "";
+    shippingCourier.value = order.shipping_courier || "jne";
     showShippingForm.value = true;
 };
 
 const confirmShipping = async () => {
     if (!trackingNumber.value.trim()) {
-        alert('Masukkan nomor resi terlebih dahulu');
+        alert("Masukkan nomor resi terlebih dahulu");
         return;
     }
 
     try {
         // Endpoint untuk update status ke shipping dengan tracking number
-        await axios.post(`/api/seller/orders/${selectedOrderId.value}/update-status`, {
-            status: 'shipping',
-            tracking_number: trackingNumber.value,
-            shipping_courier: shippingCourier.value,
-        });
+        await axios.post(
+            `/api/seller/orders/${selectedOrderId.value}/update-status`,
+            {
+                status: "shipping",
+                tracking_number: trackingNumber.value,
+                shipping_courier: shippingCourier.value,
+            }
+        );
 
         showShippingForm.value = false;
-        trackingNumber.value = '';
-        shippingCourier.value = 'jne';
+        trackingNumber.value = "";
+        shippingCourier.value = "jne";
         selectedOrderId.value = null;
 
         // Refresh orders
         await fetchIncomingOrders();
-        alert('Paket berhasil dikonfirmasi dikirim');
+        alert("Paket berhasil dikonfirmasi dikirim");
     } catch (error) {
-        console.error('Error confirming shipping:', error);
-        const message = error.response?.data?.message || 'Gagal mengkonfirmasi pengiriman';
+        console.error("Error confirming shipping:", error);
+        const message =
+            error.response?.data?.message || "Gagal mengkonfirmasi pengiriman";
         alert(message);
     }
 };
@@ -939,33 +1404,37 @@ onMounted(async () => {
     if (user.value) {
         await fetchCartCount();
         await fetchProducts();
+        await fetchCategories();
         await fetchIncomingOrders();
     }
-    
+
     // Listen untuk user update event (setelah edit profil)
-    window.addEventListener('userUpdated', handleUserUpdated);
+    window.addEventListener("userUpdated", handleUserUpdated);
 });
 
 onBeforeUnmount(() => {
-    window.removeEventListener('userUpdated', handleUserUpdated);
+    window.removeEventListener("userUpdated", handleUserUpdated);
 });
 </script>
 
 <style scoped>
-.modal-enter-active, .modal-leave-active {
+.modal-enter-active,
+.modal-leave-active {
     transition: opacity 0.3s ease;
 }
 
-.modal-enter-from, .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
     opacity: 0;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.25s, transform 0.25s;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
     transform: translateY(-6px);
 }
 </style>
-
