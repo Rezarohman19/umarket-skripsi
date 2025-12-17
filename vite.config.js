@@ -18,7 +18,12 @@ export default defineConfig({
                 'resources/js/app-checkout.js',
                 'resources/js/app-order-confirmation.js',
                 'resources/js/app-profile.js',
-                'resources/js/app-product-detail.js'
+                'resources/js/app-product-detail.js',
+                'resources/js/app-admin-dashboard.js',
+                'resources/js/app-admin-products.js',
+                'resources/js/app-admin-users.js',
+                'resources/js/app-admin-sales.js',
+                'resources/js/app-admin-profile.js',
             ],
             refresh: true,
         }),
