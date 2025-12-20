@@ -336,6 +336,41 @@ Route::middleware('auth')->group(function () {
         ]));
     });
 
+    // Cleanup orphaned transaction items (items yang produknya sudah dihapus)
+    Route::post('/api/admin/cleanup-orphaned-items', function () {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Cari transaction_items yang product_id-nya tidak ada di tabel products
+        // Menggunakan left join untuk menemukan orphaned records
+        $orphanedItems = \App\Models\TransactionItem::leftJoin('products', 'transaction_items.product_id', '=', 'products.id')
+            ->whereNull('products.id')
+            ->select('transaction_items.*')
+            ->get();
+
+        $count = $orphanedItems->count();
+
+        if ($count === 0) {
+            return response()->json([
+                'message' => 'Tidak ada transaction_items yang perlu dihapus',
+                'deleted_count' => 0
+            ]);
+        }
+
+        $ids = $orphanedItems->pluck('id')->toArray();
+        $deleted = \App\Models\TransactionItem::whereIn('id', $ids)->delete();
+
+        return response()->json([
+            'message' => 'Cleanup berhasil',
+            'deleted_count' => $deleted,
+            'found_count' => $count
+        ]);
+    });
+
     // Produk milik user
     Route::get('/api/my-products', function () {
         $products = \App\Models\Product::with('category')

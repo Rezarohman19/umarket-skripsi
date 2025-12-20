@@ -668,9 +668,11 @@
                                             >Harga</label
                                         >
                                         <input
-                                            v-model.number="form.price"
-                                            type="number"
-                                            min="0"
+                                            v-model="priceInput"
+                                            type="text"
+                                            placeholder="Contoh: Rp 10.000 atau 10000"
+                                            @input="handlePriceInput"
+                                            @blur="formatPriceInput"
                                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                     </div>
@@ -943,6 +945,43 @@ const activeOrderSection = ref(null); // 'paid', 'processing', 'shipping', 'hist
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
+// Helper untuk parse harga dari format string ke number
+const parsePrice = (priceString) => {
+    if (!priceString) return 0;
+    // Hapus semua karakter non-digit kecuali titik (untuk separator ribuan)
+    const cleaned = priceString.toString().replace(/[^\d.]/g, '');
+    // Hapus semua titik (karena di Indonesia titik = separator ribuan, bukan desimal)
+    const numberString = cleaned.replace(/\./g, '');
+    const parsed = parseInt(numberString, 10);
+    return isNaN(parsed) ? 0 : parsed;
+};
+
+// Helper untuk format harga ke string dengan format Rupiah
+const formatPriceString = (price) => {
+    if (!price || price === 0) return '';
+    return `Rp ${formatPrice(price)}`;
+};
+
+// Ref untuk input harga (string)
+const priceInput = ref('');
+
+// Handle input harga - parse dan update form.price
+const handlePriceInput = (event) => {
+    const value = event.target.value;
+    priceInput.value = value;
+    // Parse dan update form.price
+    form.value.price = parsePrice(value);
+};
+
+// Format harga saat blur (keluar dari input)
+const formatPriceInput = () => {
+    if (form.value.price > 0) {
+        priceInput.value = formatPriceString(form.value.price);
+    } else {
+        priceInput.value = '';
+    }
+};
+
 const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
@@ -1082,7 +1121,12 @@ const handleProfile = () => {
 
 const toggleForm = () => {
     showForm.value = !showForm.value;
-    if (!showForm.value) resetForm();
+    if (!showForm.value) {
+        resetForm();
+    } else {
+        // Saat form dibuka, pastikan priceInput juga di-reset
+        priceInput.value = '';
+    }
 };
 
 const resetForm = () => {
@@ -1096,6 +1140,7 @@ const resetForm = () => {
         imageFile: null,
         imagePreview: null,
     };
+    priceInput.value = '';
 };
 
 const cancelForm = () => {
@@ -1114,6 +1159,8 @@ const editProduct = (p) => {
         imageFile: null,
         imagePreview: p.image_url || null,
     };
+    // Set priceInput dengan format yang sudah diformat
+    priceInput.value = p.price > 0 ? formatPriceString(p.price) : '';
     showForm.value = true;
 };
 

@@ -137,7 +137,24 @@ const cartItems = ref([]);
 const loading = ref(true);
 const selectedItems = ref([]);
 
-const goBack = () => window.history.back();
+const goBack = () => {
+    // Cek apakah user datang dari halaman konfirmasi atau checkout
+    // Bisa dari referrer atau sessionStorage flag
+    const referrer = document.referrer;
+    const isFromConfirmation = referrer.includes('/order-confirmation');
+    const isFromCheckout = referrer.includes('/checkout');
+    const fromCheckoutFlow = sessionStorage.getItem('from_checkout_flow') === 'true';
+    
+    // Jika datang dari konfirmasi atau checkout, langsung ke beranda
+    // Kalau tidak, gunakan history back biasa
+    if (isFromConfirmation || isFromCheckout || fromCheckoutFlow) {
+        // Hapus flag setelah digunakan
+        sessionStorage.removeItem('from_checkout_flow');
+        window.location.href = '/';
+    } else {
+        window.history.back();
+    }
+};
 
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
 
@@ -287,6 +304,18 @@ const handleCheckout = () => {
 
 onMounted(async () => {
     await fetchCartItems();
+    
+    // Jika user datang dari halaman konfirmasi atau checkout,
+    // set flag di sessionStorage untuk menandai bahwa user datang dari checkout flow
+    // Ini akan digunakan oleh fungsi goBack() untuk redirect ke beranda
+    const referrer = document.referrer;
+    const isFromConfirmation = referrer.includes('/order-confirmation');
+    const isFromCheckout = referrer.includes('/checkout');
+    
+    if (isFromConfirmation || isFromCheckout) {
+        // Set flag di sessionStorage untuk menandai bahwa user datang dari konfirmasi/checkout
+        sessionStorage.setItem('from_checkout_flow', 'true');
+    }
 });
 </script>
 

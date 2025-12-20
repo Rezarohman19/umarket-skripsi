@@ -305,25 +305,34 @@ const fetchTransactions = async () => {
         orders.value = purchaseTransactions.flatMap(transaction => {
             // Jika transaction punya items, map setiap item
             if (transaction.items && transaction.items.length > 0) {
-                return transaction.items.map(item => {
-                    const status = mapTransactionStatus(transaction.status);
-                    const actions = getPurchaseActions(status);
-                    
-                    return {
-                        id: `${transaction.id}-${item.id}`,
-                        transaction_id: transaction.id,
-                        status: status,
-                        store: item.product?.user?.name || transaction.store_name || 'Toko',
-                        product: item.product?.name || 'Produk',
-                        category: item.product?.description || '',
-                        qty: item.qty || 1,
-                        price: item.price || item.product?.price || 0,
-                        total: (item.price || item.product?.price || 0) * (item.qty || 1),
-                        image_url: item.product?.image_url || null,
-                        actions: actions,
-                        transaction: transaction,
-                    };
-                });
+                // Filter out items yang product-nya sudah dihapus (null atau undefined)
+                // Pastikan product ada dan punya id
+                return transaction.items
+                    .filter(item => {
+                        return item.product !== null && 
+                               item.product !== undefined && 
+                               item.product.id !== null &&
+                               item.product.id !== undefined;
+                    })
+                    .map(item => {
+                        const status = mapTransactionStatus(transaction.status);
+                        const actions = getPurchaseActions(status);
+                        
+                        return {
+                            id: `${transaction.id}-${item.id}`,
+                            transaction_id: transaction.id,
+                            status: status,
+                            store: item.product?.user?.name || transaction.store_name || 'Toko',
+                            product: item.product?.name || 'Produk',
+                            category: item.product?.description || '',
+                            qty: item.qty || 1,
+                            price: item.price || item.product?.price || 0,
+                            total: (item.price || item.product?.price || 0) * (item.qty || 1),
+                            image_url: item.product?.image_url || null,
+                            actions: actions,
+                            transaction: transaction,
+                        };
+                    });
             } else {
                 // Fallback jika tidak ada items
                 const status = mapTransactionStatus(transaction.status);

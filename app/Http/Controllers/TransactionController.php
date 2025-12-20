@@ -25,10 +25,28 @@ class TransactionController extends Controller
     {
         $user = Auth::user();
 
+        // Ambil semua transaksi user
         $transactions = Transaction::where('user_id', $user->id)
-            ->with(['items.product.user'])
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // Ambil semua product_id yang masih ada
+        $existingProductIds = \App\Models\Product::pluck('id')->toArray();
+
+        // Load items yang product_id-nya masih ada
+        $transactions->load(['items' => function ($query) use ($existingProductIds) {
+            if (!empty($existingProductIds)) {
+                $query->whereIn('product_id', $existingProductIds);
+            } else {
+                // Jika tidak ada produk sama sekali, return empty
+                $query->whereRaw('1 = 0');
+            }
+        }, 'items.product.user']);
+
+        // Filter transactions yang masih punya items setelah filter
+        $transactions = $transactions->filter(function ($transaction) {
+            return $transaction->items->count() > 0;
+        })->values();
 
         return response()->json($transactions);
     }
