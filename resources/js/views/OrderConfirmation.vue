@@ -103,7 +103,7 @@
             <!-- Payment Status -->
             <div v-if="paymentStatus" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Status Pembayaran</h2>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 mb-4">
                     <span :class="[
                         'px-4 py-2 rounded-full text-sm font-medium',
                         paymentStatus === 'paid' || paymentStatus === 'settlement'
@@ -118,6 +118,17 @@
                             : 'Menunggu konfirmasi pembayaran.' }}
                     </p>
                 </div>
+                
+                <!-- Payment Button (for pending status) -->
+                <button
+                    v-if="paymentStatus === 'pending' && snapToken"
+                    @click="handlePaymentClick"
+                    :disabled="isProcessingPayment"
+                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed"
+                >
+                    <span v-if="isProcessingPayment">Memproses...</span>
+                    <span v-else>Lanjutkan Pembayaran</span>
+                </button>
             </div>
 
             <!-- Action Buttons -->
@@ -164,6 +175,8 @@ const paymentMethod = ref('');
 const paymentStatus = ref('pending');
 const orderItems = ref([]);
 const shippingAddress = ref(null);
+const snapToken = ref('');
+const isProcessingPayment = ref(false);
 
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
 
@@ -196,6 +209,37 @@ const goToHome = () => {
     window.location.href = '/';
 };
 
+const handlePaymentClick = () => {
+    if (snapToken.value && window.snap) {
+        isProcessingPayment.value = true;
+        window.snap.pay(snapToken.value, {
+            onSuccess: function(result) {
+                console.log('Payment success:', result);
+                // Refresh payment status after 2 seconds
+                setTimeout(() => {
+                    isProcessingPayment.value = false;
+                    fetchOrderData();
+                }, 2000);
+            },
+            onPending: function(result) {
+                console.log('Payment pending:', result);
+                isProcessingPayment.value = false;
+            },
+            onError: function(result) {
+                console.error('Payment error:', result);
+                isProcessingPayment.value = false;
+                alert('Pembayaran gagal. Silakan coba lagi.');
+            },
+            onClose: function() {
+                console.log('Payment modal closed');
+                isProcessingPayment.value = false;
+            }
+        });
+    } else {
+        alert('Snap payment gateway tidak tersedia');
+    }
+};
+
 const fetchOrderData = async () => {
     try {
         // Ambil data dari URL params
@@ -216,6 +260,7 @@ const fetchOrderData = async () => {
                     totalPrice.value = transaction.total_price || 0;
                     paymentStatus.value = transaction.status || 'pending';
                     paymentMethod.value = transaction.payment_method || 'midtrans';
+                    snapToken.value = transaction.snap_token || '';
                     
                     // Format tanggal
                     if (transaction.created_at) {
@@ -270,6 +315,7 @@ const fetchOrderData = async () => {
                 orderItems.value = data.orderItems || [];
                 shippingAddress.value = data.shippingAddress || null;
                 orderDate.value = data.orderDate || new Date().toLocaleDateString('id-ID');
+                snapToken.value = data.snapToken || '';
                 
                 // Clear localStorage setelah digunakan
                 localStorage.removeItem('order_confirmation');
@@ -281,6 +327,12 @@ const fetchOrderData = async () => {
 };
 
 onMounted(() => {
+    // Load Midtrans Snap SDK
+    const script = document.createElement('script');
+    script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    script.setAttribute('data-client-key', 'Mid-client-t4gCXBa6b1_ar6Ji');
+    document.head.appendChild(script);
+    
     fetchOrderData();
 });
 </script>
@@ -288,4 +340,3 @@ onMounted(() => {
 <style scoped>
 /* Additional styles if needed */
 </style>
-

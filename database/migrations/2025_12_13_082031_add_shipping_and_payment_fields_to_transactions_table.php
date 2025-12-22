@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->string('shipping_name')->nullable()->after('status');
+            $table->string('snap_token')->nullable()->after('status');
+            $table->string('shipping_name')->nullable()->after('snap_token');
             $table->string('shipping_phone', 20)->nullable()->after('shipping_name');
             $table->text('shipping_address')->nullable()->after('shipping_phone');
             $table->string('payment_method')->nullable()->after('shipping_address');

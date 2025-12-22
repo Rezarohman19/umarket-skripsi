@@ -9,6 +9,7 @@ use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use Midtrans\Snap;
 use Midtrans\Config;
@@ -125,7 +126,25 @@ class TransactionController extends Controller
                 ],
             ];
 
-            $snapToken = Snap::getSnapToken($params);
+            // If enabled_payments configured, forward to Midtrans to limit displayed methods
+            $enabledPayments = config('midtrans.enabled_payments');
+            if ($enabledPayments && is_array($enabledPayments)) {
+                $params['enabled_payments'] = $enabledPayments;
+            }
+
+            // Initialize Midtrans configuration from config/midtrans.php
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$clientKey = config('midtrans.client_key');
+            Config::$isProduction = config('midtrans.is_production') ? true : false;
+            Config::$isSanitized = config('midtrans.is_sanitized') ?? true;
+            Config::$is3ds = config('midtrans.is_3ds') ?? true;
+
+            // If running in tests, avoid calling external Midtrans SDK
+            if (app()->runningUnitTests() || app()->environment('testing')) {
+                $snapToken = 'test-snap-token';
+            } else {
+                $snapToken = Snap::getSnapToken($params);
+            }
 
             $transaction->snap_token = $snapToken;
             $transaction->save();
@@ -142,6 +161,8 @@ class TransactionController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            // Log exception detail to laravel.log for easier debugging
+            Log::error('Checkout exception: ' . $e->getMessage(), ['exception' => $e]);
             DB::rollBack();
             return response()->json([
                 'message' => 'Checkout failed',
