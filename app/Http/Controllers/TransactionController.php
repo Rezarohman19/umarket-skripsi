@@ -71,12 +71,21 @@ class TransactionController extends Controller
                 return response()->json(['message' => 'Cart not found'], 404);
             }
 
+            // Ambil cart_item_ids dari request (item yang dipilih user)
+            $selectedCartItemIds = $request->input('cart_item_ids', []);
+            
+            if (empty($selectedCartItemIds)) {
+                return response()->json(['message' => 'No items selected for checkout'], 400);
+            }
+
+            // Hanya ambil cart items yang dipilih oleh user
             $cartItems = CartItem::with('product')
                 ->where('cart_id', $cart->id)
+                ->whereIn('id', $selectedCartItemIds)
                 ->get();
 
             if ($cartItems->isEmpty()) {
-                return response()->json(['message' => 'Cart is empty'], 400);
+                return response()->json(['message' => 'Selected items not found in cart'], 400);
             }
 
             $totalPrice = 0;
@@ -94,12 +103,18 @@ class TransactionController extends Controller
                 ];
             }
 
+            // Ambil shipping address dari request jika ada
+            $shippingAddress = $request->input('shipping_address', []);
+            
             // Buat transaksi (PENDING)
             $transaction = Transaction::create([
                 'user_id' => $user->id,
                 'total_price' => $totalPrice,
                 'status' => 'pending',
                 'payment_method' => 'midtrans',
+                'shipping_name' => $shippingAddress['name'] ?? $user->name,
+                'shipping_phone' => $shippingAddress['phone'] ?? $user->phone,
+                'shipping_address' => $shippingAddress['address'] ?? $user->address,
             ]);
 
             foreach ($cartItems as $item) {
@@ -149,8 +164,8 @@ class TransactionController extends Controller
             $transaction->snap_token = $snapToken;
             $transaction->save();
 
-            // Hapus cart
-            CartItem::where('cart_id', $cart->id)->delete();
+            // Hapus hanya cart items yang sudah di-checkout (yang dipilih user)
+            CartItem::whereIn('id', $selectedCartItemIds)->delete();
 
             DB::commit();
 
