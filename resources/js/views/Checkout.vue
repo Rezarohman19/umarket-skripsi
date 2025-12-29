@@ -75,50 +75,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Metode Pembayaran -->
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Metode Pembayaran</h2>
-                        <div class="space-y-3">
-                            <label
-                                v-for="method in paymentMethods"
-                                :key="method.id"
-                                :class="[
-                                    'flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all',
-                                    selectedPayment === method.id
-                                        ? 'border-blue-600 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
-                                ]"
-                            >
-                                <input
-                                    type="radio"
-                                    :value="method.id"
-                                    v-model="selectedPayment"
-                                    class="w-5 h-5 text-blue-600 focus:ring-blue-500"
-                                />
-                                <div class="flex items-center gap-3 flex-1">
-                                    <div :class="[
-                                        'w-12 h-12 rounded-lg flex items-center justify-center',
-                                        method.bgColor
-                                    ]">
-                                        <svg v-if="method.id === 'bank_transfer'" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                        </svg>
-                                        <svg v-else-if="method.id === 'e_wallet'" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        <svg v-else class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-900 dark:text-white">{{ method.name }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ method.description }}</p>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Right Column - Ringkasan -->
@@ -226,30 +182,7 @@ const shippingAddress = ref({
     phone: '',
     address: '',
 });
-const selectedPayment = ref('bank_transfer');
 const showAddressModal = ref(false);
-
-// Payment methods
-const paymentMethods = [
-    {
-        id: 'bank_transfer',
-        name: 'Transfer Bank',
-        description: 'BCA, Mandiri, BRI, BNI',
-        bgColor: 'bg-blue-600',
-    },
-    {
-        id: 'e_wallet',
-        name: 'E-Wallet',
-        description: 'GoPay, OVO, DANA, LinkAja',
-        bgColor: 'bg-green-600',
-    },
-    {
-        id: 'cod',
-        name: 'Bayar di Tempat',
-        description: 'Cash on Delivery',
-        bgColor: 'bg-orange-600',
-    },
-];
 
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
 
@@ -342,6 +275,66 @@ const saveAddress = () => {
     // Bisa juga simpan ke backend jika perlu
 };
 
+const loadMidtransAndRedirect = (snapToken, transactionId) => {
+    // Cek apakah Midtrans Snap SDK sudah dimuat
+    if (window.snap) {
+        // Langsung redirect ke Midtrans
+        window.snap.pay(snapToken, {
+            onSuccess: function(result) {
+                console.log('Payment success:', result);
+                // Redirect ke order confirmation setelah pembayaran berhasil
+                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+            },
+            onPending: function(result) {
+                console.log('Payment pending:', result);
+                // Redirect ke order confirmation untuk menunggu konfirmasi
+                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+            },
+            onError: function(result) {
+                console.error('Payment error:', result);
+                alert('Pembayaran gagal. Silakan coba lagi.');
+                // Tetap redirect ke order confirmation untuk melihat detail pesanan
+                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+            },
+            onClose: function() {
+                console.log('Payment modal closed');
+                // User menutup halaman pembayaran, redirect ke order confirmation
+                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+            }
+        });
+    } else {
+        // Load Midtrans Snap SDK terlebih dahulu
+        const script = document.createElement('script');
+        script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', 'Mid-client-t4gCXBa6b1_ar6Ji');
+        script.onload = () => {
+            // Setelah SDK dimuat, redirect ke Midtrans
+            if (window.snap) {
+                window.snap.pay(snapToken, {
+                    onSuccess: function(result) {
+                        console.log('Payment success:', result);
+                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+                    },
+                    onPending: function(result) {
+                        console.log('Payment pending:', result);
+                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+                    },
+                    onError: function(result) {
+                        console.error('Payment error:', result);
+                        alert('Pembayaran gagal. Silakan coba lagi.');
+                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+                    },
+                    onClose: function() {
+                        console.log('Payment modal closed');
+                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+                    }
+                });
+            }
+        };
+        document.head.appendChild(script);
+    }
+};
+
 const handleConfirmPayment = async () => {
     if (!shippingAddress.value.address) {
         alert('Lengkapi alamat pengiriman terlebih dahulu');
@@ -356,21 +349,16 @@ const handleConfirmPayment = async () => {
     try {
         processing.value = true;
 
-        // Siapkan data checkout
+        // Siapkan data checkout dengan cart_item_ids yang dipilih
         const checkoutData = {
-            items: checkoutItems.value.map(item => ({
-                cart_item_id: item.id,
-                product_id: item.product_id,
-                quantity: item.qty,
-            })),
             shipping_address: shippingAddress.value,
-            payment_method: selectedPayment.value,
+            cart_item_ids: checkoutItems.value.map(item => item.id), // Kirim ID item yang dipilih
         };
 
         // Panggil API checkout
         const response = await axios.post('/api/checkout', checkoutData);
 
-        if (response.data) {
+        if (response.data && response.data.snap_token) {
             // Hapus checkout items dari localStorage
             localStorage.removeItem('checkout_items');
             
@@ -379,14 +367,12 @@ const handleConfirmPayment = async () => {
             const confirmationData = {
                 transactionId: transactionId,
                 orderId: `ORDER-${transactionId}`,
-                totalPrice: response.data.transaction?.total_price || checkoutData.items.reduce((sum, item) => {
-                    const cartItem = checkoutItems.value.find(ci => ci.id === item.cart_item_id);
-                    return sum + (cartItem?.price * cartItem?.qty || 0);
-                }, 0),
-                paymentMethod: checkoutData.payment_method,
+                totalPrice: response.data.transaction?.total_price || totalPrice.value,
+                paymentMethod: 'midtrans',
                 paymentStatus: response.data.transaction?.status || 'pending',
                 orderItems: checkoutItems.value,
-                shippingAddress: checkoutData.shipping_address,
+                shippingAddress: shippingAddress.value,
+                snapToken: response.data.snap_token,
                 orderDate: new Date().toLocaleDateString('id-ID', {
                     year: 'numeric',
                     month: 'long',
@@ -397,12 +383,31 @@ const handleConfirmPayment = async () => {
             };
             localStorage.setItem('order_confirmation', JSON.stringify(confirmationData));
             
-            // Redirect ke halaman konfirmasi pesanan
-            window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
+            // Load Midtrans Snap SDK dan redirect ke pembayaran
+            loadMidtransAndRedirect(response.data.snap_token, transactionId);
         }
     } catch (error) {
         console.error('Error during checkout:', error);
-        const message = error.response?.data?.message || 'Gagal melakukan checkout';
+        console.error('Error response:', error.response);
+        
+        let message = 'Gagal melakukan checkout';
+        
+        if (error.response) {
+            // Ada response dari server
+            message = error.response.data?.message || error.response.data?.error || message;
+            
+            // Tampilkan error detail untuk debugging
+            if (error.response.data?.error) {
+                console.error('Error detail:', error.response.data.error);
+            }
+        } else if (error.request) {
+            // Request dikirim tapi tidak ada response
+            message = 'Tidak ada response dari server. Pastikan server berjalan dan database terkoneksi.';
+        } else {
+            // Error saat setup request
+            message = error.message || message;
+        }
+        
         alert(message);
     } finally {
         processing.value = false;

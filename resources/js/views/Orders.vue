@@ -316,7 +316,7 @@ const fetchTransactions = async () => {
                     })
                     .map(item => {
                         const status = mapTransactionStatus(transaction.status);
-                        const actions = getPurchaseActions(status);
+                        const actions = getPurchaseActions(status, transaction);
                         
                         return {
                             id: `${transaction.id}-${item.id}`,
@@ -336,7 +336,7 @@ const fetchTransactions = async () => {
             } else {
                 // Fallback jika tidak ada items
                 const status = mapTransactionStatus(transaction.status);
-                const actions = getPurchaseActions(status);
+                const actions = getPurchaseActions(status, transaction);
                 
                 return [{
                     id: transaction.id,
@@ -379,8 +379,11 @@ const mapTransactionStatus = (status) => {
     return statusMap[status] || 'riwayat';
 };
 
-const getPurchaseActions = (status) => {
+const getPurchaseActions = (status, transaction) => {
     const actions = [];
+    if (status === 'belum_bayar' && transaction?.snap_token) {
+        actions.push({ label: 'Lanjutkan Pembayaran', type: 'continue_payment', variant: 'primary' });
+    }
     if (status === 'dikemas' || status === 'dikirim') {
         actions.push({ label: 'Hubungi Penjual', type: 'contact', variant: 'secondary' });
     }
@@ -394,8 +397,79 @@ const handleAction = (type, order) => {
         return;
     }
     
-    if (type === 'contact') {
+    if (type === 'continue_payment') {
+        handleContinuePayment(order);
+    } else if (type === 'contact') {
         alert(`Hubungi penjual untuk pesanan ${order.product}`);
+    }
+};
+
+const handleContinuePayment = (order) => {
+    const snapToken = order.transaction?.snap_token;
+    
+    if (!snapToken) {
+        alert('Token pembayaran tidak tersedia. Silakan hubungi customer service.');
+        return;
+    }
+    
+    // Cek apakah Midtrans Snap SDK sudah dimuat
+    if (window.snap) {
+        // Langsung buka halaman pembayaran Midtrans
+        window.snap.pay(snapToken, {
+            onSuccess: function(result) {
+                console.log('Payment success:', result);
+                // Refresh halaman untuk update status
+                setTimeout(() => {
+                    fetchTransactions();
+                }, 2000);
+            },
+            onPending: function(result) {
+                console.log('Payment pending:', result);
+                // Refresh halaman untuk update status
+                setTimeout(() => {
+                    fetchTransactions();
+                }, 2000);
+            },
+            onError: function(result) {
+                console.error('Payment error:', result);
+                alert('Pembayaran gagal. Silakan coba lagi.');
+            },
+            onClose: function() {
+                console.log('Payment modal closed');
+            }
+        });
+    } else {
+        // Load Midtrans Snap SDK terlebih dahulu
+        const script = document.createElement('script');
+        script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', 'Mid-client-t4gCXBa6b1_ar6Ji');
+        script.onload = () => {
+            // Setelah SDK dimuat, buka halaman pembayaran
+            if (window.snap) {
+                window.snap.pay(snapToken, {
+                    onSuccess: function(result) {
+                        console.log('Payment success:', result);
+                        setTimeout(() => {
+                            fetchTransactions();
+                        }, 2000);
+                    },
+                    onPending: function(result) {
+                        console.log('Payment pending:', result);
+                        setTimeout(() => {
+                            fetchTransactions();
+                        }, 2000);
+                    },
+                    onError: function(result) {
+                        console.error('Payment error:', result);
+                        alert('Pembayaran gagal. Silakan coba lagi.');
+                    },
+                    onClose: function() {
+                        console.log('Payment modal closed');
+                    }
+                });
+            }
+        };
+        document.head.appendChild(script);
     }
 };
 
@@ -489,6 +563,14 @@ onMounted(async () => {
     await checkAuth();
     await fetchCartCount();
     await fetchTransactions();
+    
+    // Load Midtrans Snap SDK untuk tombol "Lanjutkan Pembayaran"
+    if (!window.snap) {
+        const script = document.createElement('script');
+        script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', 'Mid-client-t4gCXBa6b1_ar6Ji');
+        document.head.appendChild(script);
+    }
     
     // Listen untuk user update event (setelah edit profil)
     window.addEventListener('userUpdated', handleUserUpdated);
