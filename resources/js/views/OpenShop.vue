@@ -9,10 +9,7 @@
                 ]"
             >
                 <div class="p-4 flex items-center justify-between">
-                    <button
-                        @click="toggleSidebar"
-                        class="p-2 rounded-lg"
-                    >
+                    <button @click="toggleSidebar" class="p-2 rounded-lg">
                         <svg
                             class="w-5 h-5 text-white"
                             fill="none"
@@ -252,6 +249,46 @@
                                     >
                                         {{ store.name }}
                                     </p>
+                                </div>
+                            </div>
+
+                            <!-- Saldo Penjual -->
+                            <div
+                                class="bg-gradient-to-r from-[#FDA1A2]/20 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#EF3B33]/20 rounded-xl p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                            >
+                                <div
+                                    class="flex items-center justify-between gap-4"
+                                >
+                                    <div>
+                                        <p
+                                            class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1"
+                                        >
+                                            Saldo Penjualan
+                                        </p>
+                                        <p
+                                            class="text-3xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]"
+                                        >
+                                            Rp.
+                                            {{
+                                                formatPrice(store.balance || 0)
+                                            }}
+                                        </p>
+                                        <p
+                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+                                        >
+                                            Dari
+                                            {{ store.totalSold || 0 }} penjualan
+                                        </p>
+                                    </div>
+                                    <button
+                                        @click="showWithdrawModal = true"
+                                        :disabled="
+                                            !store.balance || store.balance <= 0
+                                        "
+                                        class="px-6 py-3 bg-[#EF3B33] hover:bg-[#d92f25] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-md transition-colors whitespace-nowrap"
+                                    >
+                                        Tarik Saldo
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -897,6 +934,131 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Withdraw Saldo Modal -->
+        <transition name="modal">
+            <div
+                v-if="showWithdrawModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                @click.self="showWithdrawModal = false"
+            >
+                <div
+                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                >
+                    <h3
+                        class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                    >
+                        Tarik Saldo
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- Info Saldo -->
+                        <div
+                            class="bg-[#FDA1A2]/10 dark:bg-[#8E0D3C]/20 rounded-lg p-4 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                        >
+                            <p
+                                class="text-sm text-gray-600 dark:text-gray-400 mb-1"
+                            >
+                                Saldo Tersedia
+                            </p>
+                            <p
+                                class="text-2xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]"
+                            >
+                                Rp. {{ formatPrice(store.balance || 0) }}
+                            </p>
+                        </div>
+
+                        <!-- Jumlah Penarikan -->
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                            >
+                                Jumlah Penarikan
+                            </label>
+                            <input
+                                v-model="withdrawAmount"
+                                type="text"
+                                placeholder="Masukkan jumlah"
+                                @input="handleWithdrawInput"
+                                @blur="formatWithdrawAmount"
+                                class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                            />
+                            <p
+                                class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+                            >
+                                Contoh: Rp 100.000 atau 100000
+                            </p>
+                        </div>
+
+                        <!-- Bank Account Info -->
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                            >
+                                Rekening Tujuan
+                            </label>
+                            <select
+                                v-model="withdrawBankId"
+                                class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white"
+                            >
+                                <option value="">-- Pilih Rekening --</option>
+                                <option
+                                    v-for="bank in userBanks"
+                                    :key="bank.id"
+                                    :value="bank.id"
+                                >
+                                    {{ bank.bank_name }} -
+                                    {{ bank.account_number }} ({{
+                                        bank.account_holder
+                                    }})
+                                </option>
+                            </select>
+                            <p
+                                class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+                            >
+                                <a
+                                    href="/profile"
+                                    class="text-[#EF3B33] hover:underline"
+                                >
+                                    Kelola rekening di profil
+                                </a>
+                            </p>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div
+                            v-if="withdrawError"
+                            class="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg"
+                        >
+                            {{ withdrawError }}
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-3 pt-4">
+                            <button
+                                @click="showWithdrawModal = false"
+                                class="flex-1 px-4 py-2 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg font-medium hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                @click="confirmWithdraw"
+                                :disabled="
+                                    !withdrawAmount ||
+                                    !withdrawBankId ||
+                                    withdrawProcessing
+                                "
+                                class="flex-1 px-4 py-2 bg-[#EF3B33] hover:bg-[#d92f25] disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-md transition-colors"
+                            >
+                                <span v-if="withdrawProcessing"
+                                    >Memproses...</span
+                                >
+                                <span v-else>Konfirmasi Penarikan</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -911,6 +1073,8 @@ const searchQuery = ref("");
 
 const store = ref({
     name: "Nama Toko",
+    balance: 0,
+    totalSold: 0,
     stats: {
         incoming: 0,
         needShip: 0,
@@ -936,12 +1100,21 @@ const form = ref({
 // Orders
 const incomingOrders = ref([]);
 const ordersLoading = ref(false);
-const orderFilterStatus = ref("");
+const activeOrderSection = ref(null);
 const showShippingForm = ref(false);
-const trackingNumber = ref("");
-const shippingCourier = ref("jne");
 const selectedOrderId = ref(null);
-const activeOrderSection = ref(null); // 'paid', 'processing', 'shipping', 'history', atau null
+const trackingNumber = ref("");
+const shippingCourier = ref("");
+
+// Withdraw
+const showWithdrawModal = ref(false);
+const withdrawAmount = ref("");
+const withdrawAmountNumber = ref(0);
+const withdrawBankId = ref("");
+const withdrawError = ref("");
+const withdrawProcessing = ref(false);
+const userBanks = ref([]);
+const orderFilterStatus = ref("");
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
@@ -949,21 +1122,21 @@ const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 const parsePrice = (priceString) => {
     if (!priceString) return 0;
     // Hapus semua karakter non-digit kecuali titik (untuk separator ribuan)
-    const cleaned = priceString.toString().replace(/[^\d.]/g, '');
+    const cleaned = priceString.toString().replace(/[^\d.]/g, "");
     // Hapus semua titik (karena di Indonesia titik = separator ribuan, bukan desimal)
-    const numberString = cleaned.replace(/\./g, '');
+    const numberString = cleaned.replace(/\./g, "");
     const parsed = parseInt(numberString, 10);
     return isNaN(parsed) ? 0 : parsed;
 };
 
 // Helper untuk format harga ke string dengan format Rupiah
 const formatPriceString = (price) => {
-    if (!price || price === 0) return '';
+    if (!price || price === 0) return "";
     return `Rp ${formatPrice(price)}`;
 };
 
 // Ref untuk input harga (string)
-const priceInput = ref('');
+const priceInput = ref("");
 
 // Handle input harga - parse dan update form.price
 const handlePriceInput = (event) => {
@@ -978,7 +1151,7 @@ const formatPriceInput = () => {
     if (form.value.price > 0) {
         priceInput.value = formatPriceString(form.value.price);
     } else {
-        priceInput.value = '';
+        priceInput.value = "";
     }
 };
 
@@ -1125,7 +1298,7 @@ const toggleForm = () => {
         resetForm();
     } else {
         // Saat form dibuka, pastikan priceInput juga di-reset
-        priceInput.value = '';
+        priceInput.value = "";
     }
 };
 
@@ -1140,7 +1313,7 @@ const resetForm = () => {
         imageFile: null,
         imagePreview: null,
     };
-    priceInput.value = '';
+    priceInput.value = "";
 };
 
 const cancelForm = () => {
@@ -1160,7 +1333,7 @@ const editProduct = (p) => {
         imagePreview: p.image_url || null,
     };
     // Set priceInput dengan format yang sudah diformat
-    priceInput.value = p.price > 0 ? formatPriceString(p.price) : '';
+    priceInput.value = p.price > 0 ? formatPriceString(p.price) : "";
     showForm.value = true;
 };
 
@@ -1446,6 +1619,110 @@ const confirmShipping = async () => {
     }
 };
 
+const handleWithdrawInput = (event) => {
+    const value = event.target.value;
+    withdrawAmount.value = value;
+    withdrawAmountNumber.value = parsePrice(value);
+    withdrawError.value = "";
+};
+
+const formatWithdrawAmount = () => {
+    if (withdrawAmountNumber.value > 0) {
+        withdrawAmount.value = formatPriceString(withdrawAmountNumber.value);
+    } else {
+        withdrawAmount.value = "";
+    }
+};
+
+const confirmWithdraw = async () => {
+    withdrawError.value = "";
+
+    // Validasi
+    if (!withdrawAmountNumber.value || withdrawAmountNumber.value <= 0) {
+        withdrawError.value = "Masukkan jumlah penarikan yang valid";
+        return;
+    }
+
+    if (!withdrawBankId.value) {
+        withdrawError.value = "Pilih rekening tujuan terlebih dahulu";
+        return;
+    }
+
+    if (withdrawAmountNumber.value > (store.value.balance || 0)) {
+        withdrawError.value = `Saldo tidak cukup. Saldo Anda: Rp ${formatPrice(
+            store.value.balance || 0
+        )}`;
+        return;
+    }
+
+    if (withdrawAmountNumber.value < 50000) {
+        withdrawError.value = "Jumlah minimum penarikan adalah Rp 50.000";
+        return;
+    }
+
+    // Konfirmasi
+    if (
+        !confirm(
+            `Tarik saldo Rp ${formatPrice(
+                withdrawAmountNumber.value
+            )}?\n\nPencairan akan diproses dalam 1-2 hari kerja.`
+        )
+    ) {
+        return;
+    }
+
+    try {
+        withdrawProcessing.value = true;
+
+        const response = await axios.post("/api/seller/withdraw", {
+            amount: withdrawAmountNumber.value,
+            bank_account_id: withdrawBankId.value,
+        });
+
+        alert(
+            "Permintaan penarikan berhasil dibuat!\nStatus dapat dipantau di halaman profil Anda."
+        );
+
+        // Reset form
+        withdrawAmount.value = "";
+        withdrawAmountNumber.value = 0;
+        withdrawBankId.value = "";
+        showWithdrawModal.value = false;
+
+        // Refresh saldo
+        await fetchSellerBalance();
+    } catch (error) {
+        console.error("Error withdrawing balance:", error);
+        withdrawError.value =
+            error.response?.data?.message || "Gagal memproses penarikan saldo";
+    } finally {
+        withdrawProcessing.value = false;
+    }
+};
+
+const fetchSellerBalance = async () => {
+    if (!user.value) return;
+
+    try {
+        const response = await axios.get("/api/seller/balance");
+        store.value.balance = response.data.balance || 0;
+        store.value.totalSold = response.data.total_sold || 0;
+    } catch (error) {
+        console.error("Error fetching seller balance:", error);
+    }
+};
+
+const fetchUserBanks = async () => {
+    if (!user.value) return;
+
+    try {
+        const response = await axios.get("/api/user/banks");
+        userBanks.value = response.data || [];
+    } catch (error) {
+        console.error("Error fetching user banks:", error);
+    }
+};
+
 onMounted(async () => {
     await checkAuth();
     if (user.value) {
@@ -1453,6 +1730,8 @@ onMounted(async () => {
         await fetchProducts();
         await fetchCategories();
         await fetchIncomingOrders();
+        await fetchSellerBalance();
+        await fetchUserBanks();
     }
 
     // Listen untuk user update event (setelah edit profil)
