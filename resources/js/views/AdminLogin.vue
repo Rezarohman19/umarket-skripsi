@@ -1,18 +1,18 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+    <div class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] flex items-center justify-center p-4">
         <div class="w-full max-w-md">
             <!-- Logo Container -->
             <div class="flex justify-center mb-8">
-                <div class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
+                <div class="w-20 h-20 bg-[#1D1842] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1D1842]/30 dark:shadow-[#1D1842]/50">
                     <span class="text-4xl font-bold text-white">U</span>
                 </div>
             </div>
 
             <!-- Login Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
+            <div class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30">
                 <!-- Title -->
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h1 class="text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
                         Hi, Admin!
                     </h1>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -23,16 +23,16 @@
                 <!-- Error Message dari Laravel -->
                 <div 
                     v-if="laravelErrors.email" 
-                    class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+                    class="mb-6 p-4 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 border border-[#EF3B33]/40 dark:border-[#EF3B33]/40 rounded-lg"
                 >
-                    <p class="text-sm text-red-600 dark:text-red-400">{{ laravelErrors.email }}</p>
+                    <p class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.email }}</p>
                 </div>
 
                 <!-- Login Form - Form submission tradisional Laravel -->
                 <form method="POST" action="/login" class="space-y-6">
                     <!-- Email Input -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="email" class="block text-sm font-medium text-gray-800 dark:text-gray-300 mb-2">
                             Email Admin
                         </label>
                         <div class="relative">
@@ -42,7 +42,7 @@
                                 type="email"
                                 required
                                 autocomplete="email"
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-xl focus:outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 placeholder="admin@umarket.com"
                             />
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -51,14 +51,14 @@
                                 </svg>
                             </div>
                         </div>
-                        <p v-if="laravelErrors.email" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                        <p v-if="laravelErrors.email" class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
                             {{ laravelErrors.email }}
                         </p>
                     </div>
 
                     <!-- Password Input -->
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="password" class="block text-sm font-medium text-gray-800 dark:text-gray-300 mb-2">
                             Kata Sandi
                         </label>
                         <div class="relative">
@@ -68,7 +68,7 @@
                                 :type="showPassword ? 'text' : 'password'"
                                 required
                                 autocomplete="current-password"
-                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-xl focus:outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 placeholder="Masukkan kata sandi"
                             />
                             <button
@@ -85,7 +85,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <p v-if="laravelErrors.password" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                        <p v-if="laravelErrors.password" class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
                             {{ laravelErrors.password }}
                         </p>
                     </div>
@@ -97,9 +97,9 @@
                                 name="remember"
                                 type="checkbox"
                                 value="1"
-                                class="w-4 h-4 text-indigo-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:ring-2"
+                                class="w-4 h-4 text-[#8E0D3C] bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:outline-none"
                             />
-                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                            <span class="ml-2 text-sm text-gray-800 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
                                 Ingat Saya
                             </span>
                         </label>
@@ -111,12 +111,12 @@
                     <!-- Submit Button -->
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
+                        class="w-full bg-[#8E0D3C] dark:bg-[#8E0D3C] text-white font-semibold py-3.5 px-4 rounded-xl shadow-md shadow-[#8E0D3C]/20 dark:shadow-[#8E0D3C]/20 flex items-center justify-center"
                     >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        <span>Masuk</span>
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
-                        Masuk sebagai Admin
                     </button>
                 </form>
             </div>

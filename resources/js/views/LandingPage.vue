@@ -1,20 +1,20 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
             <!-- Left Sidebar - Hanya muncul jika user sudah login -->
             <aside 
                 v-if="user"
                 :class="[
-                    'bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64'
                 ]"
             >
                 <div class="p-4 flex items-center justify-between">
                     <button
                         @click="toggleSidebar"
-                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        class="p-2 rounded-lg"
                     >
-                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
@@ -23,9 +23,9 @@
                 <nav class="px-4 space-y-2">
                     <a
                         href="#"
-                        class="flex items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium border border-blue-200 dark:border-blue-800"
+                        class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         <span v-if="!sidebarCollapsed">Beranda</span>
@@ -34,9 +34,9 @@
                     <a
                         href="#"
                         @click.prevent="handleMyOrders"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         <span v-if="!sidebarCollapsed">Pesanan Saya</span>
@@ -45,9 +45,9 @@
                     <a
                         href="#"
                         @click.prevent="handleOpenShop"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         <span v-if="!sidebarCollapsed">Buka Toko</span>
@@ -57,7 +57,7 @@
                 <div class="mt-auto p-4">
                     <button
                         @click="handleLogout"
-                        class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                        class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                     >
                         <span v-if="!sidebarCollapsed">Keluar</span>
                         <span v-else class="flex justify-center">
@@ -72,10 +72,10 @@
             <!-- Main Content -->
             <main :class="['flex-1 transition-all duration-300', user && sidebarCollapsed ? 'ml-16' : user ? 'ml-64' : 'ml-0']">
                 <!-- Header -->
-                <header class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10">
+                <header class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10">
                     <div class="flex items-center justify-between">
                         <!-- Logo -->
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <div class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center">
                             <span class="text-white font-bold">U</span>
                         </div>
 
@@ -93,7 +93,7 @@
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari"
-                                    class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                    class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
                                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -105,13 +105,13 @@
                         <button
                             v-if="user"
                             @click="handleCart"
-                            class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mr-1"
+                            class="relative p-2 text-gray-600 dark:text-gray-400 mr-1"
                         >
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             <span v-if="cartCount > 0" :class="[
-                                'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
+                                'absolute top-0 right-0 bg-[#EF3B33] text-white text-xs rounded-full flex items-center justify-center font-semibold',
                                 cartCount > 9 ? 'w-6 h-6 -mt-1 -mr-1' : 'w-5 h-5'
                             ]">
                                 {{ cartCount > 99 ? '99+' : cartCount }}
@@ -122,8 +122,8 @@
                         <button
                             v-if="user"
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all ml-2"
-                            :class="user?.photo_url ? 'ring-2 ring-blue-500' : 'bg-gray-200 dark:bg-gray-700'"
+                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center ml-2"
+                            :class="user?.photo_url ? 'ring-2 ring-[#8E0D3C] dark:ring-[#FDA1A2]' : 'bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/30'"
                         >
                             <img
                                 v-if="user?.photo_url"
@@ -138,7 +138,7 @@
                         <button
                             v-else
                             @click="goToLogin"
-                            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                            class="px-4 py-2 bg-[#EF3B33] text-white font-medium rounded-lg shadow-md"
                         >
                             Login
                         </button>
@@ -159,11 +159,11 @@
                         <div
                             v-for="product in filteredProducts"
                             :key="product.id"
-                            class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+                            class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer"
                             @click="goToProductDetail(product.id)"
                         >
                             <!-- Product Image -->
-                            <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center overflow-hidden">
+                            <div class="w-full h-48 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden">
                                 <svg v-if="!product.image_url" class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -172,22 +172,22 @@
 
                             <!-- Product Info -->
                             <div class="p-4">
-                                <p class="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1 uppercase tracking-wide">{{ getProductCategory(product.name) }}</p>
+                                <p class="text-xs font-medium text-[#EF3B33] dark:text-[#EF3B33] mb-1 uppercase tracking-wide">{{ getProductCategory(product.name) }}</p>
                                 <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ product.store_name || product.user?.name || 'Toko' }}</p>
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ product.name }}</h3>
                                 <p v-if="product.description" class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                                     {{ product.description }}
                                 </p>
-                                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
+                                <p class="text-2xl font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-4">
                                     Rp. {{ formatPrice(product.price) }}
                                 </p>
 
                                 <!-- Quantity Selector & Add to Cart -->
                                 <div class="flex items-center gap-3" @click.stop>
-                                    <div class="flex items-center border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+                                    <div class="flex items-center border-2 border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-lg bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10">
                                         <button
                                             @click.stop="decreaseQuantity(product.id)"
-                                            class="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                            class="px-3 py-1 text-gray-600 dark:text-gray-400"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
@@ -198,7 +198,7 @@
                                         </span>
                                         <button
                                             @click.stop="increaseQuantity(product.id)"
-                                            class="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                            class="px-3 py-1 text-gray-600 dark:text-gray-400"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -208,7 +208,7 @@
 
                                     <button
                                         @click.stop="handleAddToCart(product)"
-                                        class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+                                        class="flex-1 bg-[#EF3B33] text-white font-medium py-2 px-4 rounded-lg shadow-md"
                                     >
                                         Tambah Keranjang
                                     </button>
@@ -251,8 +251,8 @@
                 @click.self="closeLoginModal"
             >
                 <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full transform transition-all modal-content">
-                    <!-- Card Header dengan gradient -->
-                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl p-6">
+                    <!-- Card Header -->
+                    <div class="bg-[#EF3B33] rounded-t-2xl p-6">
                         <div class="flex items-center justify-center mb-2">
                             <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
                                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,20 +266,20 @@
                     <!-- Card Body -->
                     <div class="p-6">
                         <p class="text-gray-700 dark:text-gray-300 text-center mb-6 leading-relaxed">
-                            Anda harus melakukan <span class="font-semibold text-blue-600 dark:text-blue-400">login</span> sebelum melakukan aksi lebih lanjut.
+                            Anda harus melakukan <span class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2]">login</span> sebelum melakukan aksi lebih lanjut.
                         </p>
 
                         <!-- Action Buttons -->
                         <div class="flex gap-3">
                             <button
                                 @click="closeLoginModal"
-                                class="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                                class="flex-1 px-4 py-3 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] font-medium rounded-lg"
                             >
                                 Batal
                             </button>
                             <button
                                 @click="goToLogin"
-                                class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+                                class="flex-1 px-4 py-3 bg-[#EF3B33] text-white font-medium rounded-lg shadow-lg"
                             >
                                 Login
                             </button>
@@ -287,7 +287,7 @@
                     </div>
 
                     <!-- Decorative bottom border -->
-                    <div class="h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-b-2xl"></div>
+                    <div class="h-1 bg-[#EF3B33] rounded-b-2xl"></div>
                 </div>
             </div>
         </transition>

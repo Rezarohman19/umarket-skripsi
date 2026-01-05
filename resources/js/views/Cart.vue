@@ -1,8 +1,8 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-24">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] pb-24">
         <div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 space-y-4">
             <!-- Back -->
-            <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer hover:underline" @click="goBack">
+            <div class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer" @click="goBack">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -10,33 +10,33 @@
             </div>
 
             <!-- Title -->
-            <h1 class="text-xl font-semibold text-center text-gray-900 dark:text-white">Keranjang Saya</h1>
+            <h1 class="text-xl font-semibold text-center text-[#1D1842] dark:text-[#FDA1A2]">Keranjang Saya</h1>
 
             <!-- Loading -->
             <div v-if="loading" class="text-center py-8">
-                <p class="text-gray-500 dark:text-gray-400">Memuat keranjang...</p>
+                <p class="text-[#1D1842] dark:text-[#FDA1A2]">Memuat keranjang...</p>
             </div>
 
             <!-- Empty Cart -->
             <div v-else-if="cartItems.length === 0" class="text-center py-12">
-                <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-24 h-24 mx-auto text-[#FDA1A2] dark:text-[#FDA1A2] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <p class="text-gray-600 dark:text-gray-400 text-lg">Keranjang Anda kosong</p>
-                <p class="text-gray-500 dark:text-gray-500 text-sm mt-2">Tambahkan produk ke keranjang untuk melihatnya di sini</p>
+                <p class="text-[#1D1842] dark:text-[#FDA1A2] text-lg">Keranjang Anda kosong</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">Tambahkan produk ke keranjang untuk melihatnya di sini</p>
             </div>
 
             <!-- Cart List -->
             <div v-else class="space-y-4">
                 <!-- Pilih Semua -->
-                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-4 flex items-center gap-3">
+                <div class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 flex items-center gap-3">
                     <input
                         type="checkbox"
                         :checked="isAllSelected"
                         @change="toggleSelectAll"
-                        class="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 cursor-pointer"
+                        class="w-5 h-5 text-[#EF3B33] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded focus:outline-none cursor-pointer"
                     />
-                    <label class="text-sm font-semibold text-gray-900 dark:text-white cursor-pointer" @click="toggleSelectAll">
+                    <label class="text-sm font-semibold text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer" @click="toggleSelectAll">
                         Pilih Semua
                     </label>
                 </div>
@@ -45,18 +45,18 @@
                 <div
                     v-for="item in cartItems"
                     :key="item.id"
-                    class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-4 flex items-center gap-4"
+                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 flex items-center gap-4"
                 >
                     <!-- Checkbox -->
                     <input
                         type="checkbox"
                         :checked="selectedItems.includes(item.id)"
                         @change="toggleItem(item.id)"
-                        class="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 cursor-pointer"
+                        class="w-5 h-5 text-[#EF3B33] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded focus:outline-none cursor-pointer"
                     />
 
                     <!-- Image -->
-                    <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center rounded-md overflow-hidden">
+                    <div class="w-24 h-24 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center rounded-md overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                         <img
                             v-if="item.image_url"
                             :src="item.image_url"
@@ -70,21 +70,21 @@
 
                     <!-- Info -->
                     <div class="flex-1">
-                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ item.store_name }}</p>
-                        <p class="text-sm text-gray-800 dark:text-gray-100 font-semibold">{{ item.product_name }}</p>
+                        <p class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33]">{{ item.store_name }}</p>
+                        <p class="text-sm text-[#1D1842] dark:text-[#FDA1A2] font-semibold">{{ item.product_name }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ item.product_description || 'Tidak ada deskripsi' }}</p>
-                        <p class="text-sm font-semibold text-gray-900 dark:text-white mt-1">Rp. {{ formatPrice(item.price) }}</p>
+                        <p class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33] mt-1">Rp. {{ formatPrice(item.price) }}</p>
                     </div>
 
                     <!-- Quantity -->
                     <div class="flex items-center gap-3">
                         <button
-                            class="w-8 h-8 border border-gray-300 dark:border-gray-700 rounded-md text-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                            class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
                             @click="decrease(item)"
                         >-</button>
-                        <div class="w-10 text-center text-gray-900 dark:text-white font-semibold">{{ item.qty }}</div>
+                        <div class="w-10 text-center text-[#1D1842] dark:text-[#FDA1A2] font-semibold">{{ item.qty }}</div>
                         <button
-                            class="w-8 h-8 border border-gray-300 dark:border-gray-700 rounded-md text-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                            class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
                             @click="increase(item)"
                         >+</button>
                     </div>
@@ -92,7 +92,7 @@
                     <!-- Delete Button -->
                     <button
                         @click="removeItem(item)"
-                        class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                        class="p-2 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg"
                         title="Hapus dari keranjang"
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,20 +106,20 @@
         <!-- Checkout Footer (Sticky) -->
         <div
             v-if="!loading && cartItems.length > 0 && selectedItems.length > 0"
-            class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-800 shadow-lg z-50"
+            class="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1D1842] border-t border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg z-50"
         >
             <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
                 <div class="flex items-center justify-between">
                     <!-- Total -->
                     <div class="flex-1">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Total Harga</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white">Rp. {{ formatPrice(totalPrice) }}</p>
+                        <p class="text-sm text-[#1D1842] dark:text-[#FDA1A2]">Total Harga</p>
+                        <p class="text-xl font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(totalPrice) }}</p>
                     </div>
 
                     <!-- Checkout Button -->
                     <button
                         @click="handleCheckout"
-                        class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg ml-4"
+                        class="px-8 py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg ml-4"
                     >
                         Checkout ({{ selectedItems.length }})
                     </button>

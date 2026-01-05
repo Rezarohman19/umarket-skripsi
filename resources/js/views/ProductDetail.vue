@@ -1,10 +1,10 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
             <!-- Back Button -->
             <button
                 @click="goBack"
-                class="mb-6 flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                class="mb-6 flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2]"
             >
                 <svg
                     class="w-5 h-5"
@@ -24,7 +24,7 @@
 
             <!-- Loading -->
             <div v-if="loading" class="text-center py-12">
-                <p class="text-gray-500 dark:text-gray-400">
+                <p class="text-[#1D1842] dark:text-[#FDA1A2]">
                     Memuat detail produk...
                 </p>
             </div>
@@ -44,12 +44,12 @@
                         d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                 </svg>
-                <p class="text-gray-600 dark:text-gray-400 text-lg">
+                <p class="text-[#1D1842] dark:text-[#FDA1A2] text-lg">
                     Produk tidak ditemukan
                 </p>
                 <button
                     @click="goBack"
-                    class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    class="mt-4 px-6 py-2 bg-[#EF3B33] text-white rounded-lg"
                 >
                     Kembali ke Beranda
                 </button>
@@ -58,13 +58,13 @@
             <!-- Product Detail -->
             <div
                 v-else
-                class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-300 dark:border-gray-800 shadow-lg overflow-hidden"
+                class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg overflow-hidden"
             >
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
                     <!-- Product Image -->
                     <div class="w-full">
                         <div
-                            class="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-xl flex items-center justify-center overflow-hidden"
+                            class="w-full h-96 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-xl flex items-center justify-center overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                         >
                             <svg
                                 v-if="!product.image_url"
@@ -94,7 +94,7 @@
                         <div>
                             <!-- Store Name -->
                             <p
-                                class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2"
+                                class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33] mb-2"
                             >
                                 {{ product.store_name || "Toko" }}
                             </p>
@@ -120,7 +120,7 @@
                             <!-- Price -->
                             <div class="mb-6">
                                 <p
-                                    class="text-4xl font-bold text-blue-600 dark:text-blue-400"
+                                    class="text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]"
                                 >
                                     Rp. {{ formatPrice(product.price) }}
                                 </p>
@@ -154,16 +154,16 @@
                             <!-- Quantity Selector -->
                             <div class="flex items-center gap-4">
                                 <label
-                                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    class="text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]"
                                     >Jumlah:</label
                                 >
                                 <div
-                                    class="flex items-center border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800"
+                                    class="flex items-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50"
                                 >
                                     <button
                                         @click="decreaseQuantity"
                                         :disabled="quantity <= 1"
-                                        class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <svg
                                             class="w-5 h-5"
@@ -180,14 +180,14 @@
                                         </svg>
                                     </button>
                                     <span
-                                        class="px-6 py-2 text-gray-900 dark:text-white font-medium min-w-[60px] text-center"
+                                        class="px-6 py-2 text-[#1D1842] dark:text-[#FDA1A2] font-medium min-w-[60px] text-center"
                                     >
                                         {{ quantity }}
                                     </span>
                                     <button
                                         @click="increaseQuantity"
                                         :disabled="quantity >= product.stock"
-                                        class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <svg
                                             class="w-5 h-5"
@@ -210,13 +210,13 @@
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <button
                                     @click="handleAddToCart"
-                                    class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-3 px-6 rounded-lg shadow-md"
                                 >
                                     Tambah ke Keranjang
                                 </button>
                                 <button
                                     @click="handleCheckout"
-                                    class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-3 px-6 rounded-lg shadow-md"
                                 >
                                     Checkout Langsung
                                 </button>
@@ -235,14 +235,14 @@
                 @click.self="showLoginModal = false"
             >
                 <div
-                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
+                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
                 >
                     <div class="flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4"
+                            class="w-16 h-16 bg-[#FDA1A2]/20 dark:bg-[#FDA1A2]/20 rounded-full flex items-center justify-center mb-4"
                         >
                             <svg
-                                class="w-8 h-8 text-blue-600 dark:text-blue-400"
+                                class="w-8 h-8 text-[#EF3B33] dark:text-[#EF3B33]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -256,7 +256,7 @@
                             </svg>
                         </div>
                         <h3
-                            class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
+                            class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-2"
                         >
                             Login Diperlukan
                         </h3>
@@ -267,13 +267,13 @@
                         <div class="flex gap-3 w-full">
                             <button
                                 @click="showLoginModal = false"
-                                class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                class="flex-1 px-4 py-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg font-medium"
                             >
                                 Batal
                             </button>
                             <button
                                 @click="goToLogin"
-                                class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                                class="flex-1 px-4 py-2 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg"
                             >
                                 Login
                             </button>

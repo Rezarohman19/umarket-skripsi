@@ -1,20 +1,20 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
             <!-- Sidebar -->
             <aside
                 :class="[
-                    'bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
                 <div class="p-4 flex items-center justify-between">
                     <button
                         @click="toggleSidebar"
-                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="p-2 rounded-lg"
                     >
                         <svg
-                            class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                            class="w-5 h-5 text-white"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -32,10 +32,10 @@
                 <nav class="px-4 space-y-2">
                     <a
                         href="/"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
                         <svg
-                            class="w-5 h-5 mr-3"
+                            class="w-5 h-5 text-white mr-3"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -52,10 +52,10 @@
 
                     <a
                         href="/orders"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
                         <svg
-                            class="w-5 h-5 mr-3"
+                            class="w-5 h-5 text-white mr-3"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -72,10 +72,10 @@
 
                     <a
                         href="#"
-                        class="flex items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium border border-blue-200 dark:border-blue-800"
+                        class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
                     >
                         <svg
-                            class="w-5 h-5 mr-3"
+                            class="w-5 h-5 text-white mr-3"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -94,7 +94,7 @@
                 <div class="mt-auto p-4">
                     <button
                         @click="handleLogout"
-                        class="w-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                        class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                     >
                         <span v-if="!sidebarCollapsed">Keluar</span>
                         <span v-else class="flex justify-center">
@@ -125,11 +125,11 @@
             >
                 <!-- Header -->
                 <header
-                    class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10"
+                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between">
                         <div
-                            class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center"
+                            class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
                         >
                             <span class="text-white font-bold">U</span>
                         </div>
@@ -149,7 +149,7 @@
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari"
-                                    class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                    class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
                                 <svg
                                     class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
@@ -169,7 +169,7 @@
 
                         <button
                             @click="handleCart"
-                            class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mr-1"
+                            class="relative p-2 text-gray-600 dark:text-gray-400 mr-1"
                         >
                             <svg
                                 class="w-6 h-6"
@@ -187,7 +187,7 @@
                             <span
                                 v-if="cartCount > 0"
                                 :class="[
-                                    'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
+                                    'absolute top-0 right-0 bg-[#EF3B33] text-white text-xs rounded-full flex items-center justify-center font-semibold',
                                     cartCount > 9
                                         ? 'w-6 h-6 -mt-1 -mr-1'
                                         : 'w-5 h-5',
@@ -200,11 +200,11 @@
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all ml-2"
+                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center ml-2"
                             :class="
                                 user?.photo_url
-                                    ? 'ring-2 ring-blue-500'
-                                    : 'bg-gray-200 dark:bg-gray-700'
+                                    ? 'ring-2 ring-[#8E0D3C] dark:ring-[#FDA1A2]'
+                                    : 'bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/30'
                             "
                         >
                             <img
@@ -235,7 +235,7 @@
                 <div class="p-6 space-y-8">
                     <!-- Store Overview -->
                     <section
-                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6"
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
                     >
                         <div
                             class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
@@ -260,9 +260,9 @@
                             <button
                                 @click="showOrdersSection('paid')"
                                 :class="[
-                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
                                     activeOrderSection === 'paid'
-                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        ? 'ring-2 ring-[#EF3B33] dark:ring-[#FDA1A2]'
                                         : '',
                                 ]"
                             >
@@ -280,9 +280,9 @@
                             <button
                                 @click="showOrdersSection('processing')"
                                 :class="[
-                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
                                     activeOrderSection === 'processing'
-                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        ? 'ring-2 ring-[#FDA1A2] dark:ring-[#FDA1A2]'
                                         : '',
                                 ]"
                             >
@@ -300,9 +300,9 @@
                             <button
                                 @click="showOrdersSection('shipping')"
                                 :class="[
-                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
                                     activeOrderSection === 'shipping'
-                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        ? 'ring-2 ring-[#8E0D3C] dark:ring-[#8E0D3C]'
                                         : '',
                                 ]"
                             >
@@ -320,9 +320,9 @@
                             <button
                                 @click="showOrdersSection('history')"
                                 :class="[
-                                    'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center transition-all hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
                                     activeOrderSection === 'history'
-                                        ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                                        ? 'ring-2 ring-[#1D1842] dark:ring-[#1D1842]'
                                         : '',
                                 ]"
                             >
@@ -343,18 +343,18 @@
                     <!-- Pesanan Section (Muncul saat statistik diklik) -->
                     <section
                         v-if="activeOrderSection"
-                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6 space-y-4"
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 space-y-4"
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <h2
-                                    class="text-lg font-semibold text-gray-800 dark:text-gray-100"
+                                    class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
                                 >
                                     {{ getSectionTitle(activeOrderSection) }}
                                 </h2>
                                 <button
                                     @click="activeOrderSection = null"
-                                    class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                                    class="p-1 text-gray-500"
                                     title="Tutup"
                                 >
                                     <svg
@@ -409,7 +409,7 @@
                             <div
                                 v-for="order in filteredOrdersBySection"
                                 :key="order.id"
-                                class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                class="border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg p-4"
                             >
                                 <div
                                     class="flex items-start justify-between mb-3"
@@ -464,10 +464,10 @@
                                     <div
                                         v-for="item in order.items"
                                         :key="item.id"
-                                        class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded"
+                                        class="flex items-center gap-3 p-2 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded"
                                     >
                                         <div
-                                            class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded flex items-center justify-center overflow-hidden flex-shrink-0"
+                                            class="w-12 h-12 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                                         >
                                             <img
                                                 v-if="item.product?.image_url"
@@ -522,10 +522,10 @@
                                 <!-- Shipping Address -->
                                 <div
                                     v-if="order.shipping_address"
-                                    class="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs"
+                                    class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
                                 >
                                     <p
-                                        class="font-semibold text-blue-700 dark:text-blue-400 mb-1"
+                                        class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1"
                                     >
                                         Alamat Pengiriman:
                                     </p>
@@ -541,10 +541,10 @@
                                 <!-- Tracking Number -->
                                 <div
                                     v-if="order.tracking_number"
-                                    class="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs"
+                                    class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
                                 >
                                     <p
-                                        class="font-semibold text-green-700 dark:text-green-400 mb-1"
+                                        class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1"
                                     >
                                         Nomor Resi:
                                     </p>
@@ -565,14 +565,14 @@
                                                 'processing'
                                             )
                                         "
-                                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition-colors"
+                                        class="px-3 py-1.5 bg-[#EF3B33] text-white rounded-lg text-xs font-medium"
                                     >
                                         Mulai Kemas
                                     </button>
                                     <button
                                         v-if="order.status === 'processing'"
                                         @click="showShippingModal(order)"
-                                        class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition-colors"
+                                        class="px-3 py-1.5 bg-[#FDA1A2] text-white rounded-lg text-xs font-medium"
                                     >
                                         Kirim Paket
                                     </button>
@@ -584,7 +584,7 @@
                                                 'delivered'
                                             )
                                         "
-                                        class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition-colors"
+                                        class="px-3 py-1.5 bg-[#8E0D3C] text-white rounded-lg text-xs font-medium"
                                     >
                                         Tandai Diterima
                                     </button>
@@ -595,16 +595,16 @@
 
                     <!-- Product Table -->
                     <section
-                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6 space-y-4"
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 space-y-4"
                     >
                         <div class="flex items-center justify-between">
                             <h2
-                                class="text-lg font-semibold text-gray-800 dark:text-gray-100"
+                                class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
                             >
                                 Produk
                             </h2>
                             <button
-                                class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                                class="px-4 py-2 bg-[#EF3B33] text-white text-sm font-medium rounded-lg shadow-md"
                                 @click="toggleForm"
                             >
                                 + Tambah Produk
@@ -614,7 +614,7 @@
                         <transition name="fade">
                             <div
                                 v-if="showForm"
-                                class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3 border border-dashed border-gray-300 dark:border-gray-700"
+                                class="bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 space-y-3 border border-dashed border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
                             >
                                 <div
                                     class="grid grid-cols-1 sm:grid-cols-2 gap-3"
@@ -627,7 +627,7 @@
                                         <input
                                             v-model="form.name"
                                             type="text"
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
                                         />
                                     </div>
                                     <div>
@@ -640,7 +640,7 @@
                                             type="text"
                                             list="category-suggestions"
                                             placeholder="Ketik nama kategori (atau pilih dari saran)..."
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
                                         />
                                         <datalist id="category-suggestions">
                                             <option
@@ -658,7 +658,7 @@
                                         <textarea
                                             v-model="form.description"
                                             rows="3"
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                            class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none resize-none"
                                             placeholder="Masukkan deskripsi produk yang detail..."
                                         ></textarea>
                                     </div>
@@ -673,7 +673,7 @@
                                             placeholder="Contoh: Rp 10.000 atau 10000"
                                             @input="handlePriceInput"
                                             @blur="formatPriceInput"
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
                                         />
                                     </div>
                                     <div>
@@ -685,7 +685,7 @@
                                             v-model.number="form.stock"
                                             type="number"
                                             min="0"
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
                                         />
                                     </div>
                                     <div class="sm:col-span-2">
@@ -695,7 +695,7 @@
                                         >
                                         <div class="flex items-center gap-3">
                                             <label
-                                                class="w-28 h-28 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center bg-white dark:bg-gray-900 cursor-pointer hover:border-blue-500"
+                                                class="w-28 h-28 border border-dashed border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg flex items-center justify-center bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 cursor-pointer"
                                             >
                                                 <input
                                                     type="file"
@@ -731,13 +731,13 @@
                                 </div>
                                 <div class="flex justify-end gap-2">
                                     <button
-                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                                        class="px-4 py-2 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg"
                                         @click="cancelForm"
                                     >
                                         Batal
                                     </button>
                                     <button
-                                        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition"
+                                        class="px-4 py-2 bg-[#EF3B33] text-white rounded-lg shadow-md"
                                         @click="submitForm"
                                     >
                                         {{
@@ -753,7 +753,7 @@
                         <div class="overflow-x-auto">
                             <div class="min-w-full">
                                 <div
-                                    class="grid grid-cols-6 bg-gray-100 dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 rounded-lg px-4 py-3"
+                                    class="grid grid-cols-6 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-sm font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] rounded-lg px-4 py-3"
                                 >
                                     <div>Nama Toko</div>
                                     <div>Nama</div>
@@ -770,7 +770,7 @@
                                     <div
                                         v-for="p in products"
                                         :key="p.id"
-                                        class="grid grid-cols-6 items-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-4 gap-2"
+                                        class="grid grid-cols-6 items-center bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg px-4 py-4 gap-2"
                                     >
                                         <div
                                             class="text-sm text-gray-700 dark:text-gray-300"
@@ -778,34 +778,34 @@
                                             {{ store.name }}
                                         </div>
                                         <div
-                                            class="text-sm text-gray-800 dark:text-gray-100 font-semibold"
+                                            class="text-sm text-[#1D1842] dark:text-[#FDA1A2] font-semibold"
                                         >
                                             {{ p.name }}
                                         </div>
                                         <div
-                                            class="text-sm text-gray-600 dark:text-gray-400"
+                                            class="text-sm text-[#EF3B33] dark:text-[#EF3B33]"
                                         >
                                             {{ p.category?.name || "-" }}
                                         </div>
                                         <div
-                                            class="text-sm text-gray-700 dark:text-gray-300"
+                                            class="text-sm text-[#1D1842] dark:text-[#FDA1A2]"
                                         >
                                             {{ p.stock }}
                                         </div>
                                         <div
-                                            class="text-sm text-gray-800 dark:text-gray-100 font-semibold"
+                                            class="text-sm text-[#EF3B33] dark:text-[#EF3B33] font-semibold"
                                         >
                                             Rp. {{ formatPrice(p.price) }}
                                         </div>
                                         <div class="flex justify-end gap-2">
                                             <button
-                                                class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                                class="px-3 py-1 text-xs rounded-full bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2]"
                                                 @click="editProduct(p)"
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                class="px-3 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50"
+                                                class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]"
                                                 @click="deleteProduct(p.id)"
                                             >
                                                 Hapus
@@ -835,7 +835,7 @@
                 @click.self="showShippingForm = false"
             >
                 <div
-                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
+                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
                 >
                     <h3
                         class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
@@ -853,7 +853,7 @@
                                 v-model="trackingNumber"
                                 type="text"
                                 placeholder="Masukkan nomor resi"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
                             />
                         </div>
                         <div>
@@ -864,7 +864,7 @@
                             </label>
                             <select
                                 v-model="shippingCourier"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
                             >
                                 <option value="jne">JNE</option>
                                 <option value="tiki">TIKI</option>
@@ -882,13 +882,13 @@
                                     shippingCourier = 'jne';
                                     selectedOrderId = null;
                                 "
-                                class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                class="flex-1 px-4 py-2 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg font-medium"
                             >
                                 Batal
                             </button>
                             <button
                                 @click="confirmShipping"
-                                class="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition"
+                                class="flex-1 px-4 py-2 bg-[#EF3B33] text-white rounded-lg font-semibold"
                             >
                                 Konfirmasi Kirim
                             </button>
@@ -1010,22 +1010,22 @@ const getStatusLabel = (status) => {
 const getStatusClass = (status) => {
     const classes = {
         pending:
-            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-        paid: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
+        paid: "bg-[#FDA1A2]/30 text-[#8E0D3C] dark:bg-[#FDA1A2]/20 dark:text-[#FDA1A2]",
         processing:
-            "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+            "bg-[#FDA1A2]/30 text-[#8E0D3C] dark:bg-[#FDA1A2]/20 dark:text-[#FDA1A2]",
         shipping:
-            "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
+            "bg-[#8E0D3C]/20 text-[#8E0D3C] dark:bg-[#8E0D3C]/30 dark:text-[#FDA1A2]",
         delivered:
-            "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+            "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
         completed:
-            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+            "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
         cancelled:
-            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
     };
     return (
         classes[status] ||
-        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+        "bg-[#FDA1A2]/20 text-[#8E0D3C] dark:bg-[#8E0D3C]/20 dark:text-[#FDA1A2]"
     );
 };
 

@@ -1,19 +1,19 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
             <!-- Sidebar -->
             <aside
                 :class="[
-                    'bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64'
                 ]"
             >
                 <div class="p-4 flex items-center justify-between">
                     <button
                         @click="toggleSidebar"
-                        class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="p-2 rounded-lg"
                     >
-                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
@@ -22,9 +22,9 @@
                 <nav class="px-4 space-y-2">
                     <a
                         href="/"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         <span v-if="!sidebarCollapsed">Beranda</span>
@@ -32,9 +32,9 @@
 
                     <a
                         href="#"
-                        class="flex items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium border border-blue-200 dark:border-blue-800"
+                        class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         <span v-if="!sidebarCollapsed">Pesanan Saya</span>
@@ -43,9 +43,9 @@
                     <a
                         href="#"
                         @click.prevent="handleOpenShop"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         <span v-if="!sidebarCollapsed">Buka Toko</span>
@@ -55,7 +55,7 @@
                 <div class="mt-auto p-4">
                     <button
                         @click="handleLogout"
-                        class="w-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                        class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                     >
                         <span v-if="!sidebarCollapsed">Keluar</span>
                         <span v-else class="flex justify-center">
@@ -70,9 +70,9 @@
             <!-- Main Content -->
             <main :class="['flex-1 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
                 <!-- Header -->
-                <header class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10">
+                <header class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10">
                     <div class="flex items-center justify-between">
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <div class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center">
                             <span class="text-white font-bold">U</span>
                         </div>
 
@@ -88,7 +88,7 @@
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari"
-                                    class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                    class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
                                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -98,13 +98,13 @@
 
                         <button
                             @click="handleCart"
-                            class="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mr-1"
+                            class="relative p-2 text-gray-600 dark:text-gray-400 mr-1"
                         >
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             <span v-if="cartCount > 0" :class="[
-                                'absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold',
+                                'absolute top-0 right-0 bg-[#EF3B33] text-white text-xs rounded-full flex items-center justify-center font-semibold',
                                 cartCount > 9 ? 'w-6 h-6 -mt-1 -mr-1' : 'w-5 h-5'
                             ]">
                                 {{ cartCount > 99 ? '99+' : cartCount }}
@@ -114,8 +114,8 @@
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all ml-2"
-                            :class="user?.photo_url ? 'ring-2 ring-blue-500' : 'bg-gray-200 dark:bg-gray-700'"
+                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center ml-2"
+                            :class="user?.photo_url ? 'ring-2 ring-[#8E0D3C] dark:ring-[#FDA1A2]' : 'bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/30'"
                         >
                             <img
                                 v-if="user?.photo_url"
@@ -138,15 +138,15 @@
                 <!-- Orders Sections -->
                 <div v-else class="p-6 space-y-8">
                     <section v-for="section in sections" :key="section.key" class="space-y-4">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ section.title }}</h2>
+                        <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">{{ section.title }}</h2>
 
                         <div
                             v-for="order in getFilteredOrders(section.key)"
                             :key="order.id"
-                            class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-4 md:p-5"
+                            class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 md:p-5"
                         >
                             <div class="flex items-start gap-4">
-                                <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <div class="w-16 h-16 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                                     <img
                                         v-if="order.image_url"
                                         :src="order.image_url"
@@ -182,8 +182,8 @@
                                         </div>
                                         <div class="flex flex-col md:items-end text-sm text-gray-700 dark:text-gray-300">
                                             <span>{{ order.qty }} pcs</span>
-                                            <span class="font-semibold">Rp. {{ formatPrice(order.price) }}</span>
-                                            <span class="font-semibold text-blue-600 dark:text-blue-400">Total: Rp. {{ formatPrice(order.total) }}</span>
+                                            <span class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Rp. {{ formatPrice(order.price) }}</span>
+                                            <span class="font-semibold text-[#EF3B33] dark:text-[#EF3B33]">Total: Rp. {{ formatPrice(order.total) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -196,10 +196,10 @@
                                     :key="action.label"
                                     @click="handleAction(action.type, order)"
                                     :class="[
-                                        'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                                        'px-4 py-2 rounded-full text-sm font-medium',
                                         action.variant === 'primary'
-                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow hover:from-blue-700 hover:to-purple-700'
-                                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                            ? 'bg-[#EF3B33] text-white shadow-md'
+                                            : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2]'
                                     ]"
                                 >
                                     {{ action.label }}
@@ -272,18 +272,18 @@ const getStatusLabel = (status) => {
 
 const getStatusBadgeClass = (status) => {
     const classMap = {
-        'belum_bayar': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
-        'dikemas': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
-        'dikirim': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
-        'riwayat': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-        'pending': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
-        'paid': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-        'processing': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
-        'shipping': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
-        'completed': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-        'failed': 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+        'belum_bayar': 'bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]',
+        'dikemas': 'bg-[#FDA1A2]/30 dark:bg-[#FDA1A2]/20 text-[#8E0D3C] dark:text-[#FDA1A2]',
+        'dikirim': 'bg-[#8E0D3C]/20 dark:bg-[#8E0D3C]/30 text-[#8E0D3C] dark:text-[#FDA1A2]',
+        'riwayat': 'bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]',
+        'pending': 'bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]',
+        'paid': 'bg-[#FDA1A2]/30 dark:bg-[#FDA1A2]/20 text-[#8E0D3C] dark:text-[#FDA1A2]',
+        'processing': 'bg-[#FDA1A2]/30 dark:bg-[#FDA1A2]/20 text-[#8E0D3C] dark:text-[#FDA1A2]',
+        'shipping': 'bg-[#8E0D3C]/20 dark:bg-[#8E0D3C]/30 text-[#8E0D3C] dark:text-[#FDA1A2]',
+        'completed': 'bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]',
+        'failed': 'bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]'
     };
-    return classMap[status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300';
+    return classMap[status] || 'bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-gray-800 dark:text-gray-300';
 };
 
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);

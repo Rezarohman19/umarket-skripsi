@@ -1,10 +1,10 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950 pb-24">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] pb-24">
         <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6">
             <!-- Back Button -->
             <button
                 @click="goBack"
-                class="mb-6 flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                class="mb-6 flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2]"
             >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -13,22 +13,22 @@
             </button>
 
             <!-- Title -->
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Checkout</h1>
+            <h1 class="text-2xl font-bold text-[#1D1842] dark:text-[#FDA1A2] mb-6">Checkout</h1>
 
             <div v-if="loading" class="text-center py-12">
-                <p class="text-gray-500 dark:text-gray-400">Memuat data checkout...</p>
+                <p class="text-[#1D1842] dark:text-[#FDA1A2]">Memuat data checkout...</p>
             </div>
 
             <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column - Main Content -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Alamat Pengiriman -->
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6">
+                    <div class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Alamat Pengiriman</h2>
+                            <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Alamat Pengiriman</h2>
                             <button
                                 @click="showAddressModal = true"
-                                class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                                class="text-sm text-[#EF3B33] dark:text-[#EF3B33]"
                             >
                                 Ubah
                             </button>
@@ -41,8 +41,8 @@
                     </div>
 
                     <!-- Daftar Produk -->
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Produk yang Dipesan</h2>
+                    <div class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6">
+                        <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Produk yang Dipesan</h2>
                         <div class="space-y-4">
                             <div
                                 v-for="item in checkoutItems"
@@ -50,7 +50,7 @@
                                 class="flex items-start gap-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-0"
                             >
                                 <!-- Product Image -->
-                                <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <div class="w-20 h-20 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                                     <img
                                         v-if="item.image_url"
                                         :src="item.image_url"
@@ -79,28 +79,28 @@
 
                 <!-- Right Column - Ringkasan -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm p-6 sticky top-6">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ringkasan Pesanan</h2>
+                    <div class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 sticky top-6">
+                        <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Ringkasan Pesanan</h2>
                         
                         <div class="space-y-3 mb-6">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
-                                <span class="text-gray-900 dark:text-white">Rp. {{ formatPrice(subtotal) }}</span>
+                                <span class="text-[#1D1842] dark:text-[#FDA1A2]">Rp. {{ formatPrice(subtotal) }}</span>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600 dark:text-gray-400">Ongkos Kirim</span>
-                                <span class="text-gray-900 dark:text-white">Rp. {{ formatPrice(shippingCost) }}</span>
+                                <span class="text-[#1D1842] dark:text-[#FDA1A2]">Rp. {{ formatPrice(shippingCost) }}</span>
                             </div>
-                            <div class="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between">
-                                <span class="font-semibold text-gray-900 dark:text-white">Total</span>
-                                <span class="font-bold text-lg text-blue-600 dark:text-blue-400">Rp. {{ formatPrice(totalPrice) }}</span>
+                            <div class="border-t border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 pt-3 flex justify-between">
+                                <span class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Total</span>
+                                <span class="font-bold text-lg text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(totalPrice) }}</span>
                             </div>
                         </div>
 
                         <button
                             @click="handleConfirmPayment"
                             :disabled="processing || !shippingAddress.address"
-                            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed"
+                            class="w-full bg-[#EF3B33] disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg shadow-lg disabled:cursor-not-allowed"
                         >
                             <span v-if="processing">Memproses...</span>
                             <span v-else>Konfirmasi Pembayaran</span>
@@ -121,43 +121,43 @@
                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
                 @click.self="showAddressModal = false"
             >
-                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Ubah Alamat Pengiriman</h3>
+                <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
+                    <h3 class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Ubah Alamat Pengiriman</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Penerima</label>
+                            <label class="block text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2] mb-1">Nama Penerima</label>
                             <input
                                 v-model="shippingAddress.name"
                                 type="text"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                             />
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Telepon</label>
+                            <label class="block text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2] mb-1">No. Telepon</label>
                             <input
                                 v-model="shippingAddress.phone"
                                 type="text"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                             />
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alamat Lengkap</label>
+                            <label class="block text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2] mb-1">Alamat Lengkap</label>
                             <textarea
                                 v-model="shippingAddress.address"
                                 rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                             ></textarea>
                         </div>
                         <div class="flex gap-3">
                             <button
                                 @click="showAddressModal = false"
-                                class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                class="flex-1 px-4 py-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg font-medium"
                             >
                                 Batal
                             </button>
                             <button
                                 @click="saveAddress"
-                                class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition"
+                                class="flex-1 px-4 py-2 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg"
                             >
                                 Simpan
                             </button>

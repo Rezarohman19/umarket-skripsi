@@ -1,9 +1,9 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950 py-6 px-4 sm:px-6">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] py-6 px-4 sm:px-6">
         <div class="max-w-4xl mx-auto space-y-6">
             <!-- Back -->
             <div
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 cursor-pointer hover:underline"
+                class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer"
                 @click="goBack"
             >
                 <svg
@@ -24,12 +24,12 @@
 
             <!-- Profile Card -->
             <div
-                class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-300 dark:border-gray-800 shadow-sm p-6"
+                class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
             >
                 <div class="flex flex-col items-center space-y-3 relative">
                     <!-- Foto Profil -->
                     <div
-                        class="w-20 h-20 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 text-sm border border-gray-300 dark:border-gray-700"
+                        class="w-20 h-20 rounded-full overflow-hidden bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/30 flex items-center justify-center text-[#8E0D3C] dark:text-[#FDA1A2] text-sm border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
                     >
                         <img
                             v-if="imagePreview || profile.photo_url"
@@ -44,7 +44,7 @@
                     <button
                         v-if="isEditing"
                         data-edit-button
-                        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition"
+                        class="text-sm text-[#EF3B33] dark:text-[#EF3B33]"
                         @click.stop="showPhotoMenu = !showPhotoMenu"
                     >
                         Edit
@@ -54,7 +54,7 @@
                     <div
                         v-if="showPhotoMenu && isEditing"
                         data-photo-menu
-                        class="absolute top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 min-w-[160px] overflow-hidden"
+                        class="absolute top-full mt-2 bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg shadow-lg z-10 min-w-[160px] overflow-hidden"
                     >
                         <label class="block cursor-pointer">
                             <input
@@ -63,13 +63,13 @@
                                 class="hidden"
                                 @change="onPhotoChange"
                             />
-                            <div class="px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <div class="px-4 py-2.5 text-sm text-[#1D1842] dark:text-[#FDA1A2]">
                                 Ganti Foto
                             </div>
                         </label>
                         <button
                             v-if="profile.photo_url || imagePreview"
-                            class="w-full px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left border-t border-gray-200 dark:border-gray-700"
+                            class="w-full px-4 py-2.5 text-sm text-[#1D1842] dark:text-[#FDA1A2] text-left border-t border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
                             @click="removePhoto"
                         >
                             Hapus Foto
@@ -82,69 +82,69 @@
                 >
                     <!-- Nama -->
                     <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Nama</span
                         >
-                        <span class="text-gray-700 dark:text-gray-300">:</span>
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2]">:</span>
                         <input
                             v-if="isEditing"
                             v-model="form.name"
                             type="text"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                         />
-                        <span v-else class="text-gray-900 dark:text-white">{{
+                        <span v-else class="text-[#1D1842] dark:text-[#FDA1A2]">{{
                             profile.name
                         }}</span>
                     </div>
 
                     <!-- Email -->
                     <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Email</span
                         >
-                        <span class="text-gray-700 dark:text-gray-300">:</span>
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2]">:</span>
                         <input
                             v-if="isEditing"
                             v-model="form.email"
                             type="email"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                         />
-                        <span v-else class="text-gray-900 dark:text-white">{{
+                        <span v-else class="text-[#1D1842] dark:text-[#FDA1A2]">{{
                             profile.email
                         }}</span>
                     </div>
 
                     <!-- Telepon -->
                     <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Telepon</span
                         >
-                        <span class="text-gray-700 dark:text-gray-300">:</span>
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2]">:</span>
                         <input
                             v-if="isEditing"
                             v-model="form.phone"
                             type="text"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                         />
-                        <span v-else class="text-gray-900 dark:text-white">{{
+                        <span v-else class="text-[#1D1842] dark:text-[#FDA1A2]">{{
                             profile.phone
                         }}</span>
                     </div>
 
                     <!-- Password -->
                     <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Password</span
                         >
-                        <span class="text-gray-700 dark:text-gray-300">:</span>
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2]">:</span>
                         <input
                             v-if="isEditing"
                             v-model="form.password"
                             type="password"
                             placeholder="Isi untuk ubah password"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                         />
-                        <span v-else class="text-gray-900 dark:text-white"
+                        <span v-else class="text-[#1D1842] dark:text-[#FDA1A2]"
                             >********</span
                         >
                     </div>
@@ -153,21 +153,21 @@
                 <div class="mt-6 flex justify-end gap-2">
                     <button
                         v-if="isEditing"
-                        class="px-5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        class="px-5 py-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg"
                         @click="cancelEdit"
                     >
                         Batal
                     </button>
                     <button
                         v-if="isEditing"
-                        class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                        class="px-5 py-2 bg-[#EF3B33] text-white rounded-lg shadow"
                         @click="saveProfile"
                     >
                         Simpan
                     </button>
                     <button
                         v-else
-                        class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                        class="px-5 py-2 bg-[#EF3B33] text-white rounded-lg shadow"
                         @click="startEdit"
                     >
                         Ubah

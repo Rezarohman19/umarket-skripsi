@@ -1,23 +1,23 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
             <!-- Left Sidebar -->
-            <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 shadow-sm fixed left-0 top-0 bottom-0 flex flex-col z-10">
+            <aside class="w-64 bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm fixed left-0 top-0 bottom-0 flex flex-col z-10">
                 <!-- Logo -->
-                <div class="p-4 flex items-center gap-3 border-b border-gray-300 dark:border-gray-800">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div class="p-4 flex items-center gap-3 border-b border-[#EF3B33]/30">
+                    <div class="w-10 h-10 bg-[#1D1842] rounded-lg flex items-center justify-center">
                         <span class="text-white font-bold text-lg">U</span>
                     </div>
-                    <span class="text-lg font-bold text-gray-900 dark:text-white">U Market</span>
+                    <span class="text-lg font-bold text-white">U Market</span>
                 </div>
 
                 <!-- Navigation -->
                 <nav class="flex-1 p-4 space-y-2">
                     <a
                         href="/admin/dashboard"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         Beranda
@@ -25,9 +25,9 @@
 
                     <a
                         href="/admin/products"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
                         Produk
@@ -35,9 +35,9 @@
 
                     <a
                         href="/admin/users"
-                        class="flex items-center px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium border border-blue-200 dark:border-blue-800"
+                        class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                         Pengguna
@@ -45,9 +45,9 @@
 
                     <a
                         href="/admin/transactions"
-                        class="flex items-center px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                         Penjualan
@@ -55,15 +55,17 @@
                 </nav>
 
                 <!-- Logout Button -->
-                <div class="p-4 border-t border-gray-300 dark:border-gray-800">
+                <div class="mt-auto p-4 border-t border-[#EF3B33]/30">
                     <button
                         @click="handleLogout"
-                        class="w-full flex items-center px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium"
+                        class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                     >
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        Keluar
+                        <span class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Keluar
+                        </span>
                     </button>
                 </div>
             </aside>
@@ -71,16 +73,16 @@
             <!-- Main Content -->
             <main class="flex-1 ml-64">
                 <!-- Top Header (same style as dashboard) -->
-                <header class="bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 shadow-sm px-6 py-4 sticky top-0 z-10">
+                <header class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10">
                     <div class="flex items-center justify-between">
                         <!-- Logo -->
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <div class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center">
                             <span class="text-white font-bold">U</span>
                         </div>
 
                         <!-- Greeting -->
                         <div class="flex-1 mx-6">
-                            <p class="text-gray-700 dark:text-gray-300">
+                            <p class="text-[#1D1842] dark:text-[#FDA1A2]">
                                 Halo, <span class="font-semibold">Admin</span>
                             </p>
                         </div>
@@ -92,7 +94,7 @@
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari pengguna"
-                                    class="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                    class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                                 />
                                 <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -103,8 +105,8 @@
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all"
-                            :class="admin?.photo_url ? 'ring-2 ring-blue-500' : 'bg-gray-200 dark:bg-gray-700'"
+                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
+                            :class="admin?.photo_url ? '' : 'bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20'"
                         >
                             <img
                                 v-if="admin?.photo_url"
@@ -133,19 +135,19 @@
                 <!-- Users Table -->
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Daftar Pengguna</h2>
+                        <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Daftar Pengguna</h2>
                         <button
                             @click="openCreateModal"
-                            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-medium shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                            class="px-4 py-2 bg-[#EF3B33] text-white rounded-lg text-sm font-medium shadow"
                         >
                             + Tambah Pengguna
                         </button>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="min-w-full text-sm">
-                                <thead class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                                <thead class="bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2]">
                                     <tr>
                                         <th class="px-4 py-3 text-left font-semibold">Nama</th>
                                         <th class="px-4 py-3 text-left font-semibold">Email</th>
@@ -158,7 +160,7 @@
                                     <tr
                                         v-for="user in filteredUsers"
                                         :key="user.id"
-                                        class="border-t border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                                        class="border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                                     >
                                         <td class="px-4 py-3 align-middle">
                                             <span class="text-gray-800 dark:text-gray-200 font-medium">
@@ -194,13 +196,13 @@
                                         <td class="px-4 py-3 align-middle text-center">
                                             <div class="inline-flex gap-2">
                                                 <button
-                                                    class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                                                    class="px-3 py-1 text-xs rounded-full bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2]"
                                                     @click="openEditModal(user)"
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
-                                                    class="px-3 py-1 text-xs rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/40 transition"
+                                                    class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50"
                                                     @click="confirmDelete(user)"
                                                     :disabled="user.is_current"
                                                 >
@@ -230,47 +232,47 @@
                     v-if="showModal"
                     class="fixed inset-0 z-20 flex items-center justify-center bg-black/40"
                 >
-                    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg p-6 border border-gray-200 dark:border-gray-800">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-xl w-full max-w-lg p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
+                        <h3 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">
                             {{ editingUser ? 'Edit Pengguna' : 'Tambah Pengguna' }}
                         </h3>
 
                         <div class="space-y-4 text-sm">
                             <div>
-                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Nama</label>
+                                <label class="block text-[#1D1842] dark:text-[#FDA1A2] mb-1">Nama</label>
                                 <input
                                     v-model="form.name"
                                     type="text"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                <label class="block text-[#1D1842] dark:text-[#FDA1A2] mb-1">Email</label>
                                 <input
                                     v-model="form.email"
                                     type="email"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-gray-700 dark:text-gray-300 mb-1">
+                                <label class="block text-[#1D1842] dark:text-[#FDA1A2] mb-1">
                                     Password
                                     <span v-if="editingUser" class="text-xs text-gray-500 dark:text-gray-400">(kosongkan jika tidak diubah)</span>
                                 </label>
                                 <input
                                     v-model="form.password"
                                     type="password"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                                <label class="block text-[#1D1842] dark:text-[#FDA1A2] mb-1">Role</label>
                                 <select
                                     v-model="form.role"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                                 >
                                     <option value="pengguna">Pengguna</option>
                                     <option value="admin">Admin</option>
@@ -280,13 +282,13 @@
 
                         <div class="mt-6 flex justify-end gap-2">
                             <button
-                                class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+                                class="px-4 py-2 rounded-lg bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#1D1842] dark:text-[#FDA1A2] text-sm"
                                 @click="closeModal"
                             >
                                 Batal
                             </button>
                             <button
-                                class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 text-sm font-medium shadow"
+                                class="px-4 py-2 rounded-lg bg-[#EF3B33] text-white text-sm font-medium shadow"
                                 @click="saveUser"
                             >
                                 Simpan
