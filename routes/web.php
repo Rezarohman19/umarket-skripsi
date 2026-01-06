@@ -22,15 +22,16 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| AUTH ROUTES
+| AUTH ROUTES - UNIFIED (ADMIN + USER)
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+// Redirect /admin/login ke /login untuk kompatibilitas
 Route::get('/admin/login', function () {
-    return view('admin-login');
-})->name('admin.login');
+    return redirect('/login');
+});
 
 Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
@@ -97,10 +98,10 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN ROUTES
+| ADMIN ROUTES - PROTECTED BY ADMIN MIDDLEWARE
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\Admin::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin-dashboard');
     })->name('admin.dashboard');
@@ -203,12 +204,14 @@ Route::get('/storage/{path}', function ($path) {
 Route::middleware('auth')->group(function () {
 
     Route::get('/api/user', function() {
-        // Refresh user data untuk memastikan data terbaru dari database
-        $user = Auth::user()->fresh();
-        $userData = $user->toArray();
+        // Get current authenticated user
+        $user = Auth::user();
+        $userData = $user ? json_decode(json_encode($user), true) : [];
         
         // Generate photo_url (timestamp akan ditambahkan di frontend untuk cache busting)
-        $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
+        if ($user) {
+            $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
+        }
         
         return response()->json($userData);
     });

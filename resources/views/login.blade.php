@@ -23,6 +23,13 @@
             @endforeach
         </div>
     @endif
+
+    {{-- Success message dari registration --}}
+    @if (session('success'))
+        <div id="laravel-success" style="display: none;">
+            {{ session('success') }}
+        </div>
+    @endif
     
     <div id="app"></div>
 </body>
