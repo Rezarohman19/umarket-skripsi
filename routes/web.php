@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,20 @@ use App\Http\Controllers\ProfileController;
 Route::get('/', function () {
     return view('landing');
 });
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC PAGES
+|--------------------------------------------------------------------------
+*/
+Route::get('/terms-and-conditions', function () {
+    return view('terms-and-conditions');
+})->name('terms');
+
+Route::get('/contact-us', function () {
+    return view('contact-us');
+})->name('contact-us');
+Route::post('/contact-us', [ContactController::class, 'store']);
 
 /*
 |--------------------------------------------------------------------------
