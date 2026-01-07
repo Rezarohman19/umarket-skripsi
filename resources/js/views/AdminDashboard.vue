@@ -9,11 +9,9 @@
                 <div
                     class="p-4 flex items-center gap-3 border-b border-[#EF3B33]/30"
                 >
-                    <div
-                        class="w-10 h-10 bg-[#1D1842] rounded-lg flex items-center justify-center"
-                    >
-                        <span class="text-white font-bold text-lg">U</span>
-                    </div>
+                    <Logo
+                        containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                    />
                     <span class="text-lg font-bold text-white">U Market</span>
                 </div>
 
@@ -366,6 +364,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
+import Logo from "../components/Logo.vue";
 
 const searchQuery = ref("");
 const admin = ref(null);

@@ -9,15 +9,10 @@
                 <div
                     class="p-4 flex items-center gap-3 border-b border-[#EF3B33]/30"
                 >
-                    <div
-                        class="w-10 h-10 bg-[#1D1842] rounded-lg flex items-center justify-center"
-                    >
-                        <span class="text-white font-bold text-lg">U</span>
-                    </div>
-                    <span
-                        class="text-lg font-bold text-white"
-                        >U Market</span
-                    >
+                    <Logo
+                        containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                    />
+                    <span class="text-lg font-bold text-white">U Market</span>
                 </div>
 
                 <!-- Navigation -->
@@ -110,8 +105,18 @@
                         class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                     >
                         <span class="flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            <svg
+                                class="w-5 h-5 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                />
                             </svg>
                             Keluar
                         </span>
@@ -475,6 +480,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
+import Logo from "../components/Logo.vue";
 
 const searchQuery = ref("");
 const admin = ref(null);
@@ -499,21 +505,21 @@ const formatPrice = (price) =>
 const parsePrice = (priceString) => {
     if (!priceString) return 0;
     // Hapus semua karakter non-digit kecuali titik (untuk separator ribuan)
-    const cleaned = priceString.toString().replace(/[^\d.]/g, '');
+    const cleaned = priceString.toString().replace(/[^\d.]/g, "");
     // Hapus semua titik (karena di Indonesia titik = separator ribuan, bukan desimal)
-    const numberString = cleaned.replace(/\./g, '');
+    const numberString = cleaned.replace(/\./g, "");
     const parsed = parseInt(numberString, 10);
     return isNaN(parsed) ? 0 : parsed;
 };
 
 // Helper untuk format harga ke string dengan format Rupiah
 const formatPriceString = (price) => {
-    if (!price || price === 0) return '';
+    if (!price || price === 0) return "";
     return `Rp ${formatPrice(price)}`;
 };
 
 // Ref untuk input harga (string)
-const priceInput = ref('');
+const priceInput = ref("");
 
 // Handle input harga - parse dan update form.price
 const handlePriceInput = (event) => {
@@ -528,7 +534,7 @@ const formatPriceInput = () => {
     if (form.value.price > 0) {
         priceInput.value = formatPriceString(form.value.price);
     } else {
-        priceInput.value = '';
+        priceInput.value = "";
     }
 };
 
@@ -590,7 +596,7 @@ const resetForm = () => {
         stock: 0,
         image: null,
     };
-    priceInput.value = '';
+    priceInput.value = "";
     editingProduct.value = null;
 };
 
@@ -610,13 +616,14 @@ const openEditModal = (product) => {
         image: null,
     };
     // Set priceInput dengan format yang sudah diformat
-    priceInput.value = product.price > 0 ? formatPriceString(product.price) : '';
+    priceInput.value =
+        product.price > 0 ? formatPriceString(product.price) : "";
     showModal.value = true;
 };
 
 const closeModal = () => {
     showModal.value = false;
-    priceInput.value = '';
+    priceInput.value = "";
 };
 
 const onImageChange = (event) => {

@@ -177,19 +177,27 @@
                 >
                     <div class="flex items-center justify-between">
                         <!-- Logo -->
-                        <div
-                            class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
-                        >
-                            <span class="text-white font-bold">U</span>
-                        </div>
+                        <Logo
+                            containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                        />
 
                         <!-- Greeting -->
                         <div class="flex-1 mx-6">
                             <p class="text-gray-700 dark:text-gray-300">
                                 Halo,
-                                <span class="font-semibold">{{
-                                    user?.name || "Pengunjung"
-                                }}</span>
+                                <template v-if="user?.name">
+                                    <span class="font-semibold">{{
+                                        user?.name
+                                    }}</span>
+                                </template>
+                                <template v-else>
+                                    <span>
+                                        Pengunjung
+                                        <span class="font-semibold italic"
+                                            >U Market</span
+                                        ></span
+                                    >
+                                </template>
                             </p>
                         </div>
 
@@ -560,6 +568,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
+import Logo from "../components/Logo.vue";
 
 const sidebarCollapsed = ref(false);
 const products = ref([]);

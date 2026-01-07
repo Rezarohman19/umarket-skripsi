@@ -170,11 +170,9 @@
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between">
-                        <div
-                            class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
-                        >
-                            <span class="text-white font-bold">U</span>
-                        </div>
+                        <Logo
+                            containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                        />
 
                         <div class="flex-1 mx-6">
                             <p class="text-gray-700 dark:text-gray-300">
@@ -442,6 +440,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
+import Logo from "../components/Logo.vue";
 
 const sidebarCollapsed = ref(false);
 const user = ref(null);
