@@ -173,12 +173,44 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
                     <!-- INFO -->
                     <div class="border rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">
+                        <h2 class="text-xl font-semibold mb-4 text-[#1D1842]">
                             Informasi Kontak
                         </h2>
-                        <p>Email: marketunila@gmail.com</p>
-                        <p>Telepon: +62 882 8674 9573</p>
-                        <p>Alamat: Bandar Lampung</p>
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <strong>Email</strong><br />
+                                <a
+                                    href="mailto:marketunila@gmail.com"
+                                    class="text-[#8E0D3C]"
+                                >
+                                    marketunila@gmail.com
+                                </a>
+                            </div>
+
+                            <div>
+                                <strong>Telepon</strong><br />
+                                <a
+                                    href="tel:+6288286749573"
+                                    class="text-[#8E0D3C]"
+                                >
+                                    +62 882 8674 9573
+                                </a>
+                            </div>
+
+                            <div>
+                                <strong>Alamat</strong><br />
+                                Gg. By Pass Raya 1, Sepang Jaya, Kota Bandar
+                                Lampung
+                            </div>
+
+                            <div>
+                                <strong>Jam Operasional</strong>
+                                <br />
+                                Senin–Jumat: 09.00–16.00 WIB <br />
+                                Sabtu: 10.00–14.00 WIB <br />
+                                Minggu: Tutup
+                            </div>
+                        </div>
                     </div>
 
                     <!-- FORM -->
