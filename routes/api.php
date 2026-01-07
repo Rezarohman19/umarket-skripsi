@@ -23,14 +23,18 @@ Route::get('/categories', function () {
     return \App\Models\Category::all();
 });
 
+// Public products (read-only)
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
+
 // API dengan token sanctum
 Route::middleware('auth:sanctum')->group(function () {
 
     // Profile API
     Route::get('/profile', [AuthController::class, 'profile']);
 
-    // PRODUCT API
-    Route::apiResource('/products', ProductController::class);
+    // PRODUCT API (write operations only)
+    Route::apiResource('/products', ProductController::class)->except(['index', 'show']);
 
     // CART API
     Route::get('/cart', [CartController::class, 'index']);
