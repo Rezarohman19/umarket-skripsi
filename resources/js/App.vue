@@ -37,3 +37,15 @@ export default {
 <style scoped>
 /* App styles here */
 </style>
+
+<style>
+#app {
+    font-family: var(
+        --font-sans,
+        "Instrument Sans",
+        ui-sans-serif,
+        system-ui,
+        sans-serif
+    );
+}
+</style>

@@ -1,0 +1,269 @@
+<template>
+    <div class="min-h-screen bg-[#FDA1A2]/10 flex">
+        <!-- SIDEBAR -->
+        <aside
+            :class="[
+                'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
+                sidebarCollapsed ? 'w-16' : 'w-64',
+            ]"
+        >
+            <div class="p-4 flex items-center justify-between">
+                <button @click="toggleSidebar" class="p-2 rounded-lg">
+                    <svg
+                        class="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 19l-7-7 7-7"
+                        />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="px-4 space-y-2">
+                <a
+                    href="/"
+                    class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                >
+                    <svg
+                        class="w-5 h-5 text-white mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        />
+                    </svg>
+                    <span v-if="!sidebarCollapsed">Beranda</span>
+                </a>
+
+                <a
+                    href="/orders"
+                    class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                >
+                    <svg
+                        class="w-5 h-5 text-white mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                    </svg>
+                    <span v-if="!sidebarCollapsed">Pesanan Saya</span>
+                </a>
+
+                <a
+                    href="/open-shop"
+                    class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                >
+                    <svg
+                        class="w-5 h-5 text-white mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        />
+                    </svg>
+                    <span v-if="!sidebarCollapsed">Buka Toko</span>
+                </a>
+            </nav>
+
+            <nav class="px-4 space-y-2 border-t border-[#EF3B33]/30 pt-4 mt-4">
+                <a
+                    href="/terms-and-conditions"
+                    class="flex items-center px-4 py-3 rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition"
+                >
+                    <svg
+                        class="w-5 h-5 text-white mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                    </svg>
+                    <span v-if="!sidebarCollapsed">Syarat & Ketentuan</span>
+                </a>
+
+                <a
+                    href="#"
+                    class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
+                >
+                    <svg
+                        class="w-5 h-5 text-white mr-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
+                    </svg>
+                    <span v-if="!sidebarCollapsed">Hubungi Kami</span>
+                </a>
+            </nav>
+
+            <div class="mt-auto p-4">
+                <button
+                    @click="handleLogout"
+                    class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
+                >
+                    <span v-if="!sidebarCollapsed">Keluar</span>
+                    <span v-else class="flex justify-center">
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main
+            class="flex-1 px-6 py-10 transition-all duration-300"
+            :class="sidebarCollapsed ? 'ml-20' : 'ml-64'"
+        >
+            <div class="max-w-5xl mx-auto bg-white rounded-xl p-8 shadow-lg">
+                <h1
+                    class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#8E0D3C] to-[#EF3B33]"
+                >
+                    Hubungi Kami
+                </h1>
+
+                <p class="text-center text-gray-600 mt-2">
+                    Kami siap membantu Anda kapan saja.
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                    <!-- INFO -->
+                    <div class="border rounded-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4">
+                            Informasi Kontak
+                        </h2>
+                        <p>Email: marketunila@gmail.com</p>
+                        <p>Telepon: +62 882 8674 9573</p>
+                        <p>Alamat: Bandar Lampung</p>
+                    </div>
+
+                    <!-- FORM -->
+                    <div class="border rounded-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4">Kirim Pesan</h2>
+
+                        <form @submit.prevent="submitForm" class="space-y-4">
+                            <input
+                                v-model="form.name"
+                                placeholder="Nama"
+                                class="input"
+                            />
+                            <input
+                                v-model="form.email"
+                                placeholder="Email"
+                                class="input"
+                            />
+                            <input
+                                v-model="form.phone"
+                                placeholder="Telepon"
+                                class="input"
+                            />
+                            <input
+                                v-model="form.subject"
+                                placeholder="Subjek"
+                                class="input"
+                            />
+                            <textarea
+                                v-model="form.message"
+                                placeholder="Pesan"
+                                class="input h-32"
+                            ></textarea>
+
+                            <button
+                                class="w-full bg-gradient-to-r from-[#8E0D3C] to-[#EF3B33] py-2 rounded text-white"
+                            >
+                                Kirim
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</template>
+
+<script setup>
+import { ref } from "vue";
+import axios from "axios";
+
+const sidebarCollapsed = ref(false);
+
+const toggleSidebar = () => {
+    sidebarCollapsed.value = !sidebarCollapsed.value;
+};
+
+const form = ref({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+});
+
+const submitForm = async () => {
+    await axios.post("/contact-us", form.value);
+    alert("Pesan terkirim");
+};
+
+const logout = async () => {
+    await axios.post("/logout");
+    window.location.href = "/login";
+};
+</script>
+
+<style scoped>
+.menu-item {
+    display: block;
+    padding: 12px;
+    border-radius: 8px;
+}
+.input {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 6px;
+}
+</style>
