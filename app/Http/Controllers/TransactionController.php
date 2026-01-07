@@ -26,7 +26,21 @@ class TransactionController extends Controller
     {
         $user = Auth::user();
 
-        // Ambil semua transaksi user
+        // Hapus transaksi yang status pending dan sudah expired (> 24 jam)
+        $expiredTime = now()->subHours(24);
+        $expiredTransactions = Transaction::where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'unpaid'])
+            ->where('created_at', '<', $expiredTime)
+            ->get();
+
+        foreach ($expiredTransactions as $transaction) {
+            // Hapus transaction items dulu
+            \App\Models\TransactionItem::where('transaction_id', $transaction->id)->delete();
+            // Hapus transaction
+            $transaction->delete();
+        }
+
+        // Ambil semua transaksi user yang belum dihapus
         $transactions = Transaction::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -42,7 +56,7 @@ class TransactionController extends Controller
                 // Jika tidak ada produk sama sekali, return empty
                 $query->whereRaw('1 = 0');
             }
-        }, 'items.product.user']);
+        }, 'items.product:id,name,description,price,image,user_id', 'items.product.user:id,name,phone']);
 
         // Filter transactions yang masih punya items setelah filter
         $transactions = $transactions->filter(function ($transaction) {
@@ -239,6 +253,29 @@ class TransactionController extends Controller
             ->get();
 
         return response()->json($transactions);
+    }
+
+    /**
+     * =========================
+     * DELETE EXPIRED TRANSACTION
+     * =========================
+     */
+    public function deleteExpiredTransaction($id)
+    {
+        $user = Auth::user();
+        $transaction = Transaction::findOrFail($id);
+
+        // Hanya user yang membuat transaksi yang bisa menghapusnya
+        if ($transaction->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Hapus transaction items dulu
+        \App\Models\TransactionItem::where('transaction_id', $transaction->id)->delete();
+        // Hapus transaction
+        $transaction->delete();
+
+        return response()->json(['message' => 'Transaction deleted successfully']);
     }
 
     /**

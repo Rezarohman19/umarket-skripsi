@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // TRANSACTIONS API
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/checkout', [TransactionController::class, 'checkout']);
+    Route::delete('/transactions/{id}', [TransactionController::class, 'deleteExpiredTransaction']);
 
     // SELLER BALANCE & WITHDRAWAL API
     Route::get('/seller/balance', function () {

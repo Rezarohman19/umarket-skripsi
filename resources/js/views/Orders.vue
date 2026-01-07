@@ -509,6 +509,12 @@ const fetchTransactions = async () => {
                         const status = mapTransactionStatus(transaction.status);
                         const actions = getPurchaseActions(status, transaction);
 
+                        // Generate image URL dari image field
+                        let imageUrl = null;
+                        if (item.product?.image) {
+                            imageUrl = `/storage/${item.product.image}`;
+                        }
+
                         return {
                             id: `${transaction.id}-${item.id}`,
                             transaction_id: transaction.id,
@@ -524,7 +530,7 @@ const fetchTransactions = async () => {
                             total:
                                 (item.price || item.product?.price || 0) *
                                 (item.qty || 1),
-                            image_url: item.product?.image_url || null,
+                            image_url: imageUrl,
                             actions: actions,
                             transaction: transaction,
                         };
@@ -638,7 +644,15 @@ const handleContinuePayment = (order) => {
             },
             onError: function (result) {
                 console.error("Payment error:", result);
-                alert("Pembayaran gagal. Silakan coba lagi.");
+                // Jika error expired, hapus transaksi
+                if (
+                    result.status_message &&
+                    result.status_message.includes("expired")
+                ) {
+                    deleteExpiredTransaction(order.transaction_id);
+                } else {
+                    alert("Pembayaran gagal. Silakan coba lagi.");
+                }
             },
             onClose: function () {
                 console.log("Payment modal closed");
@@ -667,7 +681,15 @@ const handleContinuePayment = (order) => {
                     },
                     onError: function (result) {
                         console.error("Payment error:", result);
-                        alert("Pembayaran gagal. Silakan coba lagi.");
+                        // Jika error expired, hapus transaksi
+                        if (
+                            result.status_message &&
+                            result.status_message.includes("expired")
+                        ) {
+                            deleteExpiredTransaction(order.transaction_id);
+                        } else {
+                            alert("Pembayaran gagal. Silakan coba lagi.");
+                        }
                     },
                     onClose: function () {
                         console.log("Payment modal closed");
@@ -678,12 +700,23 @@ const handleContinuePayment = (order) => {
         document.head.appendChild(script);
     }
 };
+
+const deleteExpiredTransaction = async (transactionId) => {
+    try {
+        await axios.delete(`/api/transactions/${transactionId}`);
+        console.log("Expired transaction deleted");
+        // Refresh transaksi list
+        await fetchTransactions();
+    } catch (error) {
+        console.error("Error deleting expired transaction:", error);
+    }
+};
 const contactSellerWhatsApp = (order) => {
     // Ambil nomor telepon penjual
     // Path 1: dari transaction.items[0].product.user.phone (struktur normal dari API)
     // Path 2: dari transaction.user.phone (fallback)
     let phoneNumber = null;
-    let sellerName = order.store || 'Penjual';
+    let sellerName = order.store || "Penjual";
 
     // Coba ambil dari transaction.items[0].product.user.phone
     if (order.transaction?.items && order.transaction.items.length > 0) {
@@ -699,25 +732,27 @@ const contactSellerWhatsApp = (order) => {
     }
 
     if (!phoneNumber) {
-        alert('Nomor WhatsApp penjual tidak tersedia. Silakan hubungi customer service.');
+        alert(
+            "Nomor WhatsApp penjual tidak tersedia. Silakan hubungi customer service."
+        );
         return;
     }
 
     // Bersihkan nomor telepon dari karakter non-digit kecuali +
-    phoneNumber = phoneNumber.toString().replace(/[^\d+]/g, '');
+    phoneNumber = phoneNumber.toString().replace(/[^\d+]/g, "");
 
     // Jika dimulai dengan 0, ganti dengan 62
-    if (phoneNumber.startsWith('0')) {
-        phoneNumber = '62' + phoneNumber.substring(1);
+    if (phoneNumber.startsWith("0")) {
+        phoneNumber = "62" + phoneNumber.substring(1);
     }
 
     // Jika belum ada +, tambahkan
-    if (!phoneNumber.startsWith('+')) {
-        phoneNumber = '+' + phoneNumber;
+    if (!phoneNumber.startsWith("+")) {
+        phoneNumber = "+" + phoneNumber;
     }
 
     // Buat pesan default dengan detail pesanan
-    const productName = order.product || 'Pesanan';
+    const productName = order.product || "Pesanan";
     const orderId = order.transaction_id || order.id;
     const message = `Halo ${sellerName},\n\nSaya ingin menanyakan tentang pesanan saya.\n\nID Pesanan: #${orderId}\nProduk: ${productName}\nJumlah: ${order.qty} pcs\n\nTerima kasih.`;
 
@@ -726,7 +761,7 @@ const contactSellerWhatsApp = (order) => {
 
     // Buka WhatsApp
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl, "_blank");
 };
 const handleOpenShop = () => {
     if (!user.value) {
