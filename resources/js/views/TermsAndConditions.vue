@@ -131,7 +131,7 @@
 
             <div class="mt-auto p-4">
                 <button
-                    @click="handleLogout"
+                    @click="logout"
                     class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                 >
                     <span v-if="!sidebarCollapsed">Keluar</span>
@@ -264,27 +264,15 @@ const toggleSidebar = () => {
 
 /* logout */
 const logout = async () => {
-    await axios.post("/logout");
-    window.location.href = "/login";
-};
-</script>
-
-<!-- Reusable Sidebar Link -->
-<script>
-export default {
-    components: {
-        SidebarLink: {
-            props: ["to", "label", "collapsed", "active"],
-            template: `
-        <a
-          :href="to"
-          class="flex items-center px-4 py-3 rounded-lg text-white/80"
-          :class="active ? 'bg-[#FDA1A2]/30 font-medium' : ''"
-        >
-          <span v-if="!collapsed">{{ label }}</span>
-        </a>
-      `,
-        },
-    },
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
+        try {
+            await axios.post("/logout");
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Error logging out:", error);
+            // Tetap redirect meskipun ada error
+            window.location.href = "/login";
+        }
+    }
 };
 </script>

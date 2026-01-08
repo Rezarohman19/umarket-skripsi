@@ -131,7 +131,7 @@
 
             <div class="mt-auto p-4">
                 <button
-                    @click="handleLogout"
+                    @click="logout"
                     class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
                 >
                     <span v-if="!sidebarCollapsed">Keluar</span>
@@ -281,8 +281,16 @@ const submitForm = async () => {
 };
 
 const logout = async () => {
-    await axios.post("/logout");
-    window.location.href = "/login";
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
+        try {
+            await axios.post("/logout");
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Error logging out:", error);
+            // Tetap redirect meskipun ada error
+            window.location.href = "/login";
+        }
+    }
 };
 </script>
 
