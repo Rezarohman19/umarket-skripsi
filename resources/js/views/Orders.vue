@@ -26,7 +26,7 @@
                     </button>
                 </div>
 
-                <nav class="px-4 space-y-2">
+                <nav class="px-4 space-y-3">
                     <a
                         href="/"
                         class="flex items-center px-4 py-3 rounded-lg text-white/80"
@@ -90,7 +90,7 @@
                 </nav>
 
                 <nav
-                    class="px-4 space-y-2 border-t border-[#EF3B33]/30 pt-4 mt-4"
+                    class="px-4 space-y-3 border-t border-[#EF3B33]/30 pt-6 mt-6"
                 >
                     <a
                         href="/terms-and-conditions"
