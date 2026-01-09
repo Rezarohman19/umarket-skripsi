@@ -92,7 +92,7 @@
                 </nav>
 
                 <nav
-                    class="px-4 space-y-3 border-t border-[#EF3B33]/30 pt-6 mt-6"
+                    class="px-4 space-y-3 border-t border-[#EF3B33]/30 pt-4 mt-4"
                 >
                     <a
                         href="/terms-and-conditions"
