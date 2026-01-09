@@ -5,11 +5,9 @@
         <div class="w-full max-w-md">
             <!-- Logo Container -->
             <div class="flex justify-center mb-8">
-                <div
-                    class="w-20 h-20 bg-[#1D1842] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1D1842]/30 dark:shadow-[#1D1842]/50"
-                >
-                    <span class="text-white text-2xl font-bold">U</span>
-                </div>
+                <Logo
+                    containerClass="w-32 h-32"
+                />
             </div>
 
             <!-- Login Card -->

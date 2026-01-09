@@ -3,9 +3,9 @@
         <div class="w-full max-w-md">
             <!-- Logo Container -->
             <div class="flex justify-center mb-8">
-                <div class="w-20 h-20 bg-[#1D1842] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1D1842]/30 dark:shadow-[#1D1842]/50">
-                    <span class="text-white text-2xl font-bold">U</span>
-                </div>
+                <Logo
+                    containerClass="w-32 h-32"
+                />
             </div>
 
             <!-- Register Card -->
@@ -167,9 +167,22 @@
                     <!-- Submit Button -->
                     <button
                         type="submit"
-                        class="w-full bg-[#EF3B33] hover:bg-[#8E0D3C] dark:bg-[#EF3B33] dark:hover:bg-[#8E0D3C] text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
+                        class="w-full bg-[#8E0D3C] dark:bg-[#8E0D3C] text-white font-semibold py-3.5 px-4 rounded-xl shadow-md shadow-[#8E0D3C]/20 dark:shadow-[#8E0D3C]/20 flex items-center justify-center"
                     >
-                        Daftar
+                        <span>Daftar</span>
+                        <svg
+                            class="w-5 h-5 ml-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 7l5 5m0 0l-5 5m5-5H6"
+                            />
+                        </svg>
                     </button>
                 </form>
 
@@ -192,6 +205,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
+import Logo from '../components/Logo.vue';
 
 const showPassword = ref(false);
 const showPasswordConfirmation = ref(false);
