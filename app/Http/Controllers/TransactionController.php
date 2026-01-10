@@ -207,6 +207,9 @@ class TransactionController extends Controller
      */
     public function notification(Request $request)
     {
+
+    Log::info('MIDTRANS WEBHOOK MASUK', $request->all());
+
         $notif = new Notification();
 
         $orderId = $notif->order_id;
@@ -273,7 +276,9 @@ class TransactionController extends Controller
         // Hapus transaction items dulu
         \App\Models\TransactionItem::where('transaction_id', $transaction->id)->delete();
         // Hapus transaction
-        $transaction->delete();
+        $transaction->status = 'expired';
+        $transaction->save();
+
 
         return response()->json(['message' => 'Transaction deleted successfully']);
     }
