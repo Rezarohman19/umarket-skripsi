@@ -45,7 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/checkout', [TransactionController::class, 'checkout']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'deleteExpiredTransaction']);
-    Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
     
     // SELLER BALANCE & WITHDRAWAL API
     Route::get('/seller/balance', function () {
@@ -155,3 +154,5 @@ Route::middleware('auth:sanctum')->group(function () {
         ], 201);
     });
 });
+
+Route::post('/midtrans/notification', [TransactionController::class, 'notification']);

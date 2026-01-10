@@ -508,5 +508,3 @@ Route::post('/api/checkout', [TransactionController::class, 'checkout'])->middle
 // Seller Orders API
 Route::get('/api/seller/orders', [TransactionController::class, 'sellerOrders'])->middleware('auth');
 Route::post('/api/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus'])->middleware('auth');
-
-Route::post('/api/midtrans/notification', [TransactionController::class, 'notification']);
