@@ -5,8 +5,10 @@
         <div class="w-full max-w-md">
             <!-- Logo Container -->
             <div class="flex justify-center mb-8">
-                <Logo
-                    containerClass="w-32 h-32"
+                <img
+                    src="/images/logo-u-marketplace.png"
+                    alt="U Marketplace"
+                    class="h-32 w-auto object-contain"
                 />
             </div>
 
@@ -227,7 +229,6 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import Logo from "../components/Logo.vue";
 
 const showPassword = ref(false);
 const csrfToken = ref("");

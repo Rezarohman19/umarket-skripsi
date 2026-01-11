@@ -7,12 +7,13 @@
             >
                 <!-- Logo -->
                 <div
-                    class="p-4 flex items-center gap-3 border-b border-[#EF3B33]/30"
+                    class="p-4 flex items-center justify-center border-b border-[#EF3B33]/30"
                 >
-                    <Logo
-                        containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                    <img
+                        src="/images/logo-u-marketplace.png"
+                        alt="U Marketplace"
+                        class="h-12 w-auto object-contain"
                     />
-                    <span class="text-lg font-bold text-white">U Market</span>
                 </div>
 
                 <!-- Navigation -->
@@ -132,11 +133,9 @@
                 >
                     <div class="flex items-center justify-between">
                         <!-- Logo -->
-                        <div
-                            class="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
-                        >
-                            <span class="text-white font-bold">U</span>
-                        </div>
+                        <Logo
+                            containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                        />
 
                         <!-- Greeting -->
                         <div class="flex-1 mx-6">
