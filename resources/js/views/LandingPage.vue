@@ -177,8 +177,10 @@
                 >
                     <div class="flex items-center justify-between">
                         <!-- Logo -->
-                        <Logo
-                            containerClass="w-10 h-10 bg-[#1D1842] rounded-full flex items-center justify-center"
+                        <img
+                            src="/images/logo.png"
+                            alt="U Marketplace"
+                            class="w-10 h-10 object-contain"
                         />
 
                         <!-- Greeting -->
