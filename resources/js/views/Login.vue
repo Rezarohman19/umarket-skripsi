@@ -6,7 +6,7 @@
             <!-- Logo Container -->
             <div class="flex justify-center mb-8">
                 <img
-                    src="/images/logo-u-marketplace.png"
+                    src="/images/logo-u.png"
                     alt="U Marketplace"
                     class="h-32 w-auto object-contain"
                 />
