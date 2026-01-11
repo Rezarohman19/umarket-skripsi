@@ -11,28 +11,27 @@
             >
                 <!-- Logo & Toggle Button -->
                 <div :class="[
-                    'p-4 flex items-center justify-between border-b border-[#EF3B33]/30',
-                    sidebarCollapsed ? 'flex-col gap-2' : ''
+                    'p-4 border-b border-[#EF3B33]/30',
+                    sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
                 ]">
-                    <div v-if="!sidebarCollapsed" class="flex items-center gap-3 flex-1">
+                    <div :class="[
+                        'flex items-center justify-center',
+                        sidebarCollapsed ? 'w-full' : 'flex-1'
+                    ]">
                         <img
-                            src="/images/logo.png"
+                            src="/images/logo-u-marketplace.png"
                             alt="U Marketplace"
-                            class="h-10 w-auto object-contain"
-                        />
-                    </div>
-                    <div v-else class="flex justify-center w-full">
-                        <img
-                            src="/images/logo.png"
-                            alt="U Marketplace"
-                            class="h-10 w-10 object-contain"
+                            :class="[
+                                'object-contain',
+                                sidebarCollapsed ? 'h-10 w-10' : 'h-20 w-auto'
+                            ]"
                         />
                     </div>
                     <button 
                         @click="toggleSidebar" 
                         :class="[
                             'p-2 rounded-lg hover:bg-[#EF3B33]/20 transition',
-                            sidebarCollapsed ? 'w-full justify-center' : ''
+                            sidebarCollapsed ? 'w-full flex justify-center' : ''
                         ]"
                     >
                         <svg
