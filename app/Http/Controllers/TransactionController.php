@@ -145,7 +145,7 @@ class TransactionController extends Controller
             // =====================
             $params = [
                 'transaction_details' => [
-                    'order_id' => 'ORDER-' . $transaction->id,
+                    'order_id' => 'ORDER-' . $transaction->id . '-' . time(),
                     'gross_amount' => $totalPrice,
                 ],
                 'item_details' => $itemDetails,
