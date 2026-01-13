@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-950 py-12 px-4">
+    <div class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] py-12 px-4">
         <div class="max-w-2xl mx-auto">
             <!-- Success Icon -->
             <div class="text-center mb-8">
@@ -8,7 +8,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 class="text-3xl font-bold text-[#1D1842] dark:text-[#FDA1A2] mb-2">
                     Pesanan Berhasil!
                 </h1>
                 <p class="text-gray-600 dark:text-gray-400">
@@ -17,51 +17,51 @@
             </div>
 
             <!-- Order Details Card -->
-            <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Detail Pesanan</h2>
+            <div class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Detail Pesanan</h2>
                 
                 <div class="space-y-4">
                     <!-- Order ID -->
-                    <div class="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-center pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30">
                         <span class="text-gray-600 dark:text-gray-400">ID Pesanan</span>
-                        <span class="font-semibold text-gray-900 dark:text-white">#{{ orderId || 'ORDER-' + transactionId }}</span>
+                        <span class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]">#{{ orderId || 'ORDER-' + transactionId }}</span>
                     </div>
 
                     <!-- Transaction ID -->
-                    <div v-if="transactionId" class="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div v-if="transactionId" class="flex justify-between items-center pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30">
                         <span class="text-gray-600 dark:text-gray-400">ID Transaksi</span>
-                        <span class="font-semibold text-gray-900 dark:text-white">#{{ transactionId }}</span>
+                        <span class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]">#{{ transactionId }}</span>
                     </div>
 
                     <!-- Order Date -->
-                    <div class="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-center pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30">
                         <span class="text-gray-600 dark:text-gray-400">Tanggal Pesanan</span>
-                        <span class="text-gray-900 dark:text-white">{{ orderDate }}</span>
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2]">{{ orderDate }}</span>
                     </div>
 
                     <!-- Payment Method -->
-                    <div v-if="paymentMethod" class="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div v-if="paymentMethod" class="flex justify-between items-center pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30">
                         <span class="text-gray-600 dark:text-gray-400">Metode Pembayaran</span>
-                        <span class="text-gray-900 dark:text-white">{{ getPaymentMethodLabel(paymentMethod) }}</span>
+                        <span class="text-[#1D1842] dark:text-[#FDA1A2]">{{ getPaymentMethodLabel(paymentMethod) }}</span>
                     </div>
 
                     <!-- Total Price -->
                     <div class="flex justify-between items-center pt-2">
-                        <span class="text-lg font-semibold text-gray-900 dark:text-white">Total Pembayaran</span>
-                        <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">Rp. {{ formatPrice(totalPrice) }}</span>
+                        <span class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Total Pembayaran</span>
+                        <span class="text-2xl font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(totalPrice) }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Order Items -->
-            <div v-if="orderItems && orderItems.length > 0" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Produk yang Dipesan</h2>
+            <div v-if="orderItems && orderItems.length > 0" class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Produk yang Dipesan</h2>
                 
                 <div class="space-y-4">
                     <div
                         v-for="(item, index) in orderItems"
                         :key="index"
-                        class="flex items-start gap-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-0"
+                        class="flex items-start gap-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30 last:border-0"
                     >
                         <!-- Product Image -->
                         <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -79,11 +79,11 @@
                         <!-- Product Info -->
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">{{ item.store_name || 'Toko' }}</p>
-                            <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{{ item.product_name }}</p>
+                            <p class="text-sm font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-1">{{ item.product_name }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ item.product_description || '' }}</p>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Jumlah: {{ item.qty }} pcs</span>
-                                <span class="text-sm font-semibold text-gray-900 dark:text-white">Rp. {{ formatPrice(item.price * item.qty) }}</span>
+                                <span class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(item.price * item.qty) }}</span>
                             </div>
                         </div>
                     </div>
@@ -91,24 +91,24 @@
             </div>
 
             <!-- Shipping Address -->
-            <div v-if="shippingAddress" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Alamat Pengiriman</h2>
+            <div v-if="shippingAddress" class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Alamat Pengiriman</h2>
                 <div class="space-y-2">
-                    <p class="text-gray-900 dark:text-white font-medium">{{ shippingAddress.name }}</p>
+                    <p class="text-[#1D1842] dark:text-[#FDA1A2] font-medium">{{ shippingAddress.name }}</p>
                     <p class="text-gray-600 dark:text-gray-400 text-sm">{{ shippingAddress.phone }}</p>
                     <p class="text-gray-600 dark:text-gray-400 text-sm">{{ shippingAddress.address }}</p>
                 </div>
             </div>
 
             <!-- Payment Status -->
-            <div v-if="paymentStatus" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 shadow-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Status Pembayaran</h2>
+            <div v-if="paymentStatus" class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Status Pembayaran</h2>
                 <div class="flex items-center gap-3 mb-4">
                     <span :class="[
                         'px-4 py-2 rounded-full text-sm font-medium',
                         paymentStatus === 'paid' || paymentStatus === 'settlement'
                             ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                            : 'bg-[#FDA1A2]/30 dark:bg-[#EF3B33]/20 text-[#8E0D3C] dark:text-[#FDA1A2]'
                     ]">
                         {{ getPaymentStatusLabel(paymentStatus) }}
                     </span>
@@ -124,7 +124,7 @@
                     v-if="paymentStatus === 'pending' && snapToken"
                     @click="handlePaymentClick"
                     :disabled="isProcessingPayment"
-                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed"
+                    class="w-full bg-[#EF3B33] hover:bg-[#8E0D3C] dark:bg-[#EF3B33] dark:hover:bg-[#8E0D3C] disabled:bg-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                 >
                     <span v-if="isProcessingPayment">Memproses...</span>
                     <span v-else>Lanjutkan Pembayaran</span>
@@ -135,25 +135,25 @@
             <div class="flex flex-col sm:flex-row gap-4">
                 <button
                     @click="goToOrders"
-                    class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+                    class="flex-1 bg-[#EF3B33] hover:bg-[#8E0D3C] dark:bg-[#EF3B33] dark:hover:bg-[#8E0D3C] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                     Lihat Pesanan Saya
                 </button>
                 <button
                     @click="goToHome"
-                    class="flex-1 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+                    class="flex-1 bg-[#FDA1A2]/20 dark:bg-[#1D1842]/50 hover:bg-[#FDA1A2]/30 dark:hover:bg-[#1D1842]/70 text-[#1D1842] dark:text-[#FDA1A2] font-semibold py-3 px-6 rounded-lg transition-all duration-200 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
                 >
                     Kembali ke Beranda
                 </button>
             </div>
 
             <!-- Info Box -->
-            <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div class="mt-6 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg p-4">
                 <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-[#EF3B33] dark:text-[#FDA1A2] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <div class="text-sm text-blue-800 dark:text-blue-300">
+                    <div class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
                         <p class="font-semibold mb-1">Informasi Penting</p>
                         <p>Pesanan Anda akan diproses setelah pembayaran dikonfirmasi. Anda akan menerima notifikasi melalui email atau WhatsApp ketika pesanan dikirim.</p>
                     </div>
