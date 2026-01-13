@@ -140,6 +140,8 @@ class TransactionController extends Controller
                 ]);
             }
 
+            $currentId = $transaction->id;
+
             // =====================
             // MIDTRANS SNAP
             // =====================
