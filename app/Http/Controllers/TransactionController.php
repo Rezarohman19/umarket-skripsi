@@ -206,40 +206,30 @@ class TransactionController extends Controller
      * =========================
      */
     public function notification(Request $request)
-    {
+{
+    // Gunakan request->order_id karena ini yang berisi "ORDER-16"
+    $orderIdFromMidtrans = $request->order_id; 
 
-    Log::info('MIDTRANS WEBHOOK MASUK', $request->all());
+    // Potong "ORDER-" agar menjadi "16" saja
+    $transactionId = str_replace('ORDER-', '', $orderIdFromMidtrans);
 
-     return response()->json([
-        'status' => 'ok'
-    ], 200);
+    // Cari di database berdasarkan ID 16
+    $transaction = Transaction::find($transactionId);
 
-        $notif = new Notification();
-
-        $orderId = $notif->order_id;
-        $status = $notif->transaction_status;
-        $paymentType = $notif->payment_type;
-
-        $transactionId = str_replace('ORDER-', '', $orderId);
-        $transaction = Transaction::find($transactionId);
-
-        if (!$transaction) {
-            return response()->json(['message' => 'Transaction not found'], 404);
-        }
-
+    if ($transaction) {
+        // Update status sesuai logika capture/settlement
+        $status = $request->transaction_status;
+        
         if (in_array($status, ['capture', 'settlement'])) {
             $transaction->status = 'paid';
-        } elseif ($status === 'pending') {
-            $transaction->status = 'pending';
-        } elseif (in_array($status, ['expire', 'cancel', 'deny'])) {
-            $transaction->status = 'failed';
         }
-
-        $transaction->payment_type = $paymentType;
+        
         $transaction->save();
-
-        return response()->json(['message' => 'Notification processed']);
+        return response()->json(['message' => 'Success']);
     }
+
+    return response()->json(['message' => 'Transaction not found'], 404);
+}
 
     /**
      * =========================
