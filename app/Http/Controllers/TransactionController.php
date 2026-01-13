@@ -210,6 +210,10 @@ class TransactionController extends Controller
 
     Log::info('MIDTRANS WEBHOOK MASUK', $request->all());
 
+     return response()->json([
+        'status' => 'ok'
+    ], 200);
+
         $notif = new Notification();
 
         $orderId = $notif->order_id;
