@@ -671,14 +671,6 @@ const fetchTransactions = async () => {
                 // Filter out items yang product-nya sudah dihapus (null atau undefined)
                 // Pastikan product ada dan punya id
                 return transaction.items
-                    .filter((item) => {
-                        return (
-                            item.product !== null &&
-                            item.product !== undefined &&
-                            item.product.id !== null &&
-                            item.product.id !== undefined
-                        );
-                    })
                     .map((item) => {
                         const status = mapTransactionStatus(transaction.status);
                         const actions = getPurchaseActions(status, transaction);
@@ -687,6 +679,9 @@ const fetchTransactions = async () => {
                         let imageUrl = null;
                         if (item.product?.image) {
                             imageUrl = `/storage/${item.product.image}`;
+                        } else {
+                            // Placeholder image atau null
+                            imageUrl = '/images/placeholder-product.png'; // Pastikan ada atau biarkan null
                         }
 
                         return {
@@ -697,13 +692,12 @@ const fetchTransactions = async () => {
                                 item.product?.user?.name ||
                                 transaction.store_name ||
                                 "Toko",
-                            product: item.product?.name || "Produk",
+                            product: item.product?.name || "Produk Tidak Tersedia (Dihapus)",
                             category: item.product?.description || "",
                             qty: item.qty || 1,
+                            // Prioritaskan harga saat transaksi (item.price), jika tidak ada baru harga produk saat ini
                             price: item.price || item.product?.price || 0,
-                            total:
-                                (item.price || item.product?.price || 0) *
-                                (item.qty || 1),
+                            total: (item.price || item.product?.price || 0) * (item.qty || 1),
                             image_url: imageUrl,
                             actions: actions,
                             transaction: transaction,

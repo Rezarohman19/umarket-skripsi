@@ -45,23 +45,15 @@ class TransactionController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Ambil semua product_id yang masih ada
-        $existingProductIds = \App\Models\Product::pluck('id')->toArray();
-
-        // Load items yang product_id-nya masih ada
-        $transactions->load(['items' => function ($query) use ($existingProductIds) {
-            if (!empty($existingProductIds)) {
-                $query->whereIn('product_id', $existingProductIds);
-            } else {
-                // Jika tidak ada produk sama sekali, return empty
-                $query->whereRaw('1 = 0');
-            }
-        }, 'items.product:id,name,description,price,image,user_id', 'items.product.user:id,name,phone']);
-
-        // Filter transactions yang masih punya items setelah filter
-        $transactions = $transactions->filter(function ($transaction) {
-            return $transaction->items->count() > 0;
-        })->values();
+        // Load items dan relasi produknya
+        // Menggunakan withDefault() pada relasi product di model TransactionItem lebih baik, 
+        // tapi kita handle di sini dengan membiarkan product null jika terhapus.
+        $transactions->load([
+            'items.product' => function($query) {
+                $query->select('id', 'name', 'description', 'price', 'image', 'user_id');
+            }, 
+            'items.product.user:id,name,phone'
+        ]);
 
         return response()->json($transactions);
     }
