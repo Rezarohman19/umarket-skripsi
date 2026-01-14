@@ -35,7 +35,8 @@ Route::get('/contact-us', function () {
 })->name('contact-us');
 Route::post('/contact-us', [ContactController::class, 'store']);
 
-Route::match(['GET', 'POST'], '/midtrans/notification', [TransactionController::class, 'notification']);
+Route::match(['GET', 'POST'], '/midtrans/notification', [TransactionController::class, 'notification'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
 /*
 |--------------------------------------------------------------------------

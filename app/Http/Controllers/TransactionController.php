@@ -212,7 +212,7 @@ class TransactionController extends Controller
         $orderIdFromMidtrans = $request->order_id;
 
         if (!$orderIdFromMidtrans) {
-            return response()->json(['message' => 'Invalid notification'], 400);
+            return response()->json(['message' => 'OK'], 200);
         }
 
         $transactionId = null;
