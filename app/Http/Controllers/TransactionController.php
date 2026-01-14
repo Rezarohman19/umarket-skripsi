@@ -208,30 +208,46 @@ class TransactionController extends Controller
      * =========================
      */
     public function notification(Request $request)
-{
-    // Gunakan request->order_id karena ini yang berisi "ORDER-16"
-    $orderIdFromMidtrans = $request->order_id; 
+    {
+        $orderIdFromMidtrans = $request->order_id;
 
-    // Potong "ORDER-" agar menjadi "16" saja
-    $transactionId = str_replace('ORDER-', '', $orderIdFromMidtrans);
+        if (!$orderIdFromMidtrans) {
+            return response()->json(['message' => 'Invalid notification'], 400);
+        }
 
-    // Cari di database berdasarkan ID 16
-    $transaction = Transaction::find($transactionId);
+        $transactionId = null;
 
-    if ($transaction) {
-        // Update status sesuai logika capture/settlement
+        if (strpos($orderIdFromMidtrans, 'ORDER-') === 0) {
+            $parts = explode('-', $orderIdFromMidtrans);
+            if (isset($parts[1])) {
+                $transactionId = $parts[1];
+            }
+        } else {
+            $transactionId = $orderIdFromMidtrans;
+        }
+
+        if (!$transactionId) {
+            return response()->json(['message' => 'Transaction not found'], 404);
+        }
+
+        $transaction = Transaction::find($transactionId);
+
+        if (!$transaction) {
+            return response()->json(['message' => 'Transaction not found'], 404);
+        }
+
         $status = $request->transaction_status;
-        
+
         if (in_array($status, ['capture', 'settlement'])) {
             $transaction->status = 'paid';
+        } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
+            $transaction->status = 'failed';
         }
-        
+
         $transaction->save();
+
         return response()->json(['message' => 'Success']);
     }
-
-    return response()->json(['message' => 'Transaction not found'], 404);
-}
 
     /**
      * =========================
