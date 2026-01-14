@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
+Route::get('/midtrans/notification', [TransactionController::class, 'notification']);
 
 // Auth API
 Route::post('/login', [AuthController::class, 'login']);
