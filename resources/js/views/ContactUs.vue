@@ -7,10 +7,36 @@
                 sidebarCollapsed ? 'w-16' : 'w-64',
             ]"
         >
-            <div class="p-4 flex items-center justify-between">
-                <button @click="toggleSidebar" class="p-2 rounded-lg">
+            <!-- Logo & Toggle Button -->
+            <div :class="[
+                'p-4 border-b border-[#EF3B33]/30',
+                sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
+            ]">
+                <div :class="[
+                    'flex items-center justify-center',
+                    sidebarCollapsed ? 'w-full' : 'flex-1'
+                ]">
+                    <img
+                        src="/images/logo-u-marketplace.png"
+                        alt="U Marketplace"
+                        :class="[
+                            'object-contain',
+                            sidebarCollapsed ? 'h-10 w-10' : 'h-20 w-auto'
+                        ]"
+                    />
+                </div>
+                <button 
+                    @click="toggleSidebar" 
+                    :class="[
+                        'p-2 rounded-lg hover:bg-[#EF3B33]/20 transition',
+                        sidebarCollapsed ? 'w-full flex justify-center' : ''
+                    ]"
+                >
                     <svg
-                        class="w-5 h-5 text-white"
+                        :class="[
+                            'text-white transition-transform duration-300',
+                            sidebarCollapsed ? 'w-5 h-5 rotate-180' : 'w-5 h-5'
+                        ]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -25,13 +51,22 @@
                 </button>
             </div>
 
-            <nav class="px-4 space-y-3">
+            <nav :class="[
+                'space-y-3',
+                sidebarCollapsed ? 'px-2' : 'px-4'
+            ]">
                 <a
                     href="/"
-                    class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                    :class="[
+                        'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                        sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                    ]"
                 >
                     <svg
-                        class="w-5 h-5 text-white mr-3"
+                        :class="[
+                            'text-white flex-shrink-0',
+                            sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                        ]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -48,10 +83,16 @@
 
                 <a
                     href="/orders"
-                    class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                    :class="[
+                        'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                        sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                    ]"
                 >
                     <svg
-                        class="w-5 h-5 text-white mr-3"
+                        :class="[
+                            'text-white flex-shrink-0',
+                            sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                        ]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -68,10 +109,16 @@
 
                 <a
                     href="/open-shop"
-                    class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                    :class="[
+                        'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                        sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                    ]"
                 >
                     <svg
-                        class="w-5 h-5 text-white mr-3"
+                        :class="[
+                            'text-white flex-shrink-0',
+                            sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                        ]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -87,13 +134,24 @@
                 </a>
             </nav>
 
-            <nav class="px-4 space-y-3 border-t border-[#EF3B33]/30 pt-4 mt-4">
+            <nav
+                :class="[
+                    'space-y-3 border-t border-[#EF3B33]/30 pt-4 mt-4',
+                    sidebarCollapsed ? 'px-2' : 'px-4'
+                ]"
+            >
                 <a
                     href="/terms-and-conditions"
-                    class="flex items-center px-4 py-3 rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition"
+                    :class="[
+                        'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                        sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                    ]"
                 >
                     <svg
-                        class="w-5 h-5 text-white mr-3"
+                        :class="[
+                            'text-white flex-shrink-0',
+                            sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                        ]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -110,10 +168,16 @@
 
                 <a
                     href="#"
-                    class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
+                    :class="[
+                        'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
+                        sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                    ]"
                 >
                     <svg
-                        class="w-5 h-5 text-white mr-3"
+                        :class="[
+                            'text-white flex-shrink-0',
+                            sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                        ]"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -129,27 +193,32 @@
                 </a>
             </nav>
 
-            <div class="mt-auto p-4">
+            <div :class="[
+                'mt-auto',
+                sidebarCollapsed ? 'p-2' : 'p-4'
+            ]">
                 <button
                     @click="logout"
-                    class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
+                    :class="[
+                        'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40',
+                        sidebarCollapsed ? 'px-2 flex justify-center' : 'px-4'
+                    ]"
                 >
                     <span v-if="!sidebarCollapsed">Keluar</span>
-                    <span v-else class="flex justify-center">
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                            />
-                        </svg>
-                    </span>
+                    <svg
+                        v-else
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
+                    </svg>
                 </button>
             </div>
         </aside>
@@ -157,7 +226,7 @@
         <!-- CONTENT -->
         <main
             class="flex-1 px-6 py-10 transition-all duration-300"
-            :class="sidebarCollapsed ? 'ml-20' : 'ml-64'"
+            :class="sidebarCollapsed ? 'ml-16' : 'ml-64'"
         >
             <div class="max-w-5xl mx-auto bg-white rounded-xl p-8 shadow-lg">
                 <h1

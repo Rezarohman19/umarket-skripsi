@@ -361,108 +361,129 @@
                         </h2>
 
                         <div
-                            v-for="order in getFilteredOrders(section.key)"
-                            :key="order.id"
+                            v-for="orderGroup in getFilteredOrders(section.key)"
+                            :key="orderGroup.id"
                             class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 md:p-5"
                         >
-                            <div class="flex items-start gap-4">
-                                <div
-                                    class="w-16 h-16 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
-                                >
-                                    <img
-                                        v-if="order.image_url"
-                                        :src="order.image_url"
-                                        :alt="order.product"
-                                        class="w-full h-full object-cover"
-                                    />
-                                    <svg
-                                        v-else
-                                        class="w-10 h-10 text-gray-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                            <!-- Header: Store Name & Status -->
+                            <div class="flex items-start justify-between gap-2 mb-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                                <div class="flex-1">
+                                    <p
+                                        class="text-base font-semibold text-gray-700 dark:text-gray-300"
                                     >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                        {{ orderGroup.store }}
+                                    </p>
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-500 mt-1"
+                                    >
+                                        Dari Toko
+                                    </p>
                                 </div>
+                                <span
+                                    :class="[
+                                        'px-2 py-1 rounded-full text-xs font-medium',
+                                        getStatusBadgeClass(
+                                            orderGroup.status
+                                        ),
+                                    ]"
+                                >
+                                    {{ getStatusLabel(orderGroup.status) }}
+                                </span>
+                            </div>
 
-                                <div class="flex-1 space-y-1">
+                            <!-- Items List -->
+                            <div class="space-y-3 mb-4">
+                                <div
+                                    v-for="item in orderGroup.items"
+                                    :key="item.id"
+                                    class="flex items-start gap-4 p-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg"
+                                >
                                     <div
-                                        class="flex items-start justify-between gap-2"
+                                        class="w-16 h-16 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                                     >
-                                        <div class="flex-1">
-                                            <p
-                                                class="text-sm font-semibold text-gray-700 dark:text-gray-300"
-                                            >
-                                                {{ order.store }}
-                                            </p>
-                                            <p
-                                                class="text-xs text-gray-500 dark:text-gray-500 mt-1"
-                                            >
-                                                Dari Toko
-                                            </p>
-                                        </div>
-                                        <span
-                                            :class="[
-                                                'px-2 py-1 rounded-full text-xs font-medium',
-                                                getStatusBadgeClass(
-                                                    order.status
-                                                ),
-                                            ]"
+                                        <img
+                                            v-if="item.image_url"
+                                            :src="item.image_url"
+                                            :alt="item.product"
+                                            class="w-full h-full object-cover"
+                                        />
+                                        <svg
+                                            v-else
+                                            class="w-10 h-10 text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
                                         >
-                                            {{ getStatusLabel(order.status) }}
-                                        </span>
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                            />
+                                        </svg>
                                     </div>
-                                    <div
-                                        class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-2"
-                                    >
-                                        <div>
-                                            <p
-                                                class="text-sm text-gray-600 dark:text-gray-400 font-medium"
-                                            >
-                                                {{ order.product }}
-                                            </p>
-                                            <p
-                                                class="text-xs text-gray-500 dark:text-gray-500 mt-1"
-                                            >
-                                                {{ order.category || "" }}
-                                            </p>
-                                        </div>
+
+                                    <div class="flex-1 space-y-1">
                                         <div
-                                            class="flex flex-col md:items-end text-sm text-gray-700 dark:text-gray-300"
+                                            class="flex flex-col md:flex-row md:items-center md:justify-between gap-2"
                                         >
-                                            <span>{{ order.qty }} pcs</span>
-                                            <span
-                                                class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
-                                                >Rp.
-                                                {{
-                                                    formatPrice(order.price)
-                                                }}</span
+                                            <div>
+                                                <p
+                                                    class="text-sm text-gray-600 dark:text-gray-400 font-medium"
+                                                >
+                                                    {{ item.product }}
+                                                </p>
+                                                <p
+                                                    class="text-xs text-gray-500 dark:text-gray-500 mt-1"
+                                                >
+                                                    {{ item.category || "" }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="flex flex-col md:items-end text-sm text-gray-700 dark:text-gray-300"
                                             >
-                                            <span
-                                                class="font-semibold text-[#EF3B33] dark:text-[#EF3B33]"
-                                                >Total: Rp.
-                                                {{
-                                                    formatPrice(order.total)
-                                                }}</span
-                                            >
+                                                <span>{{ item.qty }} pcs</span>
+                                                <span
+                                                    class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
+                                                    >Rp.
+                                                    {{
+                                                        formatPrice(item.price)
+                                                    }}</span
+                                                >
+                                                <span
+                                                    class="font-semibold text-[#EF3B33] dark:text-[#EF3B33]"
+                                                    >Subtotal: Rp.
+                                                    {{
+                                                        formatPrice(item.total)
+                                                    }}</span
+                                                >
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Total Order -->
+                            <div class="flex justify-end mb-4 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                        Total Pesanan
+                                    </p>
+                                    <p
+                                        class="text-lg font-bold text-[#EF3B33] dark:text-[#EF3B33]"
+                                    >
+                                        Rp. {{ formatPrice(orderGroup.total) }}
+                                    </p>
+                                </div>
+                            </div>
+
                             <!-- Actions -->
-                            <div class="mt-4 flex flex-wrap gap-3">
+                            <div class="flex flex-wrap gap-3">
                                 <!-- Status Actions -->
                                 <button
-                                    v-for="action in order.actions"
+                                    v-for="action in orderGroup.actions"
                                     :key="action.label"
-                                    @click="handleAction(action.type, order)"
+                                    @click="handleAction(action.type, orderGroup)"
                                     :class="[
                                         'px-4 py-2 rounded-full text-sm font-medium',
                                         action.variant === 'primary'
@@ -475,7 +496,7 @@
 
                                 <!-- Contact Seller WhatsApp Button -->
                                 <button
-                                    @click="contactSellerWhatsApp(order)"
+                                    @click="contactSellerWhatsApp(orderGroup)"
                                     class="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-full text-sm font-medium shadow-md transition-colors"
                                     title="Hubungi penjual melalui WhatsApp"
                                 >
@@ -529,18 +550,60 @@ const sections = [
 const orders = ref([]); // Pembelian saja
 const loading = ref(true);
 
-const getFilteredOrders = (status) => {
-    return orders.value
-        .filter((order) => order.status === status)
-        .filter((order) => {
-            if (!searchQuery.value) return true;
-            const q = searchQuery.value.toLowerCase();
+// Function untuk mengelompokkan orders berdasarkan transaction_id dan store
+const getGroupedOrders = (status) => {
+    const filtered = orders.value.filter((order) => order.status === status);
+    
+    // Group by transaction_id dan store
+    const grouped = {};
+    filtered.forEach((order) => {
+        const key = `${order.transaction_id}-${order.store}`;
+        if (!grouped[key]) {
+            grouped[key] = {
+                id: key,
+                transaction_id: order.transaction_id,
+                store: order.store,
+                status: order.status,
+                items: [],
+                total: 0,
+                actions: order.actions || [],
+                transaction: order.transaction,
+            };
+        }
+        grouped[key].items.push({
+            id: order.id,
+            product: order.product,
+            category: order.category,
+            qty: order.qty,
+            price: order.price,
+            total: order.total,
+            image_url: order.image_url,
+        });
+        grouped[key].total += order.total;
+    });
+    
+    // Convert to array
+    let result = Object.values(grouped);
+    
+    // Apply search filter
+    if (searchQuery.value) {
+        const q = searchQuery.value.toLowerCase();
+        result = result.filter((group) => {
             return (
-                (order.store || "").toLowerCase().includes(q) ||
-                (order.product || "").toLowerCase().includes(q) ||
-                (order.category || "").toLowerCase().includes(q)
+                (group.store || "").toLowerCase().includes(q) ||
+                group.items.some((item) =>
+                    (item.product || "").toLowerCase().includes(q) ||
+                    (item.category || "").toLowerCase().includes(q)
+                )
             );
         });
+    }
+    
+    return result;
+};
+
+const getFilteredOrders = (status) => {
+    return getGroupedOrders(status);
 };
 
 const getStatusLabel = (status) => {
@@ -712,21 +775,21 @@ const getPurchaseActions = (status, transaction) => {
     return actions;
 };
 
-const handleAction = (type, order) => {
+const handleAction = (type, orderGroup) => {
     if (!user.value) {
         window.location.href = "/login";
         return;
     }
 
     if (type === "continue_payment") {
-        handleContinuePayment(order);
+        handleContinuePayment(orderGroup);
     } else if (type === "contact") {
-        contactSellerWhatsApp(order);
+        contactSellerWhatsApp(orderGroup);
     }
 };
 
-const handleContinuePayment = (order) => {
-    const snapToken = order.transaction?.snap_token;
+const handleContinuePayment = (orderGroup) => {
+    const snapToken = orderGroup.transaction?.snap_token;
 
     if (!snapToken) {
         alert(
@@ -753,18 +816,18 @@ const handleContinuePayment = (order) => {
                     fetchTransactions();
                 }, 2000);
             },
-            onError: function (result) {
-                console.error("Payment error:", result);
-                // Jika error expired, hapus transaksi
-                if (
-                    result.status_message &&
-                    result.status_message.includes("expired")
-                ) {
-                    deleteExpiredTransaction(order.transaction_id);
-                } else {
-                    alert("Pembayaran gagal. Silakan coba lagi.");
-                }
-            },
+                    onError: function (result) {
+                        console.error("Payment error:", result);
+                        // Jika error expired, hapus transaksi
+                        if (
+                            result.status_message &&
+                            result.status_message.includes("expired")
+                        ) {
+                            deleteExpiredTransaction(orderGroup.transaction_id);
+                        } else {
+                            alert("Pembayaran gagal. Silakan coba lagi.");
+                        }
+                    },
             onClose: function () {
                 console.log("Payment modal closed");
             },
@@ -797,7 +860,7 @@ const handleContinuePayment = (order) => {
                             result.status_message &&
                             result.status_message.includes("expired")
                         ) {
-                            deleteExpiredTransaction(order.transaction_id);
+                            deleteExpiredTransaction(orderGroup.transaction_id);
                         } else {
                             alert("Pembayaran gagal. Silakan coba lagi.");
                         }
@@ -822,24 +885,24 @@ const deleteExpiredTransaction = async (transactionId) => {
         console.error("Error deleting expired transaction:", error);
     }
 };
-const contactSellerWhatsApp = (order) => {
+const contactSellerWhatsApp = (orderGroup) => {
     // Ambil nomor telepon penjual
     // Path 1: dari transaction.items[0].product.user.phone (struktur normal dari API)
     // Path 2: dari transaction.user.phone (fallback)
     let phoneNumber = null;
-    let sellerName = order.store || "Penjual";
+    let sellerName = orderGroup.store || "Penjual";
 
     // Coba ambil dari transaction.items[0].product.user.phone
-    if (order.transaction?.items && order.transaction.items.length > 0) {
-        const firstItem = order.transaction.items[0];
+    if (orderGroup.transaction?.items && orderGroup.transaction.items.length > 0) {
+        const firstItem = orderGroup.transaction.items[0];
         phoneNumber = firstItem.product?.user?.phone;
         sellerName = firstItem.product?.user?.name || sellerName;
     }
 
     // Fallback ke transaction.user.phone jika belum ketemu
-    if (!phoneNumber && order.transaction?.user?.phone) {
-        phoneNumber = order.transaction.user.phone;
-        sellerName = order.transaction.user.name || sellerName;
+    if (!phoneNumber && orderGroup.transaction?.user?.phone) {
+        phoneNumber = orderGroup.transaction.user.phone;
+        sellerName = orderGroup.transaction.user.name || sellerName;
     }
 
     if (!phoneNumber) {
@@ -863,9 +926,9 @@ const contactSellerWhatsApp = (order) => {
     }
 
     // Buat pesan default dengan detail pesanan
-    const productName = order.product || "Pesanan";
-    const orderId = order.transaction_id || order.id;
-    const message = `Halo ${sellerName},\n\nSaya ingin menanyakan tentang pesanan saya.\n\nID Pesanan: #${orderId}\nProduk: ${productName}\nJumlah: ${order.qty} pcs\n\nTerima kasih.`;
+    const orderId = orderGroup.transaction_id || orderGroup.id;
+    const itemsList = orderGroup.items.map(item => `- ${item.product} (${item.qty} pcs)`).join('\n');
+    const message = `Halo ${sellerName},\n\nSaya ingin menanyakan tentang pesanan saya.\n\nID Pesanan: #${orderId}\nProduk:\n${itemsList}\nTotal: Rp. ${formatPrice(orderGroup.total)}\n\nTerima kasih.`;
 
     // Encode pesan untuk URL
     const encodedMessage = encodeURIComponent(message);
