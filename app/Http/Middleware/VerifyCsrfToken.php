@@ -13,7 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'api/*',
-        'api/midtrans/notification',
+        'midtrans/notification',
     ];
 
     protected function tokensMatch($request)
