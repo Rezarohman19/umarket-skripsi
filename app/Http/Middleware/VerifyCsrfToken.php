@@ -12,7 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/*',
         'midtrans/notification',
     ];
 
@@ -24,4 +23,5 @@ class VerifyCsrfToken extends Middleware
 
         return parent::tokensMatch($request);
     }
+    
 }
