@@ -14,14 +14,4 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'midtrans/notification',
     ];
-
-    protected function tokensMatch($request)
-    {
-        if ($request->is('midtrans/*')) {
-            return true;
-        }
-
-        return parent::tokensMatch($request);
-    }
-    
 }
