@@ -132,8 +132,6 @@ class TransactionController extends Controller
                 ]);
             }
 
-            $currentId = $transaction->id;
-
             // =====================
             // MIDTRANS SNAP
             // =====================
@@ -200,46 +198,34 @@ class TransactionController extends Controller
      * =========================
      */
     public function notification(Request $request)
-    {
-        $orderIdFromMidtrans = $request->order_id;
+{
+    Log::info('MIDTRANS NOTIFICATION', $request->all());
 
-        if (!$orderIdFromMidtrans) {
-            return response()->json(['message' => 'OK'], 200);
-        }
+    $notif = new Notification();
 
-        $transactionId = null;
+    $orderId = $notif->order_id;
+    $status  = $notif->transaction_status;
 
-        if (strpos($orderIdFromMidtrans, 'ORDER-') === 0) {
-            $parts = explode('-', $orderIdFromMidtrans);
-            if (isset($parts[1])) {
-                $transactionId = $parts[1];
-            }
-        } else {
-            $transactionId = $orderIdFromMidtrans;
-        }
+    $transaction = Transaction::find($orderId);
 
-        if (!$transactionId) {
-            return response()->json(['message' => 'Transaction not found'], 404);
-        }
-
-        $transaction = Transaction::find($transactionId);
-
-        if (!$transaction) {
-            return response()->json(['message' => 'Transaction not found'], 404);
-        }
-
-        $status = $request->transaction_status;
-
-        if (in_array($status, ['capture', 'settlement'])) {
-            $transaction->status = 'paid';
-        } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
-            $transaction->status = 'failed';
-        }
-
-        $transaction->save();
-
-        return response()->json(['message' => 'Success']);
+    if (!$transaction) {
+        Log::warning('Transaction not found', ['order_id' => $orderId]);
+        return response()->json(['message' => 'Transaction not found'], 404);
     }
+
+    if (in_array($status, ['capture', 'settlement'])) {
+        $transaction->status = 'paid';
+    } elseif ($status === 'pending') {
+        $transaction->status = 'pending';
+    } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
+        $transaction->status = 'failed';
+    }
+
+    $transaction->save();
+
+    return response()->json(['message' => 'OK'], 200);
+}
+
 
     /**
      * =========================

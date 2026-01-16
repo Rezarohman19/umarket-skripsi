@@ -8,6 +8,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
 
+Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
+Route::get('/midtrans/notification', [TransactionController::class, 'notification']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::post('/profile', [ProfileController::class, 'update']);
