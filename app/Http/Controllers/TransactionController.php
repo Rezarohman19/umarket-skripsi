@@ -199,31 +199,55 @@ class TransactionController extends Controller
      */
     public function notification(Request $request)
 {
-    Log::info('MIDTRANS NOTIFICATION', $request->all());
+    Log::info('MIDTRANS NOTIFICATION MASUK', $request->all());
 
-    $notif = new Notification();
+    // Inisialisasi Config agar Notification SDK bekerja
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = config('midtrans.is_production');
 
-    $orderId = $notif->order_id;
-    $status  = $notif->transaction_status;
+    try {
+        $notif = new Notification();
+        $orderId = $notif->order_id; // "ORDER-17-17368291"
+        $status  = $notif->transaction_status;
 
-    $transaction = Transaction::find($orderId);
+        // --- PROSES AMBIL ID ASLI ---
+        // Pecah string berdasarkan tanda "-"
+        $parts = explode('-', $orderId);
+        
+        // Ambil bagian index ke-1 (ini adalah angka ID transaksi Anda)
+        $transactionId = isset($parts[1]) ? $parts[1] : null;
 
-    if (!$transaction) {
-        Log::warning('Transaction not found', ['order_id' => $orderId]);
-        return response()->json(['message' => 'Transaction not found'], 404);
+        if (!$transactionId) {
+            Log::error('Format Order ID salah: ' . $orderId);
+            return response()->json(['message' => 'Invalid ID format'], 400);
+        }
+
+        // Cari transaksi berdasarkan ID yang sudah bersih (angka saja)
+        $transaction = Transaction::find($transactionId);
+
+        if (!$transaction) {
+            Log::warning('Transaksi tidak ditemukan di database', ['id_mencari' => $transactionId]);
+            return response()->json(['message' => 'Transaction not found'], 404);
+        }
+
+        // --- UPDATE STATUS ---
+        if (in_array($status, ['capture', 'settlement'])) {
+            $transaction->status = 'paid';
+        } elseif ($status === 'pending') {
+            $transaction->status = 'pending';
+        } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
+            $transaction->status = 'failed';
+        }
+
+        $transaction->save();
+        Log::info('STATUS UPDATE BERHASIL', ['id' => $transactionId, 'status' => $transaction->status]);
+
+        return response()->json(['message' => 'OK'], 200);
+
+    } catch (\Exception $e) {
+        Log::error('ERROR NOTIFICATION: ' . $e->getMessage());
+        return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 500);
     }
-
-    if (in_array($status, ['capture', 'settlement'])) {
-        $transaction->status = 'paid';
-    } elseif ($status === 'pending') {
-        $transaction->status = 'pending';
-    } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
-        $transaction->status = 'failed';
-    }
-
-    $transaction->save();
-
-    return response()->json(['message' => 'OK'], 200);
 }
 
 
