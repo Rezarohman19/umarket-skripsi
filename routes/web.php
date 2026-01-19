@@ -13,7 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 
 Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
-Route::get('/midtrans/notification', [TransactionController::class, 'notification']);
+// Route::get('/midtrans/notification', [TransactionController::class, 'notification']);
 
 
 /*
