@@ -113,6 +113,7 @@ class TransactionController extends Controller
             $shippingAddress = $request->input('shipping_address', []);
 
             // Buat transaksi (PENDING)
+            
             $transaction = Transaction::create([
                 'user_id' => $user->id,
                 'total_price' => $totalPrice,
@@ -131,6 +132,12 @@ class TransactionController extends Controller
                     'price' => $item->product->price,
                 ]);
             }
+
+            // 2) Generate order_id sekali, lalu SIMPAN ke tabel
+            $orderId = 'ORDER-' . $transaction->id . '-' . time();
+
+            $transaction->order_id = $orderId;
+            $transaction->save();
 
             // =====================
             // MIDTRANS SNAP
