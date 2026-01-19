@@ -49,9 +49,9 @@ class TransactionController extends Controller
         // Menggunakan withDefault() pada relasi product di model TransactionItem lebih baik, 
         // tapi kita handle di sini dengan membiarkan product null jika terhapus.
         $transactions->load([
-            'items.product' => function($query) {
+            'items.product' => function ($query) {
                 $query->select('id', 'name', 'description', 'price', 'image', 'user_id');
-            }, 
+            },
             'items.product.user:id,name,phone'
         ]);
 
@@ -79,7 +79,7 @@ class TransactionController extends Controller
 
             // Ambil cart_item_ids dari request (item yang dipilih user)
             $selectedCartItemIds = $request->input('cart_item_ids', []);
-            
+
             if (empty($selectedCartItemIds)) {
                 return response()->json(['message' => 'No items selected for checkout'], 400);
             }
@@ -111,8 +111,9 @@ class TransactionController extends Controller
 
             // Ambil shipping address dari request jika ada
             $shippingAddress = $request->input('shipping_address', []);
-            
+
             // Buat transaksi (PENDING)
+            
             $transaction = Transaction::create([
                 'user_id' => $user->id,
                 'total_price' => $totalPrice,
@@ -131,6 +132,12 @@ class TransactionController extends Controller
                     'price' => $item->product->price,
                 ]);
             }
+
+            // 2) Generate order_id sekali, lalu SIMPAN ke tabel
+            $orderId = 'ORDER-' . $transaction->id . '-' . time();
+
+            $transaction->order_id = $orderId;
+            $transaction->save();
 
             // =====================
             // MIDTRANS SNAP
@@ -180,7 +187,6 @@ class TransactionController extends Controller
                 'snap_token' => $snapToken,
                 'transaction' => $transaction
             ]);
-
         } catch (\Exception $e) {
             // Log exception detail to laravel.log for easier debugging
             Log::error('Checkout exception: ' . $e->getMessage(), ['exception' => $e]);
@@ -197,58 +203,196 @@ class TransactionController extends Controller
      * MIDTRANS NOTIFICATION
      * =========================
      */
+    //     public function notification(Request $request)
+    // {
+    //     Log::info('MIDTRANS NOTIFICATION MASUK', $request->all());
+
+    //     // Inisialisasi Config agar Notification SDK bekerja
+    //     Config::$serverKey = config('midtrans.server_key');
+    //     Config::$isProduction = config('midtrans.is_production');
+
+    //     try {
+    //         $notif = new Notification();
+    //         $orderId = $notif->order_id; // "ORDER-17-17368291"
+    //         $status  = $notif->transaction_status;
+
+    //         // --- PROSES AMBIL ID ASLI ---
+    //         // Pecah string berdasarkan tanda "-"
+    //         $parts = explode('-', $orderId);
+
+    //         // Ambil bagian index ke-1 (ini adalah angka ID transaksi Anda)
+    //         $transactionId = isset($parts[1]) ? $parts[1] : null;
+
+    //         if (!$transactionId) {
+    //             Log::error('Format Order ID salah: ' . $orderId);
+    //             return response()->json(['message' => 'Invalid ID format'], 400);
+    //         }
+
+    //         // Cari transaksi berdasarkan ID yang sudah bersih (angka saja)
+    //         $transaction = Transaction::find($transactionId);
+
+    //         if (!$transaction) {
+    //             Log::warning('Transaksi tidak ditemukan di database', ['id_mencari' => $transactionId]);
+    //             return response()->json(['message' => 'Transaction not found'], 404);
+    //         }
+
+    //         // --- UPDATE STATUS ---
+    //         if (in_array($status, ['capture', 'settlement'])) {
+    //             $transaction->status = 'paid';
+    //         } elseif ($status === 'pending') {
+    //             $transaction->status = 'pending';
+    //         } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
+    //             $transaction->status = 'failed';
+    //         }
+
+    //         $transaction->save();
+    //         Log::info('STATUS UPDATE BERHASIL', ['id' => $transactionId, 'status' => $transaction->status]);
+
+    //         return response()->json(['message' => 'OK'], 200);
+
+    //     } catch (\Exception $e) {
+    //         Log::error('ERROR NOTIFICATION: ' . $e->getMessage());
+    //         return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 500);
+    //     }
+    // }
+
     public function notification(Request $request)
-{
-    Log::info('MIDTRANS NOTIFICATION MASUK', $request->all());
+    {
+        Log::info('MIDTRANS NOTIFICATION MASUK', [
+            'headers' => $request->headers->all(),
+            'payload' => $request->all(),
+            'raw' => $request->getContent(),
+        ]);
 
-    // Inisialisasi Config agar Notification SDK bekerja
-    Config::$serverKey = config('midtrans.server_key');
-    Config::$isProduction = config('midtrans.is_production');
+        // Inisialisasi Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = (bool) config('midtrans.is_production');
 
-    try {
-        $notif = new Notification();
-        $orderId = $notif->order_id; // "ORDER-17-17368291"
-        $status  = $notif->transaction_status;
+        try {
+            // Midtrans SDK akan parsing payload JSON otomatis
+            $notif = new Notification();
 
-        // --- PROSES AMBIL ID ASLI ---
-        // Pecah string berdasarkan tanda "-"
-        $parts = explode('-', $orderId);
-        
-        // Ambil bagian index ke-1 (ini adalah angka ID transaksi Anda)
-        $transactionId = isset($parts[1]) ? $parts[1] : null;
+            $orderId = $notif->order_id ?? null;
+            if (!$orderId) {
+                Log::error('MIDTRANS: order_id kosong', ['payload' => $request->all()]);
+                return response()->json(['message' => 'Invalid payload: order_id missing'], 400);
+            }
 
-        if (!$transactionId) {
-            Log::error('Format Order ID salah: ' . $orderId);
-            return response()->json(['message' => 'Invalid ID format'], 400);
+            // === VALIDASI SIGNATURE (PENTING) ===
+            // Rumus: sha512(order_id + status_code + gross_amount + server_key)
+            $statusCode   = (string) ($request->input('status_code') ?? $notif->status_code ?? '');
+            $grossAmount  = (string) ($request->input('gross_amount') ?? $notif->gross_amount ?? '');
+            $signatureKey = (string) ($request->input('signature_key') ?? $notif->signature_key ?? '');
+
+            // Midtrans kadang kirim gross_amount "1111.00" — pastikan konsisten stringnya
+            $mySignature = hash('sha512', $orderId . $statusCode . $grossAmount . config('midtrans.server_key'));
+
+            if (!hash_equals($mySignature, $signatureKey)) {
+                Log::warning('MIDTRANS: signature tidak valid', [
+                    'order_id' => $orderId,
+                    'expected' => $mySignature,
+                    'got' => $signatureKey,
+                    'status_code' => $statusCode,
+                    'gross_amount' => $grossAmount,
+                ]);
+                return response()->json(['message' => 'Invalid signature'], 401);
+            }
+
+            // Cari transaksi berdasarkan order_id (bukan parsing angka lagi)
+            $transaction = Transaction::where('order_id', $orderId)->first();
+
+            if (!$transaction) {
+                Log::warning('Transaksi tidak ditemukan di database (by order_id)', ['order_id' => $orderId]);
+                return response()->json(['message' => 'Transaction not found'], 404);
+            }
+
+            // Ambil field yang relevan dari payload (request lebih “langsung”)
+            $txStatus        = $request->input('transaction_status'); // pending/settlement/expire/cancel/deny/capture
+            $paymentType     = $request->input('payment_type');       // qris/bank_transfer/etc
+            $txId            = $request->input('transaction_id');
+            $merchantId      = $request->input('merchant_id');
+            $transactionType = $request->input('transaction_type');
+            $statusMessage   = $request->input('status_message');
+            $fraudStatus     = $request->input('fraud_status');
+            $transactionTime = $request->input('transaction_time');   // "2026-01-19 18:02:36"
+            $expiryTime      = $request->input('expiry_time');        // "2026-01-19 18:17:36"
+            $currency        = $request->input('currency');
+
+            // Customer details (opsional)
+            $customerName  = data_get($request->all(), 'customer_details.full_name');
+            $customerEmail = data_get($request->all(), 'customer_details.email');
+
+            // Mapping status midtrans -> status internal
+            $newStatus = $transaction->status;
+
+            if (in_array($txStatus, ['capture', 'settlement'], true)) {
+                // capture biasanya kartu kredit; settlement umumnya final
+                // Jika capture, fraud_status bisa "challenge" -> masih pending
+                if ($txStatus === 'capture' && $fraudStatus === 'challenge') {
+                    $newStatus = 'pending';
+                } else {
+                    $newStatus = 'paid';
+                }
+            } elseif ($txStatus === 'pending') {
+                $newStatus = 'pending';
+            } elseif (in_array($txStatus, ['cancel', 'deny'], true)) {
+                $newStatus = 'failed';
+            } elseif ($txStatus === 'expire') {
+                $newStatus = 'expired'; // lebih spesifik daripada failed
+            }
+
+            // Update kolom existing + kolom baru
+            $transaction->status = $newStatus;
+
+            // existing column kamu
+            if ($paymentType) {
+                $transaction->payment_method = $paymentType;
+            }
+
+            // kolom baru (sesuai migration yang kita buat)
+            $transaction->midtrans_transaction_id = $txId;
+            $transaction->merchant_id = $merchantId;
+            $transaction->transaction_type = $transactionType;
+            $transaction->status_code = $statusCode;
+            $transaction->status_message = $statusMessage;
+            $transaction->fraud_status = $fraudStatus;
+            $transaction->signature_key = $signatureKey;
+            $transaction->currency = $currency;
+
+            // waktu (kalau formatnya valid)
+            if ($transactionTime) $transaction->transaction_time = $transactionTime;
+            if ($expiryTime) $transaction->expiry_time = $expiryTime;
+
+            // simpan payload raw buat audit/debug
+            $transaction->midtrans_payload = $request->all();
+
+            // snapshot customer (opsional)
+            if ($customerName)  $transaction->customer_full_name = $customerName;
+            if ($customerEmail) $transaction->customer_email = $customerEmail;
+
+            // optional: update total_price dari gross_amount (kalau kamu ingin sinkron)
+            // Hati-hati: pastikan ini memang order yang sama dan tidak ada perubahan nominal
+            if (is_numeric($grossAmount)) {
+                $transaction->total_price = (float) $grossAmount;
+            }
+
+            $transaction->save();
+
+            Log::info('MIDTRANS: STATUS UPDATE BERHASIL', [
+                'transaction_id' => $transaction->id,
+                'order_id' => $orderId,
+                'midtrans_transaction_id' => $txId,
+                'status' => $transaction->status,
+            ]);
+
+            return response()->json(['message' => 'OK'], 200);
+        } catch (\Throwable $e) {
+            Log::error('ERROR MIDTRANS NOTIFICATION: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 500);
         }
-
-        // Cari transaksi berdasarkan ID yang sudah bersih (angka saja)
-        $transaction = Transaction::find($transactionId);
-
-        if (!$transaction) {
-            Log::warning('Transaksi tidak ditemukan di database', ['id_mencari' => $transactionId]);
-            return response()->json(['message' => 'Transaction not found'], 404);
-        }
-
-        // --- UPDATE STATUS ---
-        if (in_array($status, ['capture', 'settlement'])) {
-            $transaction->status = 'paid';
-        } elseif ($status === 'pending') {
-            $transaction->status = 'pending';
-        } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
-            $transaction->status = 'failed';
-        }
-
-        $transaction->save();
-        Log::info('STATUS UPDATE BERHASIL', ['id' => $transactionId, 'status' => $transaction->status]);
-
-        return response()->json(['message' => 'OK'], 200);
-
-    } catch (\Exception $e) {
-        Log::error('ERROR NOTIFICATION: ' . $e->getMessage());
-        return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 500);
     }
-}
 
 
     /**
@@ -263,8 +407,8 @@ class TransactionController extends Controller
         $productIds = \App\Models\Product::where('user_id', $seller->id)->pluck('id');
 
         $transactions = Transaction::whereHas('items', function ($q) use ($productIds) {
-                $q->whereIn('product_id', $productIds);
-            })
+            $q->whereIn('product_id', $productIds);
+        })
             ->with(['items.product', 'user'])
             ->orderBy('created_at', 'desc')
             ->get();
