@@ -132,15 +132,9 @@
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between">
-                        <!-- Logo -->
-                        <img
-                            src="/images/logo.png"
-                            alt="U Marketplace"
-                            class="w-10 h-10 object-contain"
-                        />
 
                         <!-- Greeting -->
-                        <div class="flex-1 mx-6">
+                        <div class="flex-1 mr-6">
                             <p class="text-[#1D1842] dark:text-[#FDA1A2]">
                                 Halo, <span class="font-semibold">Admin</span>
                             </p>

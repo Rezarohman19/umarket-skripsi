@@ -236,13 +236,8 @@
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between">
-                        <img
-                            src="/images/logo.png"
-                            alt="U Marketplace"
-                            class="w-10 h-10 object-contain"
-                        />
 
-                        <div class="flex-1 mx-6">
+                        <div class="flex-1 mr-6">
                             <p class="text-gray-700 dark:text-gray-300">
                                 Halo,
                                 <span class="font-semibold">{{

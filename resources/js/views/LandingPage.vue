@@ -243,15 +243,16 @@
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between">
-                        <!-- Logo -->
+                        <!-- Logo (hanya muncul jika belum login) -->
                         <img
+                            v-if="!user"
                             src="/images/logo.png"
                             alt="U Marketplace"
                             class="w-10 h-10 object-contain"
                         />
 
                         <!-- Greeting -->
-                        <div class="flex-1 mx-6">
+                        <div class="flex-1" :class="user ? '' : 'mx-6'">
                             <p class="text-gray-700 dark:text-gray-300">
                                 Halo,
                                 <template v-if="user?.name">
@@ -369,6 +370,58 @@
                     </div>
                 </header>
 
+                <!-- Website Info Card (hanya tampil jika bukan dari tombol back login) -->
+                <div v-if="showWelcomeCard && !user" class="p-6 pb-0">
+                    <div class="bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <!-- Info Content -->
+                                <div class="flex-1 text-center md:text-left">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
+                                        Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
+                                    </h2>
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed mb-4">
+                                        Platform e-commerce terpercaya untuk mahasiswa dan masyarakat umum. 
+                                        Temukan berbagai produk berkualitas dari penjual lokal atau mulai buka toko Anda sendiri!
+                                    </p>
+                                    
+                                    <!-- Features -->
+                                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                                        <div class="flex items-center gap-2 bg-white/60 dark:bg-[#1D1842]/60 px-3 py-1.5 rounded-full">
+                                            <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs font-medium">Gratis Daftar</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-white/60 dark:bg-[#1D1842]/60 px-3 py-1.5 rounded-full">
+                                            <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs font-medium">Transaksi Aman</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 bg-white/60 dark:bg-[#1D1842]/60 px-3 py-1.5 rounded-full">
+                                            <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                            </svg>
+                                            <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs font-medium">Buka Toko Sendiri</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- CTA Button -->
+                                <div class="flex-shrink-0">
+                                    <button
+                                        @click="goToLoginFromWelcome"
+                                        class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-6 py-3 rounded-xl shadow-lg border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                                    >
+                                        Mulai Sekarang
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Products Grid -->
                 <div class="p-6">
                     <div v-if="loading" class="text-center py-12">
@@ -388,15 +441,16 @@
 
                     <div
                         v-else
-                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3"
+                        class="grid gap-3"
+                        style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));"
                     >
                         <div
                             v-for="product in filteredProducts"
                             :key="product.id"
-                            class="relative bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer pb-10"
+                            class="relative bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer"
                             @click="goToProductDetail(product.id)"
                         >
-                            <!-- Product Image (slightly larger) -->
+                            <!-- Product Image -->
                             <div
                                 class="w-full h-28 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden"
                             >
@@ -423,14 +477,9 @@
                             </div>
 
                             <!-- Product Info -->
-                            <div class="p-2">
+                            <div class="p-2 pb-1">
                                 <p
-                                    class="text-[10px] font-medium text-[#EF3B33] dark:text-[#EF3B33] mb-0.5 uppercase tracking-wide"
-                                >
-                                    {{ getProductCategory(product.name) }}
-                                </p>
-                                <p
-                                    class="text-[10px] font-semibold text-gray-600 dark:text-gray-400 mb-0.5"
+                                    class="text-[10px] font-semibold text-gray-500 dark:text-gray-400"
                                 >
                                     {{
                                         product.store_name ||
@@ -439,12 +488,12 @@
                                     }}
                                 </p>
                                 <h3
-                                    class="text-sm font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2"
+                                    class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2"
                                 >
                                     {{ product.name }}
                                 </h3>
                                 <p
-                                    class="text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-2"
+                                    class="text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-1"
                                 >
                                     Rp. {{ formatPrice(product.price) }}
                                 </p>
@@ -648,6 +697,22 @@ const user = ref(null);
 const cartCount = ref(0);
 const notification = ref({ show: false, message: "", type: "success" });
 const showLoginModal = ref(false);
+const showWelcomeCard = ref(true);
+
+// Cek apakah user kembali dari halaman login (tidak jadi login)
+const checkWelcomeCardVisibility = () => {
+    const hideWelcome = sessionStorage.getItem('hideWelcomeCard');
+    if (hideWelcome === 'true') {
+        showWelcomeCard.value = false;
+    }
+};
+
+// Fungsi untuk navigasi ke login dari welcome card
+const goToLoginFromWelcome = () => {
+    // Set flag agar saat back, card tidak muncul
+    sessionStorage.setItem('hideWelcomeCard', 'true');
+    window.location.href = '/login?from=welcome';
+};
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -667,19 +732,19 @@ const filteredProducts = computed(() => {
 });
 
 const getQuantity = (productId) => {
-    return quantities.value[productId] || 1;
+    return quantities.value[productId] || 0;
 };
 
 const increaseQuantity = (productId) => {
     if (!quantities.value[productId]) {
-        quantities.value[productId] = 1;
+        quantities.value[productId] = 0;
     }
     quantities.value[productId]++;
 };
 
 const decreaseQuantity = (productId) => {
-    if (!quantities.value[productId] || quantities.value[productId] <= 1) {
-        quantities.value[productId] = 1;
+    if (!quantities.value[productId] || quantities.value[productId] <= 0) {
+        quantities.value[productId] = 0;
         return;
     }
     quantities.value[productId]--;
@@ -880,6 +945,9 @@ const handleUserUpdated = async (event) => {
 };
 
 onMounted(async () => {
+    // Cek apakah welcome card harus disembunyikan (user kembali dari login)
+    checkWelcomeCardVisibility();
+    
     await checkAuth();
     await fetchProducts();
     await fetchCartCount();
