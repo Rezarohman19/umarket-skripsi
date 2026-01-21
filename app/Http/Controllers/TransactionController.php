@@ -94,88 +94,121 @@ class TransactionController extends Controller
                 return response()->json(['message' => 'Selected items not found in cart'], 400);
             }
 
-            $totalPrice = 0;
-            $itemDetails = [];
-
             foreach ($cartItems as $item) {
-                $subtotal = $item->product->price * $item->qty;
-                $totalPrice += $subtotal;
-
-                $itemDetails[] = [
-                    'id' => $item->product->id,
-                    'price' => $item->product->price,
-                    'quantity' => $item->qty,
-                    'name' => $item->product->name,
-                ];
+                $stock = $item->product->stock ?? 0;
+                if ($item->qty > $stock) {
+                    return response()->json([
+                        'message' => 'Stok produk tidak mencukupi untuk checkout',
+                        'product' => $item->product->name,
+                        'requested_qty' => $item->qty,
+                        'available_stock' => $stock,
+                    ], 422);
+                }
             }
 
-            // Ambil shipping address dari request jika ada
+            // Kelompokkan cart items berdasarkan penjual (user_id pemilik produk)
+            $groups = [];
+            foreach ($cartItems as $item) {
+                $sellerId = $item->product->user_id ?? 0;
+                if (!isset($groups[$sellerId])) $groups[$sellerId] = [];
+                $groups[$sellerId][] = $item;
+            }
+
             $shippingAddress = $request->input('shipping_address', []);
+            $responseTransactions = [];
 
-            // Buat transaksi (PENDING)
-            
-            $transaction = Transaction::create([
-                'user_id' => $user->id,
-                'total_price' => $totalPrice,
-                'status' => 'pending',
-                'payment_method' => 'midtrans',
-                'shipping_name' => $shippingAddress['name'] ?? $user->name,
-                'shipping_phone' => $shippingAddress['phone'] ?? $user->phone,
-                'shipping_address' => $shippingAddress['address'] ?? $user->address,
-            ]);
-
-            foreach ($cartItems as $item) {
-                TransactionItem::create([
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $item->product_id,
-                    'qty' => $item->qty,
-                    'price' => $item->product->price,
-                ]);
-            }
-
-            // 2) Generate order_id sekali, lalu SIMPAN ke tabel
-            $orderId = 'ORDER-' . $transaction->id . '-' . time();
-
-            $transaction->order_id = $orderId;
-            $transaction->save();
-
-            // =====================
-            // MIDTRANS SNAP
-            // =====================
-            $params = [
-                'transaction_details' => [
-                    'order_id' => 'ORDER-' . $transaction->id . '-' . time(),
-                    'gross_amount' => $totalPrice,
-                ],
-                'item_details' => $itemDetails,
-                'customer_details' => [
-                    'first_name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ];
-
-            // If enabled_payments configured, forward to Midtrans to limit displayed methods
-            $enabledPayments = config('midtrans.enabled_payments');
-            if ($enabledPayments && is_array($enabledPayments)) {
-                $params['enabled_payments'] = $enabledPayments;
-            }
-
-            // Initialize Midtrans configuration from config/midtrans.php
+            // Initialize Midtrans configuration once
             Config::$serverKey = config('midtrans.server_key');
             Config::$clientKey = config('midtrans.client_key');
             Config::$isProduction = config('midtrans.is_production') ? true : false;
             Config::$isSanitized = config('midtrans.is_sanitized') ?? true;
             Config::$is3ds = config('midtrans.is_3ds') ?? true;
 
-            // If running in tests, avoid calling external Midtrans SDK
-            if (app()->runningUnitTests() || app()->environment('testing')) {
-                $snapToken = 'test-snap-token';
-            } else {
-                $snapToken = Snap::getSnapToken($params);
-            }
+            foreach ($groups as $sellerId => $items) {
+                $groupTotal = 0;
+                $itemDetails = [];
 
-            $transaction->snap_token = $snapToken;
-            $transaction->save();
+                foreach ($items as $it) {
+                    $subtotal = ($it->product->price ?? 0) * $it->qty;
+                    $groupTotal += $subtotal;
+                    $itemDetails[] = [
+                        'id' => $it->product->id,
+                        'price' => $it->product->price ?? 0,
+                        'quantity' => $it->qty,
+                        'name' => $it->product->name ?? 'Produk',
+                    ];
+                }
+
+                // Buat transaksi per penjual
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'total_price' => $groupTotal,
+                    'status' => 'pending',
+                    'payment_method' => 'midtrans',
+                    'shipping_name' => $shippingAddress['name'] ?? $user->name,
+                    'shipping_phone' => $shippingAddress['phone'] ?? $user->phone,
+                    'shipping_address' => $shippingAddress['address'] ?? $user->address,
+                ]);
+
+                foreach ($items as $it) {
+                    TransactionItem::create([
+                        'transaction_id' => $transaction->id,
+                        'product_id' => $it->product_id,
+                        'qty' => $it->qty,
+                        'price' => $it->product->price ?? 0,
+                    ]);
+                }
+
+                // Generate order_id unik per transaksi
+                $orderId = 'ORDER-' . $transaction->id . '-' . time();
+                $transaction->order_id = $orderId;
+                $transaction->save();
+
+                // Siapkan parameter Midtrans untuk group ini
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $orderId,
+                        'gross_amount' => $groupTotal,
+                    ],
+                    'item_details' => $itemDetails,
+                    'customer_details' => [
+                        'first_name' => $user->name,
+                        'email' => $user->email,
+                    ],
+                ];
+
+                $enabledPayments = config('midtrans.enabled_payments');
+                if ($enabledPayments && is_array($enabledPayments)) {
+                    $params['enabled_payments'] = $enabledPayments;
+                }
+
+                // Dapatkan snap token
+                if (app()->runningUnitTests() || app()->environment('testing')) {
+                    $snapToken = 'test-snap-token';
+                } else {
+                    $snapToken = Snap::getSnapToken($params);
+                }
+
+                $transaction->snap_token = $snapToken;
+                $transaction->save();
+
+                $responseTransactions[] = [
+                    'transaction' => $transaction,
+                    'snap_token' => $snapToken,
+                    'seller_id' => $sellerId,
+                    'seller_name' => optional(optional($items[0])->product->user)->name,
+                    'items' => collect($items)->map(function ($it) {
+                        return [
+                            'product_id' => $it->product_id,
+                            'name' => $it->product->name ?? 'Produk',
+                            'qty' => $it->qty,
+                            'price' => $it->product->price ?? 0,
+                            'image_url' => $it->product->image ? \Illuminate\Support\Facades\Storage::url($it->product->image) : null,
+                        ];
+                    })->values(),
+                    'total' => $groupTotal,
+                ];
+            }
 
             // Hapus hanya cart items yang sudah di-checkout (yang dipilih user)
             CartItem::whereIn('id', $selectedCartItemIds)->delete();
@@ -184,8 +217,7 @@ class TransactionController extends Controller
 
             return response()->json([
                 'message' => 'Checkout success',
-                'snap_token' => $snapToken,
-                'transaction' => $transaction
+                'transactions' => $responseTransactions,
             ]);
         } catch (\Exception $e) {
             // Log exception detail to laravel.log for easier debugging

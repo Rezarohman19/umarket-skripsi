@@ -11,6 +11,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,41 @@ Route::get('/register', [AuthController::class, 'registerForm'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| EMAIL VERIFICATION ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    // Halaman notice verifikasi
+    Route::get('/email/verify', function () {
+        return view('verify-email');
+    })->name('verification.notice');
+
+    // Link verifikasi email
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/')->with('success', 'Email Anda telah terverifikasi.');
+    })->middleware(['signed'])->name('verification.verify');
+
+    // Resend verification email
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('success', 'Link verifikasi telah dikirim ulang.');
+    })->middleware(['throttle:6,1'])->name('verification.send');
+
+    // Dev-only: langsung verifikasi tanpa email (hanya environment local)
+    Route::post('/email/verify/dev', function (Request $request) {
+        if (config('app.env') !== 'local') {
+            abort(403);
+        }
+        if (!$request->user()->hasVerifiedEmail()) {
+            $request->user()->markEmailAsVerified();
+        }
+        return redirect('/')->with('success', 'Email Anda telah terverifikasi (dev).');
+    })->name('verification.dev');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -483,6 +519,7 @@ Route::get('/api/cart', function () {
                     'name' => $item->product->name ?? 'Produk',
                     'description' => $item->product->description ?? '',
                     'price' => $item->product->price ?? 0,
+                    'stock' => $item->product->stock ?? 0,
                     'image_url' => $item->product->image ? Storage::url($item->product->image) : null,
                     'user' => $item->product->user ?? null,
                 ],
@@ -500,6 +537,42 @@ Route::get('/api/cart/count', function () {
 
     $count = \App\Models\CartItem::where('cart_id', $cart->id)->sum('qty');
     return response()->json(['count' => $count]);
+});
+
+Route::post('/api/cart/update', function (Request $request) {
+    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
+
+    $validated = $request->validate([
+        'item_id' => 'required|integer',
+        'qty' => 'required|integer|min:1',
+    ]);
+
+    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+    if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
+
+    $item = \App\Models\CartItem::with('product')
+        ->where('cart_id', $cart->id)
+        ->where('id', $validated['item_id'])
+        ->first();
+
+    if (!$item) return response()->json(['message' => 'Item not found'], 404);
+
+    $stock = $item->product->stock ?? 0;
+    if ($validated['qty'] > $stock) {
+        return response()->json(['message' => 'Stock tidak mencukupi', 'stock' => $stock], 422);
+    }
+
+    $item->qty = $validated['qty'];
+    $item->save();
+
+    return response()->json([
+        'message' => 'Item updated',
+        'item' => [
+            'id' => $item->id,
+            'product_id' => $item->product_id,
+            'qty' => $item->qty,
+        ]
+    ]);
 });
 
 // Checkout API (menggunakan session auth)

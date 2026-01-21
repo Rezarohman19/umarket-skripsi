@@ -3,11 +3,13 @@
         <div class="w-full max-w-md">
             <!-- Logo Container -->
             <div class="flex justify-center mb-8">
-                <img
-                    src="/images/logo-u.png"
-                    alt="U Marketplace"
-                    class="h-32 w-auto object-contain"
-                />
+                <button @click="goToLanding" class="cursor-pointer hover:opacity-80 transition-opacity">
+                    <img
+                        src="/images/logo-u.png"
+                        alt="U Marketplace"
+                        class="h-32 w-auto object-contain"
+                    />
+                </button>
             </div>
 
             <!-- Register Card -->
@@ -260,6 +262,11 @@ onMounted(() => {
         success.value = 'Registrasi berhasil! Silakan masuk dengan akun Anda.';
     }
 });
+
+const goToLanding = () => {
+    sessionStorage.removeItem('hideWelcomeCard');
+    window.location.href = '/';
+};
 </script>
 
 <style scoped>
@@ -298,4 +305,3 @@ input:-webkit-autofill:active {
     -webkit-text-fill-color: #ffffff !important;
 }
 </style>
-

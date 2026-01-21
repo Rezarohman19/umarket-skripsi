@@ -33,6 +33,11 @@ class AuthController extends Controller
             // regenerate session untuk keamanan
             $request->session()->regenerate();
 
+            // Jika email belum terverifikasi, arahkan ke halaman verifikasi
+            if (!Auth::user()->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
             // Redirect berdasarkan role
             if (Auth::user()->role === 'admin') {
                 return redirect('/admin/dashboard');
@@ -67,14 +72,22 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => 'pengguna', // default role
         ]);
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.');
+        // Kirim email verifikasi
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            // Optional: log error pengiriman email
+            \Log::error('Gagal mengirim email verifikasi: '.$e->getMessage());
+        }
+
+        return redirect()->route('login')->with('success', 'Registrasi berhasil. Silakan cek email Anda untuk verifikasi sebelum login.');
     }
 
     /**
@@ -87,6 +100,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect('/');
     }
 }

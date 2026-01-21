@@ -909,11 +909,13 @@ const handleLogout = async () => {
     if (confirm("Apakah Anda yakin ingin keluar?")) {
         try {
             await axios.post("/logout");
-            window.location.href = "/login";
+            sessionStorage.removeItem('hideWelcomeCard');
+            window.location.href = "/";
         } catch (error) {
             console.error("Error logging out:", error);
             // Tetap redirect meskipun ada error
-            window.location.href = "/login";
+            sessionStorage.removeItem('hideWelcomeCard');
+            window.location.href = "/";
         }
     }
 };
