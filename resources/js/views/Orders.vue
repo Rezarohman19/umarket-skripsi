@@ -1001,16 +1001,10 @@ const fetchCartCount = async () => {
         return;
     }
     try {
-        const response = await axios.get("/api/cart");
-        const apiItems = response.data.items || [];
-        cartCount.value = apiItems.reduce(
-            (sum, item) => sum + (item.qty || item.quantity || 0),
-            0
-        );
+        const response = await axios.get("/api/cart/count");
+        cartCount.value = response.data.count || 0;
     } catch (error) {
-        if (error.response?.status !== 401) {
-            console.error("Error fetching cart count:", error);
-        }
+        console.error("Error fetching cart count:", error);
         cartCount.value = 0;
     }
 };

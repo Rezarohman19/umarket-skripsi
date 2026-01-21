@@ -564,50 +564,7 @@
             </main>
         </div>
 
-        <!-- Notification Toast -->
-        <transition name="fade">
-            <div
-                v-if="notification.show"
-                :class="[
-                    'fixed bottom-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 max-w-sm',
-                    notification.type === 'success'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white',
-                ]"
-            >
-                <div class="flex items-center gap-3">
-                    <svg
-                        v-if="notification.type === 'success'"
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5 13l4 4L19 7"
-                        />
-                    </svg>
-                    <svg
-                        v-else
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-                    <p class="font-medium">{{ notification.message }}</p>
-                </div>
-            </div>
-        </transition>
+        <!-- Legacy Notification removed -->
 
         <!-- Login Required Modal -->
         <transition name="modal">
@@ -680,6 +637,21 @@
                 </div>
             </div>
         </transition>
+         <!-- Component Toast & Confirm (Disabled per user request) -->
+        <!-- <ToastNotification
+            :visible="toast.visible"
+            :message="toast.message"
+            :type="toast.type"
+            @close="toast.visible = false"
+        />
+
+        <ConfirmModal
+            :visible="confirmModal.visible"
+            :title="confirmModal.title"
+            :message="confirmModal.message"
+            @confirm="handleConfirmAction"
+            @cancel="closeConfirmModal"
+        /> -->
     </div>
 </template>
 
@@ -693,9 +665,8 @@ const products = ref([]);
 const loading = ref(true);
 const searchQuery = ref("");
 const quantities = ref({});
-const user = ref(null);
+const user = ref(window.auth_user || null);
 const cartCount = ref(0);
-const notification = ref({ show: false, message: "", type: "success" });
 const showLoginModal = ref(false);
 const showWelcomeCard = ref(true);
 
@@ -767,6 +738,12 @@ const getProductCategory = (name) => {
 
 const getPhotoUrl = (photoUrl) => {
     if (!photoUrl) return null;
+    
+    // Jika path tidak diawali dengan /storage/ dan bukan full URL, tambahkan /storage/
+    if (!photoUrl.startsWith("/storage/") && !photoUrl.startsWith("http")) {
+        photoUrl = "/storage/" + photoUrl;
+    }
+
     // Tambahkan cache busting jika belum ada
     if (photoUrl.includes("?")) {
         return photoUrl.split("?")[0] + "?t=" + Date.now();
@@ -824,20 +801,21 @@ const handleAddToCart = async (product) => {
         // Reset quantity
         quantities.value[product.id] = 1;
 
-        // Update cart count
+        // Update cart count immediately
         await fetchCartCount();
-
-        // Trigger cart update event
+        
+        // Trigger cart update event for other components
         window.dispatchEvent(new CustomEvent("cartUpdated"));
 
-        // Tampilkan notifikasi sukses
-        showNotification("Produk berhasil ditambahkan ke keranjang", "success");
+        // Tampilkan alert sukses
+        alert("Produk berhasil ditambahkan ke keranjang");
+
     } catch (error) {
         console.error("Error adding to cart:", error);
         const message =
             error.response?.data?.message ||
             "Gagal menambahkan produk ke keranjang";
-        showNotification(message, "error");
+        alert(message);
     }
 };
 
@@ -848,18 +826,10 @@ const fetchCartCount = async () => {
     }
 
     try {
-        // Ambil cart dari API
-        const response = await axios.get("/api/cart");
-        const apiItems = response.data.items || [];
-        cartCount.value = apiItems.reduce(
-            (sum, item) => sum + (item.qty || item.quantity || 0),
-            0
-        );
+        const response = await axios.get("/api/cart/count");
+        cartCount.value = response.data.count || 0;
     } catch (error) {
-        // Jika API error (termasuk 401), set ke 0
-        if (error.response?.status !== 401) {
-            console.error("Error fetching cart count:", error);
-        }
+        console.error("Error fetching cart count:", error);
         cartCount.value = 0;
     }
 };
@@ -913,7 +883,6 @@ const handleLogout = async () => {
             window.location.href = "/";
         } catch (error) {
             console.error("Error logging out:", error);
-            // Tetap redirect meskipun ada error
             sessionStorage.removeItem('hideWelcomeCard');
             window.location.href = "/";
         }
@@ -926,18 +895,6 @@ const closeLoginModal = () => {
 
 const goToLogin = () => {
     window.location.href = "/login";
-};
-
-const showNotification = (message, type = "success") => {
-    notification.value = {
-        show: true,
-        message: message,
-        type: type,
-    };
-
-    setTimeout(() => {
-        notification.value.show = false;
-    }, 3000);
 };
 
 // Handler untuk update user data (setelah edit profil)

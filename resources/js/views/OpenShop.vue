@@ -922,7 +922,7 @@
                                     <div>Kategori</div>
                                     <div>Stok</div>
                                     <div>Harga</div>
-                                    <div class="text-right">Aksi</div>
+                                    <div>Aksi</div>
                                 </div>
 
                                 <div
@@ -959,7 +959,7 @@
                                         >
                                             Rp. {{ formatPrice(p.price) }}
                                         </div>
-                                        <div class="flex justify-end gap-2">
+                                        <div class="flex gap-2">
                                             <button
                                                 class="px-3 py-1 text-xs rounded-full bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2]"
                                                 @click="editProduct(p)"
