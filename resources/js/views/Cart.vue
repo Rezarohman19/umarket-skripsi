@@ -172,7 +172,7 @@
                     <div class="flex flex-col items-end gap-1">
                         <div class="flex items-center gap-3">
                             <button
-                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
+                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:border-[#EF3B33]/50 hover:shadow-md active:scale-95 active:shadow-inner"
                                 @click="decrease(item)"
                             >
                                 -
@@ -183,7 +183,7 @@
                                 {{ item.qty }}
                             </div>
                             <button
-                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
+                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:border-[#EF3B33]/50 hover:shadow-md active:scale-95 active:shadow-inner"
                                 @click="increase(item)"
                             >
                                 +
@@ -191,7 +191,7 @@
                             <!-- Delete Button (Moved here) -->
                             <button
                                 @click="removeItem(item)"
-                                class="p-1.5 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg ml-2 hover:bg-[#EF3B33]/20 transition-colors"
+                                class="p-1.5 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg ml-2 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:shadow-md active:scale-95 active:shadow-inner"
                                 title="Hapus dari keranjang"
                             >
                                 <svg
@@ -241,7 +241,7 @@
                     <!-- Checkout Button -->
                     <button
                         @click="handleCheckout"
-                        class="px-8 py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg ml-4"
+                        class="px-8 py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg ml-4 cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-xl active:scale-95 active:shadow-inner"
                     >
                         Checkout ({{ selectedItems.length }})
                     </button>
@@ -300,18 +300,45 @@ const removeItem = (item) => {
         visible: true,
         title: "Hapus Produk",
         message: `Hapus "${item.product_name}" dari keranjang?`,
-        onConfirm: async () => {
-            try {
-                await axios.post(`/api/cart/remove/${item.id}`);
-                const index = selectedItems.value.indexOf(item.id);
-                if (index > -1) selectedItems.value.splice(index, 1);
-                cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
-                window.dispatchEvent(new CustomEvent("cartUpdated"));
-                showToast("Produk dihapus dari keranjang", "success");
-            } catch (error) {
-                console.error("Error removing item:", error);
-                showToast("Gagal menghapus produk", "error");
-            }
+        onConfirm: () => {
+            // Tutup modal dulu
+            closeConfirmModal();
+            
+            // Simpan data item untuk rollback jika error
+            const itemToRemove = { ...item };
+            const itemIndex = cartItems.value.findIndex(i => i.id === item.id);
+            
+            // Optimistic update: langsung hapus dari UI tanpa menunggu server
+            const index = selectedItems.value.indexOf(item.id);
+            if (index > -1) selectedItems.value.splice(index, 1);
+            cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
+            
+            // Update cart count langsung setelah item dihapus
+            cartCount.value = cartItems.value.length;
+            
+            // Tampilkan toast sukses langsung
+            showToast("Produk dihapus dari keranjang", "success");
+            
+            // Update ke server di background tanpa blocking UI
+            axios.post(`/api/cart/remove/${item.id}`)
+                .then(() => {
+                    // Trigger cart update event untuk update di halaman lain
+                    window.dispatchEvent(new CustomEvent("cartUpdated"));
+                })
+                .catch((error) => {
+                    console.error("Error removing item:", error);
+                    // Rollback jika error: kembalikan item ke list
+                    if (itemIndex > -1) {
+                        cartItems.value.splice(itemIndex, 0, itemToRemove);
+                    } else {
+                        cartItems.value.push(itemToRemove);
+                    }
+                    cartCount.value = cartItems.value.length;
+                    // Tampilkan error
+                    showToast("Gagal menghapus produk", "error");
+                    // Refresh untuk sync dengan server
+                    fetchCartItems();
+                });
         }
     };
 };
@@ -328,31 +355,48 @@ const increase = async (item) => {
         return;
     }
 
-    try {
-        await axios.post("/api/cart/update", { item_id: item.id, qty: newQty });
-        item.qty = newQty;
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {
-        console.error("Error updating quantity:", error);
-        showToast(error.response?.data?.message || "Gagal menambah", "error");
-        fetchCartItems(); 
-    }
+    // Optimistic update: update UI langsung tanpa menunggu server
+    const oldQty = item.qty;
+    item.qty = newQty;
+
+    // Update di background tanpa blocking UI (fire and forget)
+    axios.post("/api/cart/update", { item_id: item.id, qty: newQty })
+        .then(() => {
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+        })
+        .catch((error) => {
+            console.error("Error updating quantity:", error);
+            // Rollback jika error
+            item.qty = oldQty;
+            showToast(error.response?.data?.message || "Gagal menambah", "error");
+            // Refresh untuk sync dengan server
+            fetchCartItems();
+        });
 };
 
 const decrease = async (item) => {
     const currentQty = parseInt(item.qty) || 0;
     if (currentQty <= 1) return;
 
-    try {
-        const newQty = currentQty - 1;
-        await axios.post("/api/cart/update", { item_id: item.id, qty: newQty });
-        item.qty = newQty;
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {
-        console.error("Error updating quantity:", error);
-        showToast("Gagal mengurangi jumlah produk", "error");
-        fetchCartItems();
-    }
+    const newQty = currentQty - 1;
+
+    // Optimistic update: update UI langsung tanpa menunggu server
+    const oldQty = item.qty;
+    item.qty = newQty;
+
+    // Update di background tanpa blocking UI (fire and forget)
+    axios.post("/api/cart/update", { item_id: item.id, qty: newQty })
+        .then(() => {
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+        })
+        .catch((error) => {
+            console.error("Error updating quantity:", error);
+            // Rollback jika error
+            item.qty = oldQty;
+            showToast("Gagal mengurangi jumlah produk", "error");
+            // Refresh untuk sync dengan server
+            fetchCartItems();
+        });
 };
 
 const handleCheckout = () => {

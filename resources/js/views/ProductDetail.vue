@@ -163,7 +163,7 @@
                                     <button
                                         @click="decreaseQuantity"
                                         :disabled="quantity <= 1"
-                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
                                     >
                                         <svg
                                             class="w-5 h-5"
@@ -187,7 +187,7 @@
                                     <button
                                         @click="increaseQuantity"
                                         :disabled="quantity >= product.stock"
-                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
                                     >
                                         <svg
                                             class="w-5 h-5"
@@ -210,13 +210,13 @@
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <button
                                     @click="handleAddToCart"
-                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-3 px-6 rounded-lg shadow-md"
+                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-3 px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#f88a8c] hover:shadow-lg active:scale-95 active:shadow-inner"
                                 >
                                     Tambah ke Keranjang
                                 </button>
                                 <button
                                     @click="handleCheckout"
-                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-3 px-6 rounded-lg shadow-md"
+                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-3 px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
                                 >
                                     Checkout Langsung
                                 </button>
@@ -224,8 +224,16 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
+    </div>
+
+        <!-- Toast Notification -->
+        <ToastNotification
+            :visible="toast.visible"
+            :message="toast.message"
+            :type="toast.type"
+            @close="handleToastClose"
+        />
 
         <!-- Login Modal -->
         <transition name="modal">
@@ -239,21 +247,13 @@
                 >
                     <div class="flex flex-col items-center text-center">
                         <div
-                            class="w-16 h-16 bg-[#FDA1A2]/20 dark:bg-[#FDA1A2]/20 rounded-full flex items-center justify-center mb-4"
+                            class="w-16 h-16 bg-white dark:bg-white rounded-full flex items-center justify-center mb-4"
                         >
-                            <svg
-                                class="w-8 h-8 text-[#EF3B33] dark:text-[#EF3B33]"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                />
-                            </svg>
+                            <img
+                                src="/images/logo-u.png"
+                                alt="U Marketplace Logo"
+                                class="w-10 h-10 object-contain"
+                            />
                         </div>
                         <h3
                             class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-2"
@@ -273,7 +273,7 @@
                             </button>
                             <button
                                 @click="goToLogin"
-                                class="flex-1 px-4 py-2 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg"
+                                class="flex-1 px-4 py-2 bg-[#FDA1A2] text-white rounded-lg font-semibold shadow-lg"
                             >
                                 Login
                             </button>
@@ -288,6 +288,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import ToastNotification from "../components/ToastNotification.vue";
 // Get product ID from URL
 const getProductId = () => {
     const path = window.location.pathname;
@@ -299,6 +300,7 @@ const loading = ref(true);
 const quantity = ref(1);
 const showLoginModal = ref(false);
 const user = ref(null);
+const toast = ref({ visible: false, message: "", type: "success" });
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
@@ -350,6 +352,12 @@ const decreaseQuantity = () => {
     }
 };
 
+const handleToastClose = () => {
+    toast.value.visible = false;
+    // Reset quantity selector ke 0 setelah toast tertutup
+    quantity.value = 0;
+};
+
 const handleAddToCart = async () => {
     if (!user.value) {
         showLoginModal.value = true;
@@ -358,6 +366,22 @@ const handleAddToCart = async () => {
 
     if (!product.value) return;
 
+    // Validasi: quantity harus lebih dari 0
+    if (quantity.value <= 0) {
+        toast.value = { visible: true, message: "Jumlah produk harus lebih dari 0", type: "error" };
+        return;
+    }
+
+    // Validasi: quantity tidak boleh melebihi stok
+    const stock = product.value.stock || 0;
+    if (quantity.value > stock) {
+        toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
+        return;
+    }
+
+    // Optimistic update: tampilkan toast langsung tanpa menunggu API
+    toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
+
     try {
         // Tambahkan produk ke cart via API
         await axios.post("/api/cart/add", {
@@ -365,19 +389,20 @@ const handleAddToCart = async () => {
             quantity: quantity.value,
         });
 
-        // Trigger cart update event
+        // Trigger cart update event untuk update cart count di halaman lain
         window.dispatchEvent(new CustomEvent("cartUpdated"));
 
-        // Reset quantity
-        quantity.value = 1;
-
-        alert("Produk berhasil ditambahkan ke keranjang!");
+        // Reset quantity setelah toast tertutup (auto close setelah 3 detik)
+        setTimeout(() => {
+            quantity.value = 0;
+        }, 3000);
     } catch (error) {
         console.error("Error adding to cart:", error);
-        alert(
-            "Gagal menambahkan produk ke keranjang: " +
-                (error.response?.data?.message || error.message)
-        );
+        const message = "Gagal menambahkan produk ke keranjang: " +
+            (error.response?.data?.message || error.message);
+        
+        // Tutup toast sukses dan tampilkan error
+        toast.value = { visible: true, message: message, type: "error" };
     }
 };
 

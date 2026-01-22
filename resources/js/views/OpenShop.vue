@@ -201,7 +201,7 @@
                     <button
                         @click="handleLogout"
                         :class="[
-                            'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40',
+                            'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40 cursor-pointer',
                             sidebarCollapsed ? 'px-2 flex justify-center' : 'px-4'
                         ]"
                     >
@@ -1184,17 +1184,28 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Confirm Modal untuk Logout -->
+        <ConfirmModal
+            :visible="confirmModal.visible"
+            :title="confirmModal.title"
+            :message="confirmModal.message"
+            @confirm="handleConfirmLogout"
+            @cancel="closeConfirmModal"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 const sidebarCollapsed = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");
+const confirmModal = ref({ visible: false, title: "", message: "" });
 
 const store = ref({
     name: "Nama Toko",
@@ -1383,21 +1394,34 @@ const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
-const handleLogout = async () => {
+const handleLogout = () => {
     if (!user.value) {
         window.location.href = "/login";
         return;
     }
 
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-        try {
-            await axios.post("/logout");
-            window.location.href = "/login";
-        } catch (error) {
-            console.error("Error logging out:", error);
-            // Tetap redirect meskipun ada error
-            window.location.href = "/login";
-        }
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Keluar",
+        message: "Apakah Anda yakin ingin keluar?"
+    };
+};
+
+const closeConfirmModal = () => {
+    confirmModal.value.visible = false;
+};
+
+const handleConfirmLogout = async () => {
+    closeConfirmModal();
+    
+    try {
+        await axios.post("/logout");
+        window.location.href = "/login";
+    } catch (error) {
+        console.error("Error logging out:", error);
+        // Tetap redirect meskipun ada error
+        window.location.href = "/login";
     }
 };
 
@@ -1626,13 +1650,13 @@ const fetchCartCount = async () => {
         return;
     }
     try {
-        const response = await axios.get("/api/cart");
-        const apiItems = response.data.items || [];
-        cartCount.value = apiItems.reduce(
-            (sum, item) => sum + (item.qty || item.quantity || 0),
-            0
-        );
+        const response = await axios.get("/api/cart/count", {
+            params: { _t: Date.now() } // Cache busting untuk memastikan data terbaru
+        });
+        const newCount = response.data?.count ?? 0;
+        cartCount.value = newCount;
     } catch (error) {
+        console.error("Error fetching cart count:", error);
         cartCount.value = 0;
     }
 };
@@ -1833,7 +1857,10 @@ const fetchSellerBalance = async () => {
         store.value.balance = response.data.balance || 0;
         store.value.totalSold = response.data.total_sold || 0;
     } catch (error) {
+        // Error handling: set default values jika API error
         console.error("Error fetching seller balance:", error);
+        store.value.balance = 0;
+        store.value.totalSold = 0;
     }
 };
 
@@ -1844,7 +1871,9 @@ const fetchUserBanks = async () => {
         const response = await axios.get("/api/user/banks");
         userBanks.value = response.data || [];
     } catch (error) {
+        // Error handling: set default empty array jika API error
         console.error("Error fetching user banks:", error);
+        userBanks.value = [];
     }
 };
 
@@ -1859,11 +1888,15 @@ onMounted(async () => {
         await fetchUserBanks();
     }
 
+    // Listen untuk cart update event
+    window.addEventListener("cartUpdated", fetchCartCount);
+
     // Listen untuk user update event (setelah edit profil)
     window.addEventListener("userUpdated", handleUserUpdated);
 });
 
 onBeforeUnmount(() => {
+    window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
 });
 </script>

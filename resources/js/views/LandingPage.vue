@@ -204,7 +204,7 @@
                     <button
                         @click="handleLogout"
                         :class="[
-                            'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40',
+                            'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40 cursor-pointer',
                             sidebarCollapsed ? 'px-2 flex justify-center' : 'px-4'
                         ]"
                     >
@@ -509,7 +509,7 @@
                                             @click.stop="
                                                 decreaseQuantity(product.id)
                                             "
-                                            class="text-xs text-gray-600 dark:text-gray-400"
+                                            class="text-xs text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95"
                                         >
                                             <svg
                                                 class="w-3 h-3"
@@ -533,7 +533,7 @@
                                             @click.stop="
                                                 increaseQuantity(product.id)
                                             "
-                                            class="text-xs text-gray-600 dark:text-gray-400"
+                                            class="text-xs text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95"
                                         >
                                             <svg
                                                 class="w-3 h-3"
@@ -552,7 +552,7 @@
                                     </div>
                                     <button
                                         @click.stop="handleAddToCart(product)"
-                                        class="flex-none w-20 bg-[#EF3B33] text-white font-medium py-0.5 px-2 rounded-sm text-xs"
+                                        class="flex-none w-20 bg-[#EF3B33] text-white font-medium py-0.5 px-2 rounded-sm text-xs cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg hover:scale-105 active:scale-95 active:shadow-inner active:bg-[#c0271f]"
                                     >
                                         Tambah Keranjang
                                     </button>
@@ -577,24 +577,16 @@
                     class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full transform transition-all modal-content"
                 >
                     <!-- Card Header -->
-                    <div class="bg-[#EF3B33] rounded-t-2xl p-6">
+                    <div class="bg-[#FDA1A2] rounded-t-2xl p-6">
                         <div class="flex items-center justify-center mb-2">
                             <div
-                                class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm"
+                                class="w-16 h-16 bg-white rounded-full flex items-center justify-center"
                             >
-                                <svg
-                                    class="w-8 h-8 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                    />
-                                </svg>
+                                <img
+                                    src="/images/logo-u.png"
+                                    alt="U Marketplace Logo"
+                                    class="w-10 h-10 object-contain"
+                                />
                             </div>
                         </div>
                         <h3 class="text-xl font-bold text-white text-center">
@@ -625,7 +617,7 @@
                             </button>
                             <button
                                 @click="goToLogin"
-                                class="flex-1 px-4 py-3 bg-[#EF3B33] text-white font-medium rounded-lg shadow-lg"
+                                class="flex-1 px-4 py-3 bg-[#FDA1A2] text-white font-medium rounded-lg shadow-lg"
                             >
                                 Login
                             </button>
@@ -633,32 +625,35 @@
                     </div>
 
                     <!-- Decorative bottom border -->
-                    <div class="h-1 bg-[#EF3B33] rounded-b-2xl"></div>
+                    <div class="h-1 bg-[#FDA1A2] rounded-b-2xl"></div>
                 </div>
             </div>
         </transition>
-         <!-- Component Toast & Confirm (Disabled per user request) -->
-        <!-- <ToastNotification
+        <!-- Toast Notification -->
+        <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
             :type="toast.type"
-            @close="toast.visible = false"
+            @close="handleToastClose"
         />
 
+        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
             :message="confirmModal.message"
-            @confirm="handleConfirmAction"
+            @confirm="handleConfirmLogout"
             @cancel="closeConfirmModal"
-        /> -->
+        />
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
 import axios from "axios";
 import Logo from "../components/Logo.vue";
+import ToastNotification from "../components/ToastNotification.vue";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 const sidebarCollapsed = ref(false);
 const products = ref([]);
@@ -669,6 +664,8 @@ const user = ref(window.auth_user || null);
 const cartCount = ref(0);
 const showLoginModal = ref(false);
 const showWelcomeCard = ref(true);
+const toast = ref({ visible: false, message: "", type: "success" });
+const confirmModal = ref({ visible: false, title: "", message: "" });
 
 // Cek apakah user kembali dari halaman login (tidak jadi login)
 const checkWelcomeCardVisibility = () => {
@@ -783,6 +780,25 @@ const fetchProducts = async () => {
     }
 };
 
+// Simpan product ID yang baru ditambahkan untuk reset quantity setelah toast tertutup
+const lastAddedProductId = ref(null);
+
+const handleToastClose = async () => {
+    toast.value.visible = false;
+    // Reset quantity selector ke 0 untuk produk yang baru ditambahkan
+    if (lastAddedProductId.value !== null) {
+        quantities.value[lastAddedProductId.value] = 0;
+        lastAddedProductId.value = null;
+    }
+    
+    // Fetch cart count lagi setelah toast tertutup untuk memastikan update
+    if (user.value) {
+        await fetchCartCount();
+        // Pastikan reactivity dengan nextTick
+        await nextTick();
+    }
+};
+
 const handleAddToCart = async (product) => {
     if (!user.value) {
         showLoginModal.value = true;
@@ -791,6 +807,25 @@ const handleAddToCart = async (product) => {
 
     const quantity = getQuantity(product.id);
 
+    // Validasi: quantity harus lebih dari 0
+    if (quantity <= 0) {
+        toast.value = { visible: true, message: "Jumlah produk harus lebih dari 0", type: "error" };
+        return;
+    }
+
+    // Validasi: quantity tidak boleh melebihi stok
+    const stock = product.stock || 0;
+    if (quantity > stock) {
+        toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
+        return;
+    }
+
+    // Optimistic update: tampilkan toast langsung tanpa menunggu API
+    toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang", type: "success" };
+    
+    // Simpan product ID untuk reset quantity setelah toast tertutup
+    lastAddedProductId.value = product.id;
+
     try {
         // Tambahkan produk ke cart via API
         await axios.post("/api/cart/add", {
@@ -798,24 +833,25 @@ const handleAddToCart = async (product) => {
             quantity: quantity,
         });
 
-        // Reset quantity
-        quantities.value[product.id] = 1;
-
-        // Update cart count immediately
+        // Fetch cart count untuk update yang akurat (cek apakah produk baru atau update existing)
+        // Cart count hanya bertambah jika produk baru, tidak bertambah jika produk sudah ada
+        // Pastikan fetch dilakukan dan update cartCount
         await fetchCartCount();
         
+        // Pastikan reactivity dengan nextTick
+        await nextTick();
+
         // Trigger cart update event for other components
         window.dispatchEvent(new CustomEvent("cartUpdated"));
-
-        // Tampilkan alert sukses
-        alert("Produk berhasil ditambahkan ke keranjang");
 
     } catch (error) {
         console.error("Error adding to cart:", error);
         const message =
             error.response?.data?.message ||
             "Gagal menambahkan produk ke keranjang";
-        alert(message);
+        
+        // Tutup toast sukses dan tampilkan error
+        toast.value = { visible: true, message: message, type: "error" };
     }
 };
 
@@ -826,8 +862,12 @@ const fetchCartCount = async () => {
     }
 
     try {
-        const response = await axios.get("/api/cart/count");
-        cartCount.value = response.data.count || 0;
+        const response = await axios.get("/api/cart/count", {
+            params: { _t: Date.now() } // Cache busting untuk memastikan data terbaru
+        });
+        const newCount = response.data?.count ?? 0;
+        // Pastikan update dengan assign langsung
+        cartCount.value = newCount;
     } catch (error) {
         console.error("Error fetching cart count:", error);
         cartCount.value = 0;
@@ -870,22 +910,35 @@ const goToProductDetail = (productId) => {
     window.location.href = `/product/${productId}`;
 };
 
-const handleLogout = async () => {
+const handleLogout = () => {
     if (!user.value) {
         showLoginModal.value = true;
         return;
     }
 
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-        try {
-            await axios.post("/logout");
-            sessionStorage.removeItem('hideWelcomeCard');
-            window.location.href = "/";
-        } catch (error) {
-            console.error("Error logging out:", error);
-            sessionStorage.removeItem('hideWelcomeCard');
-            window.location.href = "/";
-        }
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Keluar",
+        message: "Apakah Anda yakin ingin keluar?"
+    };
+};
+
+const closeConfirmModal = () => {
+    confirmModal.value.visible = false;
+};
+
+const handleConfirmLogout = async () => {
+    closeConfirmModal();
+    
+    try {
+        await axios.post("/logout");
+        sessionStorage.removeItem('hideWelcomeCard');
+        window.location.href = "/";
+    } catch (error) {
+        console.error("Error logging out:", error);
+        sessionStorage.removeItem('hideWelcomeCard');
+        window.location.href = "/";
     }
 };
 
@@ -973,4 +1026,5 @@ onBeforeUnmount(() => {
     transform: scale(0.95) translateY(10px);
     opacity: 0;
 }
+
 </style>

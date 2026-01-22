@@ -200,7 +200,7 @@
                 <button
                     @click="logout"
                     :class="[
-                        'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40',
+                        'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40 cursor-pointer',
                         sidebarCollapsed ? 'px-2 flex justify-center' : 'px-4'
                     ]"
                 >
@@ -318,30 +318,54 @@
                 </div>
             </div>
         </main>
+
+        <!-- Confirm Modal untuk Logout -->
+        <ConfirmModal
+            :visible="confirmModal.visible"
+            :title="confirmModal.title"
+            :message="confirmModal.message"
+            @confirm="handleConfirmLogout"
+            @cancel="closeConfirmModal"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 /* sidebar */
 const sidebarCollapsed = ref(false);
+const confirmModal = ref({ visible: false, title: "", message: "" });
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
 /* logout */
-const logout = async () => {
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-        try {
-            await axios.post("/logout");
-            window.location.href = "/login";
-        } catch (error) {
-            console.error("Error logging out:", error);
-            // Tetap redirect meskipun ada error
-            window.location.href = "/login";
-        }
+const logout = () => {
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Keluar",
+        message: "Apakah Anda yakin ingin keluar?"
+    };
+};
+
+const closeConfirmModal = () => {
+    confirmModal.value.visible = false;
+};
+
+const handleConfirmLogout = async () => {
+    closeConfirmModal();
+    
+    try {
+        await axios.post("/logout");
+        window.location.href = "/login";
+    } catch (error) {
+        console.error("Error logging out:", error);
+        // Tetap redirect meskipun ada error
+        window.location.href = "/login";
     }
 };
 </script>
