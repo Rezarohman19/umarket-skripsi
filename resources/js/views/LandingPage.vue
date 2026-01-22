@@ -5,9 +5,7 @@
             <aside
                 v-if="user"
                 :class="[
-                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex-col z-10',
-                    // Hidden on mobile, visible on desktop
-                    'hidden md:flex',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
@@ -234,10 +232,10 @@
                 :class="[
                     'flex-1 transition-all duration-300',
                     user && sidebarCollapsed
-                        ? 'md:ml-16'
+                        ? 'ml-16'
                         : user
-                        ? 'md:ml-64'
-                        : 'md:ml-0',
+                        ? 'ml-64'
+                        : 'ml-0',
                 ]"
             >
                 <!-- Header -->
@@ -384,6 +382,44 @@
                         </button>
                     </div>
                 </header>
+
+                <!-- Mobile Search Bar (Expandable) -->
+                <transition
+                    enter-active-class="transition duration-200 ease-out"
+                    enter-from-class="transform -translate-y-4 opacity-0"
+                    enter-to-class="transform translate-y-0 opacity-100"
+                    leave-active-class="transition duration-150 ease-in"
+                    leave-from-class="transform translate-y-0 opacity-100"
+                    leave-to-class="transform -translate-y-4 opacity-0"
+                >
+                    <div
+                        v-if="showMobileSearch"
+                        class="md:hidden bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 px-4 py-3 sticky top-[4.5rem] z-10 shadow-sm"
+                    >
+                        <div class="relative">
+                            <input
+                                v-model="searchQuery"
+                                type="text"
+                                placeholder="Cari produk..."
+                                class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                autoFocus
+                            />
+                            <svg
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </transition>
 
                 <!-- Website Info Card (hanya tampil jika bukan dari tombol back login) -->
                 <div v-if="showWelcomeCard && !user" class="p-3 sm:p-6 pb-0">
