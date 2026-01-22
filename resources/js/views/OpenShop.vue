@@ -952,11 +952,11 @@
                                             >
                                                 {{ p.name }}
                                             </div>
-                                        <div
-                                            class="text-sm text-[#EF3B33] dark:text-[#EF3B33]"
-                                        >
-                                            {{ p.category?.name || "-" }}
-                                        </div>
+                                            <div
+                                                class="text-sm text-[#EF3B33] dark:text-[#EF3B33] truncate"
+                                            >
+                                                {{ p.category?.name || "-" }}
+                                            </div>
                                         <div
                                             class="text-sm text-[#1D1842] dark:text-[#FDA1A2]"
                                         >
