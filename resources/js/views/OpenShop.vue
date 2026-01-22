@@ -738,18 +738,6 @@
                                     >
                                         Kirim Paket
                                     </button>
-                                    <button
-                                        v-if="order.status === 'shipping'"
-                                        @click="
-                                            updateOrderStatus(
-                                                order.id,
-                                                'delivered'
-                                            )
-                                        "
-                                        class="px-3 py-1.5 bg-[#8E0D3C] text-white rounded-lg text-xs font-medium"
-                                    >
-                                        Tandai Diterima
-                                    </button>
                                 </div>
                             </div>
                         </div>

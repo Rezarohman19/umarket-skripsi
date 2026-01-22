@@ -18,7 +18,7 @@
                 class="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-md"
                 :class="
                     type === 'success'
-                        ? 'bg-[#EF3B33]/10 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#EF3B33]'
+                        ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
                         : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
                 "
             >
@@ -60,7 +60,7 @@
                 class="text-xl font-bold mb-2"
                 :class="
                     type === 'success'
-                        ? 'text-[#EF3B33] dark:text-[#FDA1A2]'
+                        ? 'text-green-600 dark:text-green-400'
                         : 'text-red-600 dark:text-red-400'
                 "
             >

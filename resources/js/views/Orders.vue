@@ -775,6 +775,14 @@ const getPurchaseActions = (status, transaction) => {
             variant: "secondary",
         });
     }
+    // Tambahkan tombol "Tandai Diterima" untuk status dikirim (shipping)
+    if (status === "dikirim" || transaction?.status === "shipping") {
+        actions.push({
+            label: "Tandai Diterima",
+            type: "mark_delivered",
+            variant: "primary",
+        });
+    }
     return actions;
 };
 
@@ -788,6 +796,8 @@ const handleAction = (type, orderGroup) => {
         handleContinuePayment(orderGroup);
     } else if (type === "contact") {
         contactSellerWhatsApp(orderGroup);
+    } else if (type === "mark_delivered") {
+        handleMarkDelivered(orderGroup);
     }
 };
 
@@ -940,6 +950,7 @@ const contactSellerWhatsApp = (orderGroup) => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, "_blank");
 };
+
 const handleOpenShop = () => {
     if (!user.value) {
         window.location.href = "/login";
