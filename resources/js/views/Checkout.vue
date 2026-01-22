@@ -230,6 +230,128 @@
             </div>
         </div>
 
+        <!-- Payment Modal -->
+        <transition name="modal">
+            <div
+                v-if="showPaymentModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            >
+                <div
+                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                >
+                    <h3
+                        class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
+                    >
+                        Penyelesaian Pembayaran
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Silakan selesaikan pembayaran untuk setiap toko.
+                    </p>
+
+                    <div class="space-y-4 mb-6 max-h-[60vh] overflow-y-auto">
+                        <div
+                            v-for="(t, index) in paymentTransactions"
+                            :key="index"
+                            class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+                            :class="{
+                                'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50':
+                                    currentPaymentIndex === index,
+                                'opacity-50':
+                                    currentPaymentIndex < index &&
+                                    t.status !== 'success',
+                            }"
+                        >
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p
+                                        class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
+                                    >
+                                        {{ t.seller_name || "Toko" }}
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ t.transaction?.order_id }}
+                                    </p>
+                                </div>
+                                <span class="font-bold text-[#EF3B33]"
+                                    >Rp {{ formatPrice(t.total) }}</span
+                                >
+                            </div>
+
+                            <div class="flex justify-between items-center mt-3">
+                                <span
+                                    class="text-xs px-2 py-1 rounded-full"
+                                    :class="{
+                                        'bg-green-100 text-green-800':
+                                            t.status === 'success' ||
+                                            t.status === 'settlement',
+                                        'bg-yellow-100 text-yellow-800':
+                                            t.status === 'pending',
+                                        'bg-red-100 text-red-800':
+                                            t.status === 'failed',
+                                        'bg-gray-100 text-gray-800': !t.status,
+                                    }"
+                                >
+                                    {{ getStatusLabel(t.status) }}
+                                </span>
+
+                                <button
+                                    v-if="
+                                        t.status !== 'success' &&
+                                        t.status !== 'settlement'
+                                    "
+                                    @click="processPayment(index)"
+                                    :disabled="currentPaymentIndex !== index"
+                                    class="px-3 py-1.5 bg-[#EF3B33] text-white text-sm rounded-md shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-[#D12B24] transition-colors"
+                                >
+                                    {{
+                                        currentPaymentIndex === index
+                                            ? "Bayar Sekarang"
+                                            : "Menunggu"
+                                    }}
+                                </button>
+                                <span
+                                    v-else
+                                    class="text-green-600 text-sm font-medium flex items-center"
+                                >
+                                    <svg
+                                        class="w-4 h-4 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M5 13l4 4L19 7"
+                                        ></path>
+                                    </svg>
+                                    Berhasil
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                        <button
+                            v-if="allPaymentsCompleted"
+                            @click="finishPaymentProcess"
+                            class="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-semibold shadow-lg hover:bg-green-700"
+                        >
+                            Selesai & Lihat Pesanan
+                        </button>
+                        <button
+                            v-else
+                            @click="finishPaymentProcess"
+                            class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600"
+                        >
+                            Tutup & Cek Pesanan Saya
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
         <!-- Address Modal -->
         <transition name="modal">
             <div
@@ -429,64 +551,41 @@ const saveAddress = () => {
     // Bisa juga simpan ke backend jika perlu
 };
 
-const loadMidtransAndRedirect = (snapToken, transactionId) => {
-    // Cek apakah Midtrans Snap SDK sudah dimuat
-    if (window.snap) {
-        // Langsung redirect ke Midtrans
-        window.snap.pay(snapToken, {
-            onSuccess: function (result) {
-                console.log("Payment success:", result);
-                // Redirect ke order confirmation setelah pembayaran berhasil
-                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-            },
-            onPending: function (result) {
-                console.log("Payment pending:", result);
-                // Redirect ke order confirmation untuk menunggu konfirmasi
-                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-            },
-            onError: function (result) {
-                console.error("Payment error:", result);
-                alert("Pembayaran gagal. Silakan coba lagi.");
-                // Tetap redirect ke order confirmation untuk melihat detail pesanan
-                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-            },
-            onClose: function () {
-                console.log("Payment modal closed");
-                // User menutup halaman pembayaran, redirect ke order confirmation
-                window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-            },
-        });
-    } else {
-        // Load Midtrans Snap SDK terlebih dahulu
-        const script = document.createElement("script");
-        script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-        script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
-        script.onload = () => {
-            // Setelah SDK dimuat, redirect ke Midtrans
-            if (window.snap) {
-                window.snap.pay(snapToken, {
-                    onSuccess: function (result) {
-                        console.log("Payment success:", result);
-                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-                    },
-                    onPending: function (result) {
-                        console.log("Payment pending:", result);
-                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-                    },
-                    onError: function (result) {
-                        console.error("Payment error:", result);
-                        alert("Pembayaran gagal. Silakan coba lagi.");
-                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-                    },
-                    onClose: function () {
-                        console.log("Payment modal closed");
-                        window.location.href = `/order-confirmation?transaction_id=${transactionId}`;
-                    },
-                });
-            }
-        };
-        document.head.appendChild(script);
+const paymentTransactions = ref([]);
+const showPaymentModal = ref(false);
+const currentPaymentIndex = ref(0);
+
+const allPaymentsCompleted = computed(() => {
+    return paymentTransactions.value.every(
+        (t) => t.status === "success" || t.status === "settlement",
+    );
+});
+
+const getStatusLabel = (status) => {
+    switch (status) {
+        case "success":
+            return "Berhasil";
+        case "settlement":
+            return "Berhasil";
+        case "pending":
+            return "Menunggu Pembayaran";
+        case "failed":
+            return "Gagal";
+        default:
+            return "Belum Dibayar";
     }
+};
+
+const ensureMidtransLoaded = (callback) => {
+    if (window.snap) {
+        callback();
+        return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
+    script.onload = () => callback();
+    document.head.appendChild(script);
 };
 
 const handleConfirmPayment = async () => {
@@ -523,8 +622,18 @@ const handleConfirmPayment = async () => {
             response.data.transactions.length > 0
         ) {
             localStorage.removeItem("checkout_items");
-            await payTransactionsSequentially(response.data.transactions);
-            return;
+            checkoutItems.value = []; // Clear items to prevent double checkout
+
+            paymentTransactions.value = response.data.transactions.map((t) => ({
+                ...t,
+                status: null, // pending, success, failed
+            }));
+
+            showPaymentModal.value = true;
+            currentPaymentIndex.value = 0;
+
+            // Auto start first payment
+            processPayment(0);
         }
     } catch (error) {
         console.error("Error during checkout:", error);
@@ -533,22 +642,14 @@ const handleConfirmPayment = async () => {
         let message = "Gagal melakukan checkout";
 
         if (error.response) {
-            // Ada response dari server
             message =
                 error.response.data?.message ||
                 error.response.data?.error ||
                 message;
-
-            // Tampilkan error detail untuk debugging
-            if (error.response.data?.error) {
-                console.error("Error detail:", error.response.data.error);
-            }
         } else if (error.request) {
-            // Request dikirim tapi tidak ada response
             message =
                 "Tidak ada response dari server. Pastikan server berjalan dan database terkoneksi.";
         } else {
-            // Error saat setup request
             message = error.message || message;
         }
 
@@ -558,76 +659,67 @@ const handleConfirmPayment = async () => {
     }
 };
 
-const ensureMidtransLoaded = (callback) => {
-    if (window.snap) {
-        callback();
-        return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-    script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
-    script.onload = () => callback();
-    document.head.appendChild(script);
+const processPayment = (index) => {
+    if (index >= paymentTransactions.value.length) return;
+
+    currentPaymentIndex.value = index;
+    const t = paymentTransactions.value[index];
+
+    ensureMidtransLoaded(() => {
+        window.snap.pay(t.snap_token, {
+            onSuccess: function (result) {
+                console.log("Payment success:", result);
+                updateTransactionStatus(index, "success");
+            },
+            onPending: function (result) {
+                console.log("Payment pending:", result);
+                updateTransactionStatus(index, "pending");
+            },
+            onError: function (result) {
+                console.error("Payment error:", result);
+                updateTransactionStatus(index, "failed");
+            },
+            onClose: function () {
+                console.log("Payment modal closed");
+                // Do not auto-advance if closed, let user click again or close modal
+            },
+        });
+    });
 };
 
-const payTransactionsSequentially = async (transactions) => {
-    const process = (index) => {
-        if (index >= transactions.length) {
-            const lastId =
-                transactions[transactions.length - 1]?.transaction?.id;
-            if (lastId) {
-                window.location.href = `/order-confirmation?transaction_id=${lastId}`;
+const updateTransactionStatus = (index, status) => {
+    if (paymentTransactions.value[index]) {
+        paymentTransactions.value[index].status = status;
+
+        // Auto advance logic
+        if (
+            status === "success" ||
+            status === "settlement" ||
+            status === "pending"
+        ) {
+            if (index + 1 < paymentTransactions.value.length) {
+                setTimeout(() => {
+                    processPayment(index + 1);
+                }, 1000);
             } else {
-                window.location.href = `/order-confirmation`;
+                // All done
+                setTimeout(() => {
+                    finishPaymentProcess();
+                }, 1000);
             }
-            return;
         }
-        const t = transactions[index];
-        const transactionId = t.transaction?.id;
+    }
+};
 
-        const confirmationData = {
-            transactionId: transactionId,
-            orderId: t.transaction?.order_id || `ORDER-${transactionId}`,
-            totalPrice: t.total,
-            paymentMethod: "midtrans",
-            paymentStatus: t.transaction?.status || "pending",
-            orderItems: Array.isArray(t.items) ? t.items : checkoutItems.value,
-            shippingAddress: shippingAddress.value,
-            snapToken: t.snap_token,
-            orderDate: new Date().toLocaleDateString("id-ID", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-            }),
-        };
-        localStorage.setItem(
-            "order_confirmation",
-            JSON.stringify(confirmationData),
-        );
-
-        ensureMidtransLoaded(() => {
-            window.snap.pay(t.snap_token, {
-                onSuccess: function () {
-                    process(index + 1);
-                },
-                onPending: function () {
-                    process(index + 1);
-                },
-                onError: function () {
-                    alert(
-                        "Pembayaran gagal untuk salah satu toko. Anda dapat mencoba lagi dari halaman pesanan.",
-                    );
-                    process(index + 1);
-                },
-                onClose: function () {
-                    process(index + 1);
-                },
-            });
-        });
-    };
-    process(0);
+const finishPaymentProcess = () => {
+    const lastId =
+        paymentTransactions.value[paymentTransactions.value.length - 1]
+            ?.transaction?.id;
+    if (lastId) {
+        window.location.href = `/order-confirmation?transaction_id=${lastId}`;
+    } else {
+        window.location.href = `/orders`;
+    }
 };
 onMounted(async () => {
     await fetchUserProfile();
