@@ -668,7 +668,10 @@ const fetchTransactions = async () => {
 
         // Fetch pembelian (transaksi sebagai pembeli)
         const purchaseResponse = await axios.get("/api/transactions");
-        const purchaseTransactions = purchaseResponse.data || [];
+        let purchaseTransactions = purchaseResponse.data || [];
+        purchaseTransactions = purchaseTransactions.filter(
+            (t) => t.transaction_type !== "parent"
+        );
 
         // Map transactions pembelian ke format yang diharapkan oleh UI
         orders.value = purchaseTransactions.flatMap((transaction) => {
