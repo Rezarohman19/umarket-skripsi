@@ -5,7 +5,7 @@
             <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
                 <button
                     @click="goBack"
-                    class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] hover:text-[#EF3B33] transition-colors cursor-pointer"
+                    class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] hover:text-[#EF3B33] transition-all duration-150 cursor-pointer hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/20 rounded-lg px-3 py-2 active:scale-95"
                 >
                     <svg
                         class="w-5 h-5"

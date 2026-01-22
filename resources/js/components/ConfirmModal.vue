@@ -43,13 +43,13 @@
             <div class="flex items-center gap-3 w-full">
                 <button
                     @click="$emit('cancel')"
-                    class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer active:scale-95"
                 >
                     Batal
                 </button>
                 <button
                     @click="$emit('confirm')"
-                    class="flex-1 px-4 py-2.5 rounded-xl bg-[#EF3B33] text-white font-medium hover:bg-[#d92f25] shadow-md transition-colors"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-[#EF3B33] text-white font-medium hover:bg-[#d92f25] shadow-md transition-colors cursor-pointer active:scale-95 active:shadow-inner"
                 >
                     Ya
                 </button>

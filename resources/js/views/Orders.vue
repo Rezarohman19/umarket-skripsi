@@ -501,10 +501,10 @@
                                         handleAction(action.type, orderGroup)
                                     "
                                     :class="[
-                                        'px-4 py-2 rounded-full text-sm font-medium',
+                                        'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-150',
                                         action.variant === 'primary'
-                                            ? 'bg-[#EF3B33] text-white shadow-md'
-                                            : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2]',
+                                            ? 'bg-[#EF3B33] text-white shadow-md hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner'
+                                            : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 active:scale-95',
                                     ]"
                                 >
                                     {{ action.label }}
@@ -513,7 +513,7 @@
                                 <!-- Contact Seller WhatsApp Button -->
                                 <button
                                     @click="contactSellerWhatsApp(orderGroup)"
-                                    class="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-full text-sm font-medium shadow-md transition-colors"
+                                    class="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-full text-sm font-medium shadow-md transition-all duration-150 cursor-pointer hover:shadow-lg active:scale-95 active:shadow-inner"
                                     title="Hubungi penjual melalui WhatsApp"
                                 >
                                     <svg
@@ -541,13 +541,21 @@
             </main>
         </div>
 
-        <!-- Confirm Modal untuk Logout -->
+        <!-- Confirm Modal -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
             :message="confirmModal.message"
-            @confirm="handleConfirmLogout"
+            @confirm="handleConfirm"
             @cancel="closeConfirmModal"
+        />
+
+        <!-- Toast Notification -->
+        <ToastNotification
+            :visible="toast.visible"
+            :message="toast.message"
+            :type="toast.type"
+            @close="toast.visible = false"
         />
     </div>
 </template>
@@ -556,12 +564,14 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
+import ToastNotification from "../components/ToastNotification.vue";
 
 const sidebarCollapsed = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");
-const confirmModal = ref({ visible: false, title: "", message: "" });
+const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
+const toast = ref({ visible: false, message: "", type: "success" });
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -645,6 +655,7 @@ const getStatusLabel = (status) => {
         processing: "Diproses",
         shipping: "Dikirim",
         completed: "Selesai",
+        delivered: "Selesai",
         failed: "Gagal",
     };
     return statusMap[status] || status;
@@ -668,6 +679,8 @@ const getStatusBadgeClass = (status) => {
         shipping:
             "bg-[#8E0D3C]/20 dark:bg-[#8E0D3C]/30 text-[#8E0D3C] dark:text-[#FDA1A2]",
         completed:
+            "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
+        delivered:
             "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
         failed: "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
     };
@@ -790,13 +803,7 @@ const getPurchaseActions = (status, transaction) => {
             variant: "primary",
         });
     }
-    if (status === "dikemas" || status === "dikirim") {
-        actions.push({
-            label: "Hubungi Penjual",
-            type: "contact",
-            variant: "secondary",
-        });
-    }
+    // Hapus tombol "Hubungi Penjual" abu-abu, karena sudah ada tombol WhatsApp hijau
     // Tambahkan tombol "Tandai Diterima" untuk status dikirim (shipping)
     if (status === "dikirim" || transaction?.status === "shipping") {
         actions.push({
@@ -821,6 +828,47 @@ const handleAction = (type, orderGroup) => {
     } else if (type === "mark_delivered") {
         handleMarkDelivered(orderGroup);
     }
+};
+
+const handleMarkDelivered = (orderGroup) => {
+    if (!user.value) {
+        window.location.href = "/login";
+        return;
+    }
+
+    // Tampilkan confirm modal dengan onConfirm callback
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Penerimaan",
+        message: "Apakah Anda yakin pesanan ini sudah diterima?",
+        onConfirm: async () => {
+            try {
+                const transactionId = orderGroup.transaction_id || orderGroup.transaction?.id;
+                if (!transactionId) {
+                    throw new Error("Transaction ID tidak ditemukan");
+                }
+
+                await axios.post(`/api/transactions/${transactionId}/mark-delivered`);
+
+                // Refresh transactions untuk update status
+                await fetchTransactions();
+
+                toast.value = {
+                    visible: true,
+                    message: "Pesanan berhasil ditandai diterima",
+                    type: "success"
+                };
+            } catch (error) {
+                console.error("Error marking as delivered:", error);
+                const message = error.response?.data?.message || "Gagal menandai pesanan diterima";
+                toast.value = {
+                    visible: true,
+                    message: message,
+                    type: "error"
+                };
+            }
+        }
+    };
 };
 
 const handleContinuePayment = (orderGroup) => {
@@ -1008,28 +1056,48 @@ const handleLogout = () => {
         return;
     }
 
-    // Tampilkan confirm modal
+    // Tampilkan confirm modal (tanpa onConfirm, akan dihandle oleh handleConfirm default)
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
         message: "Apakah Anda yakin ingin keluar?",
+        onConfirm: null
     };
 };
 
 const closeConfirmModal = () => {
     confirmModal.value.visible = false;
+    confirmModal.value.onConfirm = null;
 };
 
-const handleConfirmLogout = async () => {
-    closeConfirmModal();
-
-    try {
-        await axios.post("/logout");
-        window.location.href = "/login";
-    } catch (error) {
-        console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
-        window.location.href = "/login";
+const handleConfirm = async () => {
+    // Cek apakah ada onConfirm function (untuk action selain logout)
+    if (confirmModal.value.onConfirm && typeof confirmModal.value.onConfirm === 'function') {
+        // Simpan onConfirm function sebelum close modal
+        const onConfirmFn = confirmModal.value.onConfirm;
+        
+        // Close modal dan reset onConfirm
+        confirmModal.value.visible = false;
+        confirmModal.value.onConfirm = null;
+        
+        // Jalankan onConfirm (setelah modal ditutup)
+        try {
+            await onConfirmFn();
+        } catch (error) {
+            console.error("Error in confirm action:", error);
+            // Error sudah dihandle di onConfirm function masing-masing
+        }
+    } else {
+        // Default: handle logout (backward compatibility)
+        closeConfirmModal();
+        try {
+            await axios.post("/logout");
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Error logging out:", error);
+            // Tetap redirect meskipun ada error
+            window.location.href = "/";
+        }
     }
 };
 

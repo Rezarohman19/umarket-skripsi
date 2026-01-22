@@ -29,7 +29,7 @@
                     <button 
                         @click="toggleSidebar" 
                         :class="[
-                            'p-2 rounded-lg hover:bg-[#EF3B33]/20 transition',
+                            'p-2 rounded-lg hover:bg-[#EF3B33]/20 transition-all duration-150 cursor-pointer active:scale-95',
                             sidebarCollapsed ? 'w-full flex justify-center' : ''
                         ]"
                     >
@@ -410,7 +410,7 @@
                                         :disabled="
                                             !store.balance || store.balance <= 0
                                         "
-                                        class="px-6 py-3 bg-[#EF3B33] hover:bg-[#d92f25] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-md transition-colors whitespace-nowrap"
+                                        class="px-6 py-3 bg-[#EF3B33] hover:bg-[#d92f25] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-md transition-all duration-150 cursor-pointer hover:shadow-lg active:scale-95 active:shadow-inner whitespace-nowrap"
                                     >
                                         Tarik Saldo
                                     </button>
@@ -422,7 +422,7 @@
                             <button
                                 @click="showOrdersSection('paid')"
                                 :class="[
-                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'paid'
                                         ? 'ring-2 ring-[#EF3B33] dark:ring-[#FDA1A2]'
                                         : '',
@@ -442,7 +442,7 @@
                             <button
                                 @click="showOrdersSection('processing')"
                                 :class="[
-                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'processing'
                                         ? 'ring-2 ring-[#FDA1A2] dark:ring-[#FDA1A2]'
                                         : '',
@@ -462,7 +462,7 @@
                             <button
                                 @click="showOrdersSection('shipping')"
                                 :class="[
-                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'shipping'
                                         ? 'ring-2 ring-[#8E0D3C] dark:ring-[#8E0D3C]'
                                         : '',
@@ -482,7 +482,7 @@
                             <button
                                 @click="showOrdersSection('history')"
                                 :class="[
-                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer',
+                                    'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'history'
                                         ? 'ring-2 ring-[#1D1842] dark:ring-[#1D1842]'
                                         : '',
@@ -516,7 +516,7 @@
                                 </h2>
                                 <button
                                     @click="activeOrderSection = null"
-                                    class="p-1 text-gray-500"
+                                    class="p-1 text-gray-500 cursor-pointer transition-all duration-150 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 rounded active:scale-95"
                                     title="Tutup"
                                 >
                                     <svg
@@ -727,16 +727,32 @@
                                                 'processing'
                                             )
                                         "
-                                        class="px-3 py-1.5 bg-[#EF3B33] text-white rounded-lg text-xs font-medium"
+                                        class="px-3 py-1.5 bg-[#EF3B33] text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
                                     >
                                         Mulai Kemas
                                     </button>
                                     <button
                                         v-if="order.status === 'processing'"
-                                        @click="showShippingModal(order)"
-                                        class="px-3 py-1.5 bg-[#FDA1A2] text-white rounded-lg text-xs font-medium"
+                                        @click="contactBuyer(order)"
+                                        class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner flex items-center gap-1"
                                     >
-                                        Kirim Paket
+                                        <svg
+                                            class="w-4 h-4"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.718.997 5.335 2.823 7.357L2.667 24l7.994-2.59a9.874 9.874 0 004.772 1.286h.005c5.432 0 9.748-4.317 9.748-9.747 0-2.605-.994-5.052-2.799-6.897a9.875 9.875 0 00-7.035-2.9"
+                                            />
+                                        </svg>
+                                        Hubungi Pembeli
+                                    </button>
+                                    <button
+                                        v-if="order.status === 'processing'"
+                                        @click="updateOrderStatus(order.id, 'shipping')"
+                                        class="px-3 py-1.5 bg-[#EF3B33] text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
+                                    >
+                                        Tandai Dikirim
                                     </button>
                                 </div>
                             </div>
@@ -754,7 +770,7 @@
                                 Produk
                             </h2>
                             <button
-                                class="px-4 py-2 bg-[#EF3B33] text-white text-sm font-medium rounded-lg shadow-md"
+                                class="px-4 py-2 bg-[#EF3B33] text-white text-sm font-medium rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
                                 @click="toggleForm"
                             >
                                 + Tambah Produk
@@ -881,13 +897,13 @@
                                 </div>
                                 <div class="flex justify-end gap-2">
                                     <button
-                                        class="px-4 py-2 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg"
+                                        class="px-4 py-2 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg cursor-pointer transition-all duration-150 hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 hover:shadow-lg active:scale-95 active:shadow-inner"
                                         @click="cancelForm"
                                     >
                                         Batal
                                     </button>
                                     <button
-                                        class="px-4 py-2 bg-[#EF3B33] text-white rounded-lg shadow-md"
+                                        class="px-4 py-2 bg-[#EF3B33] text-white rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
                                         @click="submitForm"
                                     >
                                         {{
@@ -949,13 +965,13 @@
                                         </div>
                                         <div class="flex gap-2">
                                             <button
-                                                class="px-3 py-1 text-xs rounded-full bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2]"
+                                                class="px-3 py-1 text-xs rounded-full bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer transition-all duration-150 hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 hover:shadow-md active:scale-95 active:shadow-inner"
                                                 @click="editProduct(p)"
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]"
+                                                class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2] cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/30 dark:hover:bg-[#EF3B33]/30 hover:shadow-md active:scale-95 active:shadow-inner"
                                                 @click="deleteProduct(p.id)"
                                             >
                                                 Hapus
@@ -1178,8 +1194,16 @@
             :visible="confirmModal.visible"
             :title="confirmModal.title"
             :message="confirmModal.message"
-            @confirm="handleConfirmLogout"
+            @confirm="handleConfirm"
             @cancel="closeConfirmModal"
+        />
+
+        <!-- Toast Notification -->
+        <ToastNotification
+            :visible="toast.visible"
+            :message="toast.message"
+            :type="toast.type"
+            @close="toast.visible = false"
         />
     </div>
 </template>
@@ -1188,12 +1212,14 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
+import ToastNotification from "../components/ToastNotification.vue";
 
 const sidebarCollapsed = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");
-const confirmModal = ref({ visible: false, title: "", message: "" });
+const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
+const toast = ref({ visible: false, message: "", type: "success" });
 
 const store = ref({
     name: "Nama Toko",
@@ -1398,6 +1424,35 @@ const handleLogout = () => {
 
 const closeConfirmModal = () => {
     confirmModal.value.visible = false;
+    // Jangan reset onConfirm di sini, biarkan handleConfirmAction yang handle
+};
+
+const handleConfirm = async () => {
+    // Cek apakah ada onConfirm function (untuk action selain logout)
+    if (confirmModal.value.onConfirm && typeof confirmModal.value.onConfirm === 'function') {
+        // Simpan onConfirm function sebelum close modal
+        const onConfirmFn = confirmModal.value.onConfirm;
+        
+        // Close modal dan reset onConfirm
+        confirmModal.value.visible = false;
+        confirmModal.value.onConfirm = null;
+        
+        // Jalankan onConfirm (setelah modal ditutup)
+        try {
+            await onConfirmFn();
+        } catch (error) {
+            console.error("Error in confirm action:", error);
+            // Tampilkan error toast jika ada
+            toast.value = {
+                visible: true,
+                message: error.response?.data?.message || "Terjadi kesalahan",
+                type: "error"
+            };
+        }
+    } else {
+        // Jika tidak ada onConfirm, berarti ini untuk logout
+        handleConfirmLogout();
+    }
 };
 
 const handleConfirmLogout = async () => {
@@ -1405,11 +1460,11 @@ const handleConfirmLogout = async () => {
     
     try {
         await axios.post("/logout");
-        window.location.href = "/login";
+        window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
         // Tetap redirect meskipun ada error
-        window.location.href = "/login";
+        window.location.href = "/";
     }
 };
 
@@ -1474,19 +1529,40 @@ const editProduct = (p) => {
     showForm.value = true;
 };
 
-const deleteProduct = async (id) => {
-    if (!confirm("Hapus produk ini?")) return;
-    try {
-        await axios.delete(`/api/products/${id}`);
-        await fetchProducts();
-    } catch (error) {
-        alert("Gagal menghapus produk");
-    }
+const deleteProduct = (id) => {
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Hapus",
+        message: "Hapus produk ini?",
+        onConfirm: async () => {
+            try {
+                await axios.delete(`/api/products/${id}`);
+                await fetchProducts();
+                
+                toast.value = {
+                    visible: true,
+                    message: "Produk berhasil dihapus",
+                    type: "success"
+                };
+            } catch (error) {
+                toast.value = {
+                    visible: true,
+                    message: "Gagal menghapus produk",
+                    type: "error"
+                };
+            }
+        }
+    };
 };
 
 const submitForm = async () => {
     if (!form.value.name || form.value.price < 0 || form.value.stock < 0) {
-        alert("Nama, harga, dan stok wajib diisi dengan benar");
+        toast.value = {
+            visible: true,
+            message: "Nama, harga, dan stok wajib diisi dengan benar",
+            type: "error"
+        };
         return;
     }
     const payload = new FormData();
@@ -1539,10 +1615,11 @@ const submitForm = async () => {
         showForm.value = false;
     } catch (error) {
         console.error("Error saving product:", error);
-        alert(
-            "Gagal menyimpan produk: " +
-                (error.response?.data?.message || error.message)
-        );
+        toast.value = {
+            visible: true,
+            message: "Gagal menyimpan produk: " + (error.response?.data?.message || error.message),
+            type: "error"
+        };
     }
 };
 
@@ -1691,41 +1768,99 @@ const fetchIncomingOrders = async () => {
     }
 };
 
-const updateOrderStatus = async (orderId, newStatus) => {
-    if (
-        !confirm(`Ubah status pesanan menjadi "${getStatusLabel(newStatus)}"?`)
-    ) {
+const updateOrderStatus = (orderId, newStatus) => {
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi",
+        message: `Ubah status pesanan menjadi "${getStatusLabel(newStatus)}"?`,
+        onConfirm: async () => {
+            try {
+                // Endpoint untuk update status pesanan
+                await axios.post(`/api/seller/orders/${orderId}/update-status`, {
+                    status: newStatus,
+                });
+
+                // Refresh orders
+                await fetchIncomingOrders();
+                
+                // Tampilkan toast sukses
+                toast.value = {
+                    visible: true,
+                    message: "Status pesanan berhasil diupdate",
+                    type: "success"
+                };
+            } catch (error) {
+                console.error("Error updating order status:", error);
+                const message =
+                    error.response?.data?.message || "Gagal mengupdate status";
+                toast.value = {
+                    visible: true,
+                    message: message,
+                    type: "error"
+                };
+            }
+        }
+    };
+};
+
+const contactBuyer = (order) => {
+    // Ambil nomor telepon pembeli dari shipping_address atau user
+    let phoneNumber = null;
+    let buyerName = order.buyer_name || "Pembeli";
+
+    // Coba ambil dari shipping_address.phone
+    if (order.shipping_address?.phone) {
+        phoneNumber = order.shipping_address.phone;
+        buyerName = order.shipping_address.name || buyerName;
+    }
+    // Fallback ke user.phone jika ada
+    else if (order.user?.phone) {
+        phoneNumber = order.user.phone;
+        buyerName = order.user.name || buyerName;
+    }
+
+    if (!phoneNumber) {
+        toast.value = {
+            visible: true,
+            message: "Nomor WhatsApp pembeli tidak tersedia",
+            type: "error"
+        };
         return;
     }
 
-    try {
-        // Endpoint untuk update status pesanan
-        // Akan dibuat di backend: POST /api/seller/orders/{id}/update-status
-        await axios.post(`/api/seller/orders/${orderId}/update-status`, {
-            status: newStatus,
-        });
+    // Format phone number untuk WhatsApp
+    phoneNumber = phoneNumber.toString().replace(/[^\d+]/g, "");
 
-        // Refresh orders
-        await fetchIncomingOrders();
-        alert("Status pesanan berhasil diupdate");
-    } catch (error) {
-        console.error("Error updating order status:", error);
-        const message =
-            error.response?.data?.message || "Gagal mengupdate status";
-        alert(message);
+    // Jika dimulai dengan 0, ganti dengan 62
+    if (phoneNumber.startsWith("0")) {
+        phoneNumber = "62" + phoneNumber.substring(1);
     }
-};
 
-const showShippingModal = (order) => {
-    selectedOrderId.value = order.id;
-    trackingNumber.value = order.tracking_number || "";
-    shippingCourier.value = order.shipping_courier || "jne";
-    showShippingForm.value = true;
+    // Jika belum ada +, tambahkan
+    if (!phoneNumber.startsWith("+")) {
+        phoneNumber = "+" + phoneNumber;
+    }
+
+    // Buat pesan default dengan detail pesanan
+    const orderId = order.id;
+    const itemsList = order.items.map(item => 
+        `- ${item.product?.name || 'Produk'} (${item.qty || item.quantity || 0} pcs)`
+    ).join('\n');
+    const message = `Halo ${buyerName},\n\nSaya ingin mengkonfirmasi pesanan Anda.\n\nID Pesanan: #${orderId}\nProduk:\n${itemsList}\nTotal: Rp. ${formatPrice(order.total_price || 0)}\n\nTerima kasih.`;
+
+    // Buka WhatsApp
+    const whatsappUrl = `https://wa.me/${phoneNumber.replace("+", "")}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
 };
 
 const confirmShipping = async () => {
     if (!trackingNumber.value.trim()) {
-        alert("Masukkan nomor resi terlebih dahulu");
+        toast.value = {
+            visible: true,
+            message: "Masukkan nomor resi terlebih dahulu",
+            type: "error"
+        };
         return;
     }
 
@@ -1747,12 +1882,21 @@ const confirmShipping = async () => {
 
         // Refresh orders
         await fetchIncomingOrders();
-        alert("Paket berhasil dikonfirmasi dikirim");
+        
+        toast.value = {
+            visible: true,
+            message: "Paket berhasil dikonfirmasi dikirim",
+            type: "success"
+        };
     } catch (error) {
         console.error("Error confirming shipping:", error);
         const message =
             error.response?.data?.message || "Gagal mengkonfirmasi pengiriman";
-        alert(message);
+        toast.value = {
+            visible: true,
+            message: message,
+            type: "error"
+        };
     }
 };
 
@@ -1797,44 +1941,48 @@ const confirmWithdraw = async () => {
         return;
     }
 
-    // Konfirmasi
-    if (
-        !confirm(
-            `Tarik saldo Rp ${formatPrice(
-                withdrawAmountNumber.value
-            )}?\n\nPencairan akan diproses dalam 1-2 hari kerja.`
-        )
-    ) {
-        return;
-    }
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Penarikan Saldo",
+        message: `Tarik saldo Rp ${formatPrice(withdrawAmountNumber.value)}?\n\nPencairan akan diproses dalam 1-2 hari kerja.`,
+        onConfirm: async () => {
+            try {
+                withdrawProcessing.value = true;
 
-    try {
-        withdrawProcessing.value = true;
+                const response = await axios.post("/api/seller/withdraw", {
+                    amount: withdrawAmountNumber.value,
+                    bank_account_id: withdrawBankId.value,
+                });
 
-        const response = await axios.post("/api/seller/withdraw", {
-            amount: withdrawAmountNumber.value,
-            bank_account_id: withdrawBankId.value,
-        });
+                // Reset form
+                withdrawAmount.value = "";
+                withdrawAmountNumber.value = 0;
+                withdrawBankId.value = "";
+                showWithdrawModal.value = false;
 
-        alert(
-            "Permintaan penarikan berhasil dibuat!\nStatus dapat dipantau di halaman profil Anda."
-        );
-
-        // Reset form
-        withdrawAmount.value = "";
-        withdrawAmountNumber.value = 0;
-        withdrawBankId.value = "";
-        showWithdrawModal.value = false;
-
-        // Refresh saldo
-        await fetchSellerBalance();
-    } catch (error) {
-        console.error("Error withdrawing balance:", error);
-        withdrawError.value =
-            error.response?.data?.message || "Gagal memproses penarikan saldo";
-    } finally {
-        withdrawProcessing.value = false;
-    }
+                // Refresh saldo
+                await fetchSellerBalance();
+                
+                toast.value = {
+                    visible: true,
+                    message: "Permintaan penarikan berhasil dibuat! Status dapat dipantau di halaman profil Anda.",
+                    type: "success"
+                };
+            } catch (error) {
+                console.error("Error withdrawing balance:", error);
+                withdrawError.value =
+                    error.response?.data?.message || "Gagal memproses penarikan saldo";
+                toast.value = {
+                    visible: true,
+                    message: error.response?.data?.message || "Gagal memproses penarikan saldo",
+                    type: "error"
+                };
+            } finally {
+                withdrawProcessing.value = false;
+            }
+        }
+    };
 };
 
 const fetchSellerBalance = async () => {

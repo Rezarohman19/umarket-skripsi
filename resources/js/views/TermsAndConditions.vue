@@ -361,11 +361,11 @@ const handleConfirmLogout = async () => {
     
     try {
         await axios.post("/logout");
-        window.location.href = "/login";
+        window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
         // Tetap redirect meskipun ada error
-        window.location.href = "/login";
+        window.location.href = "/";
     }
 };
 </script>
