@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] pb-24">
-        <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6">
+        <div class="max-w-6xl mx-auto py-4 sm:py-6 px-3 sm:px-4 md:px-6">
             <!-- Back Button -->
             <button
                 @click="goBack"
@@ -35,12 +35,12 @@
                 </p>
             </div>
 
-            <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 <!-- Left Column - Main Content -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Alamat Pengiriman -->
                     <div
-                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
                     >
                         <div class="flex items-center justify-between mb-4">
                             <h2
@@ -78,7 +78,7 @@
                         <div
                             v-for="group in groupedByStore"
                             :key="group.store_name"
-                            class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
+                            class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
                         >
                             <h2
                                 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
@@ -93,7 +93,7 @@
                                 >
                                     <!-- Product Image -->
                                     <div
-                                        class="w-20 h-20 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                                        class="w-16 h-16 sm:w-20 sm:h-20 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                                     >
                                         <img
                                             v-if="item.image_url"
@@ -169,7 +169,7 @@
                 <!-- Right Column - Ringkasan -->
                 <div class="lg:col-span-1">
                     <div
-                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 sticky top-6"
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 lg:sticky lg:top-6"
                     >
                         <h2
                             class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
@@ -207,7 +207,7 @@
                                 !shippingAddress.address ||
                                 hasInvalid
                             "
-                            class="w-full bg-[#EF3B33] disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg shadow-lg disabled:cursor-not-allowed"
+                            class="w-full bg-[#EF3B33] disabled:bg-gray-400 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-lg disabled:cursor-not-allowed text-sm sm:text-base"
                         >
                             <span v-if="processing">Memproses...</span>
                             <span v-else>Konfirmasi Pembayaran</span>
@@ -248,7 +248,7 @@
                         Silakan selesaikan pembayaran untuk setiap toko.
                     </p>
 
-                    <div class="space-y-4 mb-6 max-h-[60vh] overflow-y-auto">
+                    <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6 max-h-[50vh] sm:max-h-[60vh] overflow-y-auto">
                         <div
                             v-for="(t, index) in paymentTransactions"
                             :key="index"

@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] pb-24">
-        <div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 space-y-4">
+        <div class="max-w-5xl mx-auto py-4 sm:py-6 px-3 sm:px-4 md:px-6 space-y-4">
             <!-- Back -->
             <div
                 class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer"
@@ -25,7 +25,7 @@
             <!-- Title & Cart Icon -->
             <div class="flex items-center justify-between relative">
                 <div class="w-8"></div> <!-- Spacer for centering title -->
-                <h1 class="text-xl font-semibold text-center text-[#1D1842] dark:text-[#FDA1A2]">
+                <h1 class="text-lg sm:text-xl font-semibold text-center text-[#1D1842] dark:text-[#FDA1A2]">
                     Keranjang Saya
                 </h1>
                 <div class="w-8 flex justify-end">
@@ -108,19 +108,19 @@
                 <div
                     v-for="item in cartItems"
                     :key="item.id"
-                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 flex items-center gap-4"
+                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-4 flex items-start sm:items-center gap-3 sm:gap-4"
                 >
                     <!-- Checkbox -->
                     <input
                         type="checkbox"
                         :checked="selectedItems.includes(item.id)"
                         @change="toggleItem(item.id)"
-                        class="w-5 h-5 text-[#EF3B33] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded focus:outline-none cursor-pointer"
+                        class="w-4 h-4 sm:w-5 sm:h-5 text-[#EF3B33] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded focus:outline-none cursor-pointer flex-shrink-0"
                     />
 
                     <!-- Image -->
                     <div
-                        class="w-24 h-24 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center rounded-md overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                        class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center rounded-md overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20 flex-shrink-0"
                     >
                         <img
                             v-if="item.image_url"
@@ -145,7 +145,7 @@
                     </div>
 
                     <!-- Info -->
-                    <div class="flex-1">
+                    <div class="flex-1 min-w-0">
                         <p
                             class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33]"
                         >
@@ -169,21 +169,21 @@
                         </p>
                     </div>
 
-                    <div class="flex flex-col items-end gap-1">
-                        <div class="flex items-center gap-3">
+                    <div class="flex flex-col items-end gap-2 sm:gap-1 flex-shrink-0">
+                        <div class="flex items-center gap-2 sm:gap-3">
                             <button
-                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:border-[#EF3B33]/50 hover:shadow-md active:scale-95 active:shadow-inner"
+                                class="w-7 h-7 sm:w-8 sm:h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-base sm:text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:border-[#EF3B33]/50 hover:shadow-md active:scale-95 active:shadow-inner flex items-center justify-center"
                                 @click="decrease(item)"
                             >
                                 -
                             </button>
                             <div
-                                class="w-10 text-center text-[#1D1842] dark:text-[#FDA1A2] font-semibold"
+                                class="w-8 sm:w-10 text-center text-[#1D1842] dark:text-[#FDA1A2] font-semibold text-sm sm:text-base"
                             >
                                 {{ item.qty }}
                             </div>
                             <button
-                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:border-[#EF3B33]/50 hover:shadow-md active:scale-95 active:shadow-inner"
+                                class="w-7 h-7 sm:w-8 sm:h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-base sm:text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:border-[#EF3B33]/50 hover:shadow-md active:scale-95 active:shadow-inner flex items-center justify-center"
                                 @click="increase(item)"
                             >
                                 +
@@ -191,11 +191,11 @@
                             <!-- Delete Button (Moved here) -->
                             <button
                                 @click="removeItem(item)"
-                                class="p-1.5 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg ml-2 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:shadow-md active:scale-95 active:shadow-inner"
+                                class="p-1 sm:p-1.5 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg ml-1 sm:ml-2 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:shadow-md active:scale-95 active:shadow-inner"
                                 title="Hapus dari keranjang"
                             >
                                 <svg
-                                    class="w-5 h-5"
+                                    class="w-4 h-4 sm:w-5 sm:h-5"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -209,7 +209,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <p class="text-xs text-[#EF3B33] text-right w-full pr-1">
+                        <p class="text-xs text-[#EF3B33] text-right w-full pr-1 mt-1 sm:mt-0">
                             Sisa stok: {{ item.stock }}
                         </p>
                     </div>
@@ -224,7 +224,7 @@
             v-if="!loading && cartItems.length > 0 && selectedItems.length > 0"
             class="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1D1842] border-t border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg z-50"
         >
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+            <div class="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                 <div class="flex items-center justify-between">
                     <!-- Total -->
                     <div class="flex-1">
@@ -241,7 +241,7 @@
                     <!-- Checkout Button -->
                     <button
                         @click="handleCheckout"
-                        class="px-8 py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg ml-4 cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-xl active:scale-95 active:shadow-inner"
+                        class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg ml-2 sm:ml-4 cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-xl active:scale-95 active:shadow-inner text-sm sm:text-base"
                     >
                         Checkout ({{ selectedItems.length }})
                     </button>

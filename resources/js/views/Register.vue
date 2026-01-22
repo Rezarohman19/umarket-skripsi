@@ -13,10 +13,10 @@
             </div>
 
             <!-- Register Card -->
-            <div class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30">
+            <div class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-6 sm:p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30 max-h-[95vh] overflow-y-auto">
                 <!-- Title -->
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
                         Daftar
                     </h1>
                     <p class="text-sm text-gray-600 dark:text-gray-400">

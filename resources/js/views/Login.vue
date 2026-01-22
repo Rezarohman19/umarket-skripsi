@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] flex items-center justify-center p-4"
+        class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] flex items-center justify-center p-3 sm:p-4"
     >
         <div class="w-full max-w-md">
             <!-- Logo Container (klik untuk kembali ke landing page) -->
@@ -16,12 +16,12 @@
 
             <!-- Login Card -->
             <div
-                class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30"
+                class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-6 sm:p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30"
             >
                 <!-- Title -->
                 <div class="text-center mb-8">
                     <h1
-                        class="text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2"
+                        class="text-2xl sm:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2"
                     >
                         Masuk
                     </h1>
