@@ -469,12 +469,26 @@ Route::post('/api/cart/add', function (Request $request) {
 
     $cart = \App\Models\Cart::firstOrCreate(['user_id' => Auth::id()]);
 
+    $product = \App\Models\Product::find($validated['product_id']);
+    if (!$product) {
+        return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+    }
+
     $item = \App\Models\CartItem::firstOrCreate(
         ['cart_id' => $cart->id, 'product_id' => $validated['product_id']],
         ['qty' => 0]
     );
 
-    $item->qty += $validated['quantity'];
+    $currentQty = $item->qty;
+    $newQty = $currentQty + $validated['quantity'];
+
+    if ($newQty > $product->stock) {
+        return response()->json([
+            'message' => 'Stok tidak mencukupi. Sisa stok: ' . $product->stock . '. Anda sudah punya ' . $currentQty . ' di keranjang.'
+        ], 422);
+    }
+
+    $item->qty = $newQty;
     $item->save();
 
     return response()->json(['message' => 'Added to cart']);
@@ -535,7 +549,9 @@ Route::get('/api/cart/count', function () {
     $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
     if (!$cart) return response()->json(['count' => 0]);
 
-    $count = \App\Models\CartItem::where('cart_id', $cart->id)->sum('qty');
+    // Hitung jumlah item (per produk)
+    $count = \App\Models\CartItem::where('cart_id', $cart->id)->count();
+
     return response()->json(['count' => $count]);
 });
 

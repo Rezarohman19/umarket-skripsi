@@ -22,12 +22,37 @@
                 <span>Kembali</span>
             </div>
 
-            <!-- Title -->
-            <h1
-                class="text-xl font-semibold text-center text-[#1D1842] dark:text-[#FDA1A2]"
-            >
-                Keranjang Saya
-            </h1>
+            <!-- Title & Cart Icon -->
+            <div class="flex items-center justify-between relative">
+                <div class="w-8"></div> <!-- Spacer for centering title -->
+                <h1 class="text-xl font-semibold text-center text-[#1D1842] dark:text-[#FDA1A2]">
+                    Keranjang Saya
+                </h1>
+                <div class="w-8 flex justify-end">
+                    <div class="relative">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6 text-[#1D1842] dark:text-[#FDA1A2]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                            />
+                        </svg>
+                        <span
+                            v-if="cartCount > 0"
+                            class="absolute -top-2 -right-2 bg-[#EF3B33] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+                        >
+                            {{ cartCount }}
+                        </span>
+                    </div>
+                </div>
+            </div>
 
             <!-- Loading -->
             <div v-if="loading" class="text-center py-8">
@@ -144,47 +169,52 @@
                         </p>
                     </div>
 
-                    <!-- Quantity -->
-                    <div class="flex items-center gap-3">
-                        <button
-                            class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
-                            @click="decrease(item)"
-                        >
-                            -
-                        </button>
-                        <div
-                            class="w-10 text-center text-[#1D1842] dark:text-[#FDA1A2] font-semibold"
-                        >
-                            {{ item.qty }}
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex items-center gap-3">
+                            <button
+                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
+                                @click="decrease(item)"
+                            >
+                                -
+                            </button>
+                            <div
+                                class="w-10 text-center text-[#1D1842] dark:text-[#FDA1A2] font-semibold"
+                            >
+                                {{ item.qty }}
+                            </div>
+                            <button
+                                class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
+                                @click="increase(item)"
+                            >
+                                +
+                            </button>
+                            <!-- Delete Button (Moved here) -->
+                            <button
+                                @click="removeItem(item)"
+                                class="p-1.5 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg ml-2 hover:bg-[#EF3B33]/20 transition-colors"
+                                title="Hapus dari keranjang"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    />
+                                </svg>
+                            </button>
                         </div>
-                        <button
-                            class="w-8 h-8 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md text-lg text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
-                            @click="increase(item)"
-                        >
-                            +
-                        </button>
+                        <p class="text-xs text-[#EF3B33] text-right w-full pr-1">
+                            Sisa stok: {{ item.stock }}
+                        </p>
                     </div>
 
-                    <!-- Delete Button -->
-                    <button
-                        @click="removeItem(item)"
-                        class="p-2 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg"
-                        title="Hapus dari keranjang"
-                    >
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                        </svg>
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -219,15 +249,122 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast & Confirm -->
+    <ToastNotification
+        :visible="toast.visible"
+        :message="toast.message"
+        :type="toast.type"
+        @close="toast.visible = false"
+    />
+
+    <ConfirmModal
+        :visible="confirmModal.visible"
+        :title="confirmModal.title"
+        :message="confirmModal.message"
+        @confirm="handleConfirmAction"
+        @cancel="closeConfirmModal"
+    />
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
+import ToastNotification from "../components/ToastNotification.vue";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 const cartItems = ref([]);
 const loading = ref(true);
 const selectedItems = ref([]);
+const cartCount = ref(0);
+
+// Toast & Confirm State
+const toast = ref({ visible: false, message: "", type: "success" });
+const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
+
+const showToast = (message, type = "success") => {
+    toast.value = { visible: true, message, type };
+};
+
+const closeConfirmModal = () => {
+    confirmModal.value.visible = false;
+};
+
+const handleConfirmAction = () => {
+    if (confirmModal.value.onConfirm) confirmModal.value.onConfirm();
+    closeConfirmModal();
+};
+
+const removeItem = (item) => {
+    confirmModal.value = {
+        visible: true,
+        title: "Hapus Produk",
+        message: `Hapus "${item.product_name}" dari keranjang?`,
+        onConfirm: async () => {
+            try {
+                await axios.post(`/api/cart/remove/${item.id}`);
+                const index = selectedItems.value.indexOf(item.id);
+                if (index > -1) selectedItems.value.splice(index, 1);
+                cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
+                window.dispatchEvent(new CustomEvent("cartUpdated"));
+                showToast("Produk dihapus dari keranjang", "success");
+            } catch (error) {
+                console.error("Error removing item:", error);
+                showToast("Gagal menghapus produk", "error");
+            }
+        }
+    };
+};
+
+// ... existing code ...
+
+const increase = async (item) => {
+    const currentQty = parseInt(item.qty) || 0;
+    const newQty = currentQty + 1;
+    const stock = item.stock ?? 0;
+    
+    if (newQty > stock) {
+        showToast("Stok tidak mencukupi. Sisa stok: " + stock, "error");
+        return;
+    }
+
+    try {
+        await axios.post("/api/cart/update", { item_id: item.id, qty: newQty });
+        item.qty = newQty;
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+    } catch (error) {
+        console.error("Error updating quantity:", error);
+        showToast(error.response?.data?.message || "Gagal menambah", "error");
+        fetchCartItems(); 
+    }
+};
+
+const decrease = async (item) => {
+    const currentQty = parseInt(item.qty) || 0;
+    if (currentQty <= 1) return;
+
+    try {
+        const newQty = currentQty - 1;
+        await axios.post("/api/cart/update", { item_id: item.id, qty: newQty });
+        item.qty = newQty;
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+    } catch (error) {
+        console.error("Error updating quantity:", error);
+        showToast("Gagal mengurangi jumlah produk", "error");
+        fetchCartItems();
+    }
+};
+
+const handleCheckout = () => {
+    if (selectedItems.value.length === 0) {
+        showToast("Pilih minimal satu produk untuk checkout", "error");
+        return;
+    }
+    const itemIds = selectedItems.value.join(",");
+    window.location.href = `/checkout?items=${itemIds}`;
+};
+
+// ... rest of script ...
 
 const goBack = () => {
     // Cek apakah user datang dari halaman konfirmasi atau checkout
@@ -306,92 +443,21 @@ const fetchCartItems = async () => {
             qty: item.qty || item.quantity || 0,
             store_name: item.store_name || item.product?.user?.name || "Toko",
             image_url: item.product?.image_url || item.image_url || null,
+            stock: item.product?.stock || item.stock || 0,
         }));
     } catch (error) {
         console.error("Error fetching cart items:", error);
         cartItems.value = [];
     } finally {
         loading.value = false;
+        // Hitung cart count (per produk/item)
+        cartCount.value = cartItems.value.length;
     }
 };
 
-const increase = async (item) => {
-    const newQty = item.qty + 1;
-    const stock = item.product?.stock ?? item.stock ?? undefined;
-    if (stock !== undefined && newQty > stock) {
-        alert("Stok tidak mencukupi");
-        return;
-    }
-    try {
-        await axios.post("/api/cart/update", {
-            item_id: item.id,
-            qty: newQty,
-        });
-        item.qty = newQty;
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {
-        console.error("Error updating quantity:", error);
-        const message =
-            error.response?.data?.message || "Gagal menambah jumlah produk";
-        alert(message);
-    }
-};
+// Removing old duplicate functions to fix lint errors
+// The new functions were added at the top of the script.
 
-const decrease = async (item) => {
-    if (item.qty <= 1) return;
-
-    try {
-        const newQty = item.qty - 1;
-        await axios.post("/api/cart/update", {
-            item_id: item.id,
-            qty: newQty,
-        });
-        item.qty = newQty;
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {
-        console.error("Error updating quantity:", error);
-        alert("Gagal mengurangi jumlah produk");
-    }
-};
-
-const removeItem = async (item) => {
-    if (!confirm(`Hapus "${item.product_name}" dari keranjang?`)) {
-        return;
-    }
-
-    try {
-        // Hapus dari database via API
-        await axios.post(`/api/cart/remove/${item.id}`);
-
-        // Hapus dari selectedItems jika sedang terpilih
-        const index = selectedItems.value.indexOf(item.id);
-        if (index > -1) {
-            selectedItems.value.splice(index, 1);
-        }
-
-        cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
-
-        // Trigger custom event untuk update cart count di halaman lain
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {
-        console.error("Error removing item:", error);
-        alert(
-            "Gagal menghapus produk dari keranjang: " +
-                (error.response?.data?.message || error.message),
-        );
-    }
-};
-
-const handleCheckout = () => {
-    if (selectedItems.value.length === 0) {
-        alert("Pilih minimal satu produk untuk checkout");
-        return;
-    }
-
-    // Redirect ke halaman checkout dengan item IDs sebagai query parameter
-    const itemIds = selectedItems.value.join(",");
-    window.location.href = `/checkout?items=${itemIds}`;
-};
 
 onMounted(async () => {
     await fetchCartItems();
