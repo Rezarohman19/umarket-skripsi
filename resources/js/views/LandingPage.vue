@@ -479,7 +479,8 @@
                             <!-- Product Info -->
                             <div class="p-2 pb-1">
                                 <p
-                                    class="text-[10px] font-semibold text-gray-500 dark:text-gray-400"
+                                    @click.stop="goToStore(product.user_id || product.user?.id)"
+                                    class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:text-[#EF3B33] cursor-pointer transition-colors"
                                 >
                                     {{
                                         product.store_name ||
@@ -691,12 +692,12 @@ const filteredProducts = computed(() => {
         return products.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return products.value.filter(
-        (product) =>
-            product.name.toLowerCase().includes(query) ||
-            (product.description &&
-                product.description.toLowerCase().includes(query))
-    );
+    return products.value.filter((product) => {
+        const productName = product.name.toLowerCase();
+        const storeName = (product.store_name || product.user?.name || "").toLowerCase();
+        const description = (product.description || "").toLowerCase();
+        return productName.includes(query) || storeName.includes(query) || description.includes(query);
+    });
 });
 
 const getQuantity = (productId) => {
@@ -908,6 +909,11 @@ const handleProfile = () => {
 
 const goToProductDetail = (productId) => {
     window.location.href = `/product/${productId}`;
+};
+
+const goToStore = (userId) => {
+    if (!userId) return;
+    window.location.href = `/store/${userId}`;
 };
 
 const handleLogout = () => {

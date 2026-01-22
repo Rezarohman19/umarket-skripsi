@@ -36,6 +36,11 @@ Route::get('/contact-us', function () {
 })->name('contact-us');
 Route::post('/contact-us', [ContactController::class, 'store']);
 
+// Halaman toko (public)
+Route::get('/store/{user_id}', function () {
+    return view('store');
+})->name('store');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES - UNIFIED (ADMIN + USER)
@@ -204,6 +209,48 @@ Route::get('/api/products', function () {
         ]);
 
     return response()->json($products);
+});
+
+// Get products by store (user_id)
+Route::get('/api/store/{user_id}/products', function ($user_id) {
+    $products = \App\Models\Product::with('user:id,name,phone')
+        ->where('user_id', $user_id)
+        ->where('stock', '>', 0)
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(fn($p) => [
+            'id' => $p->id,
+            'name' => $p->name,
+            'description' => $p->description,
+            'category' => $p->category,
+            'price' => $p->price,
+            'stock' => $p->stock,
+            'image_url' => $p->image ? Storage::url($p->image) : null,
+            'user' => $p->user,
+            'user_id' => $p->user_id,
+            'store_name' => $p->user->name ?? 'Toko',
+        ]);
+
+    return response()->json($products);
+});
+
+// Get store info (user info)
+Route::get('/api/store/{user_id}', function ($user_id) {
+    $user = \App\Models\User::select('id', 'name', 'phone', 'email', 'description', 'photo')
+        ->find($user_id);
+
+    if (!$user) {
+        return response()->json(['message' => 'Store not found'], 404);
+    }
+
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+        'phone' => $user->phone,
+        'email' => $user->email,
+        'description' => $user->description,
+        'photo_url' => $user->photo ? Storage::url($user->photo) : null,
+    ]);
 });
 
 // Get single product

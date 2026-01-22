@@ -94,9 +94,10 @@
                         <div>
                             <!-- Store Name -->
                             <p
-                                class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33] mb-2"
+                                @click="goToStore(product.user_id || product.user?.id)"
+                                class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33] mb-2 hover:text-[#d92f25] cursor-pointer transition-colors inline-block"
                             >
-                                {{ product.store_name || "Toko" }}
+                                {{ product.store_name || product.user?.name || "Toko" }}
                             </p>
 
                             <!-- Product Name -->
@@ -306,6 +307,11 @@ const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
 const goBack = () => {
     window.history.back();
+};
+
+const goToStore = (userId) => {
+    if (!userId) return;
+    window.location.href = `/store/${userId}`;
 };
 
 const goToLogin = () => {

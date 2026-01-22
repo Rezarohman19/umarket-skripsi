@@ -26,6 +26,7 @@ export default defineConfig({
                 "resources/js/app-admin-profile.js",
                 "resources/js/app-terms-and-conditions.js",
                 "resources/js/app-contact-us.js",
+                "resources/js/app-store.js",
             ],
             refresh: true,
         }),
