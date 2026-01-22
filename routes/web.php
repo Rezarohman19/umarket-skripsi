@@ -644,3 +644,30 @@ Route::post('/api/checkout', [TransactionController::class, 'checkout'])->middle
 // Seller Orders API
 Route::get('/api/seller/orders', [TransactionController::class, 'sellerOrders'])->middleware('auth');
 Route::post('/api/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus'])->middleware('auth');
+
+// Buyer Orders API - Update status to delivered
+Route::post('/api/transactions/{id}/mark-delivered', function (Request $request, $id) {
+    if (!Auth::check()) {
+        return response()->json(['message' => 'Unauthenticated'], 401);
+    }
+
+    $transaction = \App\Models\Transaction::findOrFail($id);
+
+    // Validasi: hanya pembeli yang bisa update status menjadi delivered
+    if ($transaction->user_id !== Auth::id()) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    // Validasi: hanya bisa update jika status adalah shipping
+    if ($transaction->status !== 'shipping') {
+        return response()->json(['message' => 'Hanya pesanan yang sedang dikirim yang bisa ditandai diterima'], 400);
+    }
+
+    $transaction->status = 'delivered';
+    $transaction->save();
+
+    return response()->json([
+        'message' => 'Pesanan berhasil ditandai diterima',
+        'transaction' => $transaction
+    ]);
+})->middleware('auth');
