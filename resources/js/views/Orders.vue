@@ -1,11 +1,23 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
+            <!-- Mobile Backdrop Overlay -->
+            <div
+                v-if="mobileMenuOpen"
+                @click="mobileMenuOpen = false"
+                class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            ></div>
+
             <!-- Sidebar -->
             <aside
                 :class="[
-                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
-                    sidebarCollapsed ? 'w-16' : 'w-64',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-50',
+                    // Desktop behavior
+                    'md:z-10',
+                    sidebarCollapsed ? 'md:w-16' : 'md:w-64',
+                    // Mobile behavior - full width drawer
+                    'w-64',
+                    mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
                 ]"
             >
                 <!-- Logo & Toggle Button -->
@@ -245,16 +257,39 @@
             <main
                 :class="[
                     'flex-1 transition-all duration-300',
-                    sidebarCollapsed ? 'ml-16' : 'ml-64',
+                    // Mobile: no margin
+                    'ml-0',
+                    // Desktop: margin based on sidebar state
+                    sidebarCollapsed ? 'md:ml-16' : 'md:ml-64',
                 ]"
             >
                 <!-- Header -->
                 <header
-                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
+                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-10"
                 >
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1 mr-6">
-                            <p class="text-gray-700 dark:text-gray-300">
+                    <div class="flex items-center justify-between gap-2 sm:gap-4">
+                        <!-- Hamburger Menu (Mobile only) -->
+                        <button
+                            @click="mobileMenuOpen = !mobileMenuOpen"
+                            class="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+                        >
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                        </button>
+
+                        <div class="flex-1 min-w-0 mr-2 sm:mr-6">
+                            <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
                                 <span class="font-semibold">{{
                                     user?.name || "Pengunjung"
@@ -262,7 +297,7 @@
                             </p>
                         </div>
 
-                        <div class="flex-1 max-w-md mx-4">
+                        <div class="hidden sm:flex flex-1 max-w-md mx-2 md:mx-4">
                             <div class="relative">
                                 <input
                                     v-model="searchQuery"
@@ -351,14 +386,14 @@
                 </header>
 
                 <!-- Loading -->
-                <div v-if="loading" class="p-6 text-center">
+                <div v-if="loading" class="p-4 sm:p-6 text-center">
                     <p class="text-gray-500 dark:text-gray-400">
                         Memuat pesanan...
                     </p>
                 </div>
 
                 <!-- Orders Sections -->
-                <div v-else class="p-6 space-y-8">
+                <div v-else class="p-4 sm:p-6 space-y-6 sm:space-y-8">
                     <section
                         v-for="section in sections"
                         :key="section.key"
@@ -373,7 +408,7 @@
                         <div
                             v-for="orderGroup in getFilteredOrders(section.key)"
                             :key="orderGroup.id"
-                            class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 md:p-5"
+                            class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-4 md:p-5"
                         >
                             <!-- Header: Store Name & Status -->
                             <div
@@ -558,6 +593,7 @@ import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
 const sidebarCollapsed = ref(false);
+const mobileMenuOpen = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");

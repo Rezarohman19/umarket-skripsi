@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+        <div class="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
             <!-- Back Button -->
             <button
                 @click="goBack"
@@ -60,11 +60,11 @@
                 v-else
                 class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg overflow-hidden"
             >
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
                     <!-- Product Image -->
                     <div class="w-full">
                         <div
-                            class="w-full h-96 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-xl flex items-center justify-center overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                            class="w-full h-64 sm:h-80 md:h-96 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-xl flex items-center justify-center overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                         >
                             <svg
                                 v-if="!product.image_url"
@@ -102,7 +102,7 @@
 
                             <!-- Product Name -->
                             <h1
-                                class="text-3xl font-bold text-gray-900 dark:text-white mb-4"
+                                class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4"
                             >
                                 {{ product.name }}
                             </h1>
@@ -121,7 +121,7 @@
                             <!-- Price -->
                             <div class="mb-6">
                                 <p
-                                    class="text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]"
+                                    class="text-3xl sm:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]"
                                 >
                                     Rp. {{ formatPrice(product.price) }}
                                 </p>
@@ -208,16 +208,16 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex flex-col gap-3">
                                 <button
                                     @click="handleAddToCart"
-                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-3 px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#f88a8c] hover:shadow-lg active:scale-95 active:shadow-inner"
+                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#f88a8c] hover:shadow-lg active:scale-95 active:shadow-inner text-sm sm:text-base"
                                 >
                                     Tambah ke Keranjang
                                 </button>
                                 <button
                                     @click="handleCheckout"
-                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-3 px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
+                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner text-sm sm:text-base"
                                 >
                                     Checkout Langsung
                                 </button>

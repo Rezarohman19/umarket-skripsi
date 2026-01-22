@@ -1,12 +1,24 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
+            <!-- Mobile Backdrop Overlay -->
+            <div
+                v-if="user && mobileMenuOpen"
+                @click="mobileMenuOpen = false"
+                class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            ></div>
+
             <!-- Left Sidebar - Hanya muncul jika user sudah login -->
             <aside
                 v-if="user"
                 :class="[
-                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
-                    sidebarCollapsed ? 'w-16' : 'w-64',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-50',
+                    // Desktop behavior
+                    'md:z-10',
+                    sidebarCollapsed ? 'md:w-16' : 'md:w-64',
+                    // Mobile behavior - full width drawer
+                    'w-64',
+                    mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
                 ]"
             >
                 <!-- Logo & Toggle Button -->
@@ -231,29 +243,53 @@
             <main
                 :class="[
                     'flex-1 transition-all duration-300',
+                    // Mobile: no margin
+                    'ml-0',
+                    // Desktop: margin based on sidebar state
                     user && sidebarCollapsed
-                        ? 'ml-16'
+                        ? 'md:ml-16'
                         : user
-                        ? 'ml-64'
-                        : 'ml-0',
+                        ? 'md:ml-64'
+                        : 'md:ml-0',
                 ]"
             >
                 <!-- Header -->
                 <header
-                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
+                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-10"
                 >
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-2 sm:gap-4">
+                        <!-- Hamburger Menu (Mobile only, when logged in) -->
+                        <button
+                            v-if="user"
+                            @click="mobileMenuOpen = !mobileMenuOpen"
+                            class="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+                        >
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                        </button>
+
                         <!-- Logo (hanya muncul jika belum login) -->
                         <img
                             v-if="!user"
                             src="/images/logo.png"
                             alt="U Marketplace"
-                            class="w-10 h-10 object-contain"
+                            class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                         />
 
                         <!-- Greeting -->
-                        <div class="flex-1" :class="user ? '' : 'mx-6'">
-                            <p class="text-gray-700 dark:text-gray-300">
+                        <div class="flex-1 min-w-0" :class="user ? '' : 'mx-2 sm:mx-6'">
+                            <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
                                 <template v-if="user?.name">
                                     <span class="font-semibold">{{
@@ -272,7 +308,7 @@
                         </div>
 
                         <!-- Search Bar -->
-                        <div class="flex-1 max-w-md mx-4">
+                        <div class="hidden sm:flex flex-1 max-w-md mx-2 md:mx-4">
                             <div class="relative">
                                 <input
                                     v-model="searchQuery"
@@ -300,7 +336,7 @@
                         <button
                             v-if="user"
                             @click="handleCart"
-                            class="relative p-2 text-gray-600 dark:text-gray-400 mr-1"
+                            class="relative p-1.5 sm:p-2 text-gray-600 dark:text-gray-400"
                         >
                             <svg
                                 class="w-6 h-6"
@@ -332,7 +368,7 @@
                         <button
                             v-if="user"
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center ml-2"
+                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center ml-1 sm:ml-2"
                             :class="
                                 user?.photo_url
                                     ? 'ring-2 ring-[#8E0D3C] dark:ring-[#FDA1A2]'
@@ -363,7 +399,7 @@
                         <button
                             v-else
                             @click="goToLogin"
-                            class="px-4 py-2 bg-[#EF3B33] text-white font-medium rounded-lg shadow-md"
+                            class="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#EF3B33] text-white text-sm sm:text-base font-medium rounded-lg shadow-md"
                         >
                             Login
                         </button>
@@ -371,13 +407,13 @@
                 </header>
 
                 <!-- Website Info Card (hanya tampil jika bukan dari tombol back login) -->
-                <div v-if="showWelcomeCard && !user" class="p-6 pb-0">
+                <div v-if="showWelcomeCard && !user" class="p-3 sm:p-6 pb-0">
                     <div class="bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50">
-                        <div class="p-6 md:p-8">
+                        <div class="p-4 sm:p-6 md:p-8">
                             <div class="flex flex-col md:flex-row items-center gap-6">
                                 <!-- Info Content -->
                                 <div class="flex-1 text-center md:text-left">
-                                    <h2 class="text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
+                                    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
                                         Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
                                     </h2>
                                     <p class="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed mb-4">
@@ -412,7 +448,7 @@
                                 <div class="flex-shrink-0">
                                     <button
                                         @click="goToLoginFromWelcome"
-                                        class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-6 py-3 rounded-xl shadow-lg border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                                        class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 text-sm sm:text-base"
                                     >
                                         Mulai Sekarang
                                     </button>
@@ -423,7 +459,7 @@
                 </div>
 
                 <!-- Products Grid -->
-                <div class="p-6">
+                <div class="p-3 sm:p-6">
                     <div v-if="loading" class="text-center py-12">
                         <p class="text-gray-600 dark:text-gray-400">
                             Memuat produk...
@@ -441,8 +477,8 @@
 
                     <div
                         v-else
-                        class="grid gap-3"
-                        style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));"
+                        class="grid gap-2 sm:gap-3"
+                        style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));"
                     >
                         <div
                             v-for="product in filteredProducts"
@@ -657,6 +693,7 @@ import ToastNotification from "../components/ToastNotification.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
 const sidebarCollapsed = ref(false);
+const mobileMenuOpen = ref(false);
 const products = ref([]);
 const loading = ref(true);
 const searchQuery = ref("");

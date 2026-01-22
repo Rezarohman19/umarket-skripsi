@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] py-6 px-4 sm:px-6">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] py-4 sm:py-6 px-3 sm:px-4 md:px-6">
         <div class="max-w-4xl mx-auto space-y-6">
             <!-- Back -->
             <div
@@ -24,7 +24,7 @@
 
             <!-- Profile Card -->
             <div
-                class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
+                class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
             >
                 <div class="flex flex-col items-center space-y-3 relative">
                     <!-- Foto Profil -->
@@ -78,7 +78,7 @@
                 </div>
 
                 <div
-                    class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-sm"
+                    class="mt-6 grid grid-cols-1 gap-y-4 gap-x-6 text-sm"
                 >
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-gray-700 dark:text-gray-300 w-32"
@@ -173,7 +173,7 @@
                     </div>
                 </div>
 
-                <div class="mt-6 flex justify-end gap-2">
+                <div class="mt-6 flex flex-col sm:flex-row justify-end gap-2">
                     <button
                         v-if="isEditing"
                         class="px-5 py-2 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg"
