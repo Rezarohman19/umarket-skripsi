@@ -264,7 +264,7 @@
                         </div>
 
                         <!-- Search Bar (Desktop) -->
-                        <div class="hidden md:flex flex-1 max-w-md mx-2 md:mx-4">
+                        <div class="hidden md:flex flex-1 mx-2 md:mx-4">
                             <div class="relative">
                                 <input
                                     v-model="searchQuery"
@@ -551,17 +551,17 @@
                                 </p>
 
                                 <div
-                                    class="flex items-center justify-between gap-2"
+                                    class="mt-2 flex flex-col gap-2"
                                     @click.stop
                                 >
                                     <div
-                                        class="flex-none w-16 flex items-center justify-between px-0.5 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-sm bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
+                                        class="w-full flex items-center justify-between px-1 py-0.5 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
                                     >
                                         <button
                                             @click.stop="
                                                 decreaseQuantity(product.id)
                                             "
-                                            class="text-xs text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95"
+                                            class="p-1 text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95 flex items-center justify-center"
                                         >
                                             <svg
                                                 class="w-3 h-3"
@@ -578,14 +578,14 @@
                                             </svg>
                                         </button>
                                         <span
-                                            class="text-xs text-gray-900 dark:text-white font-medium text-center"
+                                            class="text-xs text-gray-900 dark:text-white font-medium text-center flex-1"
                                             >{{ getQuantity(product.id) }}</span
                                         >
                                         <button
                                             @click.stop="
                                                 increaseQuantity(product.id)
                                             "
-                                            class="text-xs text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95"
+                                            class="p-1 text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95 flex items-center justify-center"
                                         >
                                             <svg
                                                 class="w-3 h-3"
@@ -604,11 +604,12 @@
                                     </div>
                                     <button
                                         @click.stop="handleAddToCart(product)"
-                                        class="flex-none w-20 bg-[#EF3B33] text-white font-medium py-0.5 px-2 rounded-sm text-xs cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg hover:scale-105 active:scale-95 active:shadow-inner active:bg-[#c0271f]"
+                                        class="w-full bg-[#EF3B33] text-white font-medium py-1.5 px-2 rounded-md text-xs cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f]"
                                     >
                                         Tambah Keranjang
                                     </button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
