@@ -9,34 +9,44 @@
                 ]"
             >
                 <!-- Logo & Toggle Button -->
-                <div :class="[
-                    'p-4 border-b border-[#EF3B33]/30',
-                    sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
-                ]">
-                    <div :class="[
-                        'flex items-center justify-center',
-                        sidebarCollapsed ? 'w-full' : 'flex-1'
-                    ]">
+                <div
+                    :class="[
+                        'p-4 border-b border-[#EF3B33]/30',
+                        sidebarCollapsed
+                            ? 'flex flex-col items-center gap-2'
+                            : 'flex items-center justify-between',
+                    ]"
+                >
+                    <div
+                        :class="[
+                            'flex items-center justify-center',
+                            sidebarCollapsed ? 'w-full' : 'flex-1',
+                        ]"
+                    >
                         <img
                             src="/images/logo-u-marketplace.png"
                             alt="U Marketplace"
                             :class="[
                                 'object-contain',
-                                sidebarCollapsed ? 'h-10 w-10' : 'h-20 w-auto'
+                                sidebarCollapsed ? 'h-10 w-10' : 'h-20 w-auto',
                             ]"
                         />
                     </div>
-                    <button 
-                        @click="toggleSidebar" 
+                    <button
+                        @click="toggleSidebar"
                         :class="[
                             'p-2 rounded-lg hover:bg-[#EF3B33]/20 transition',
-                            sidebarCollapsed ? 'w-full flex justify-center' : ''
+                            sidebarCollapsed
+                                ? 'w-full flex justify-center'
+                                : '',
                         ]"
                     >
                         <svg
                             :class="[
                                 'text-white transition-transform duration-300',
-                                sidebarCollapsed ? 'w-5 h-5 rotate-180' : 'w-5 h-5'
+                                sidebarCollapsed
+                                    ? 'w-5 h-5 rotate-180'
+                                    : 'w-5 h-5',
                             ]"
                             fill="none"
                             stroke="currentColor"
@@ -52,21 +62,20 @@
                     </button>
                 </div>
 
-                <nav :class="[
-                    'space-y-3',
-                    sidebarCollapsed ? 'px-2' : 'px-4'
-                ]">
+                <nav :class="['space-y-3', sidebarCollapsed ? 'px-2' : 'px-4']">
                     <a
                         href="/"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
-                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                            sidebarCollapsed
+                                ? 'px-2 py-3 justify-center'
+                                : 'px-4 py-3',
                         ]"
                     >
                         <svg
                             :class="[
                                 'text-white flex-shrink-0',
-                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3',
                             ]"
                             fill="none"
                             stroke="currentColor"
@@ -86,13 +95,15 @@
                         href="#"
                         :class="[
                             'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
-                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                            sidebarCollapsed
+                                ? 'px-2 py-3 justify-center'
+                                : 'px-4 py-3',
                         ]"
                     >
                         <svg
                             :class="[
                                 'text-white flex-shrink-0',
-                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3',
                             ]"
                             fill="none"
                             stroke="currentColor"
@@ -113,13 +124,15 @@
                         @click.prevent="handleOpenShop"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
-                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                            sidebarCollapsed
+                                ? 'px-2 py-3 justify-center'
+                                : 'px-4 py-3',
                         ]"
                     >
                         <svg
                             :class="[
                                 'text-white flex-shrink-0',
-                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3',
                             ]"
                             fill="none"
                             stroke="currentColor"
@@ -139,20 +152,22 @@
                 <nav
                     :class="[
                         'space-y-3 border-t border-[#EF3B33]/30 pt-4 mt-4',
-                        sidebarCollapsed ? 'px-2' : 'px-4'
+                        sidebarCollapsed ? 'px-2' : 'px-4',
                     ]"
                 >
                     <a
                         href="/terms-and-conditions"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
-                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                            sidebarCollapsed
+                                ? 'px-2 py-3 justify-center'
+                                : 'px-4 py-3',
                         ]"
                     >
                         <svg
                             :class="[
                                 'text-white flex-shrink-0',
-                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3',
                             ]"
                             fill="none"
                             stroke="currentColor"
@@ -172,13 +187,15 @@
                         href="/contact-us"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
-                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                            sidebarCollapsed
+                                ? 'px-2 py-3 justify-center'
+                                : 'px-4 py-3',
                         ]"
                     >
                         <svg
                             :class="[
                                 'text-white flex-shrink-0',
-                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3',
                             ]"
                             fill="none"
                             stroke="currentColor"
@@ -195,15 +212,14 @@
                     </a>
                 </nav>
 
-                <div :class="[
-                    'mt-auto',
-                    sidebarCollapsed ? 'p-2' : 'p-4'
-                ]">
+                <div :class="['mt-auto', sidebarCollapsed ? 'p-2' : 'p-4']">
                     <button
                         @click="handleLogout"
                         :class="[
                             'w-full bg-[#EF3B33]/30 text-white font-medium py-3 rounded-lg transition hover:bg-[#EF3B33]/40 cursor-pointer',
-                            sidebarCollapsed ? 'px-2 flex justify-center' : 'px-4'
+                            sidebarCollapsed
+                                ? 'px-2 flex justify-center'
+                                : 'px-4',
                         ]"
                     >
                         <span v-if="!sidebarCollapsed">Keluar</span>
@@ -237,7 +253,6 @@
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between">
-
                         <div class="flex-1 mr-6">
                             <p class="text-gray-700 dark:text-gray-300">
                                 Halo,
@@ -361,7 +376,9 @@
                             class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 md:p-5"
                         >
                             <!-- Header: Store Name & Status -->
-                            <div class="flex items-start justify-between gap-2 mb-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                            <div
+                                class="flex items-start justify-between gap-2 mb-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                            >
                                 <div class="flex-1">
                                     <p
                                         class="text-base font-semibold text-gray-700 dark:text-gray-300"
@@ -377,9 +394,7 @@
                                 <span
                                     :class="[
                                         'px-2 py-1 rounded-full text-xs font-medium',
-                                        getStatusBadgeClass(
-                                            orderGroup.status
-                                        ),
+                                        getStatusBadgeClass(orderGroup.status),
                                     ]"
                                 >
                                     {{ getStatusLabel(orderGroup.status) }}
@@ -459,9 +474,13 @@
                             </div>
 
                             <!-- Total Order -->
-                            <div class="flex justify-end mb-4 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                            <div
+                                class="flex justify-end mb-4 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                            >
                                 <div class="text-right">
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400 mb-1"
+                                    >
                                         Total Pesanan
                                     </p>
                                     <p
@@ -478,7 +497,9 @@
                                 <button
                                     v-for="action in orderGroup.actions"
                                     :key="action.label"
-                                    @click="handleAction(action.type, orderGroup)"
+                                    @click="
+                                        handleAction(action.type, orderGroup)
+                                    "
                                     :class="[
                                         'px-4 py-2 rounded-full text-sm font-medium',
                                         action.variant === 'primary'
@@ -559,7 +580,7 @@ const loading = ref(true);
 // Function untuk mengelompokkan orders berdasarkan transaction_id dan store
 const getGroupedOrders = (status) => {
     const filtered = orders.value.filter((order) => order.status === status);
-    
+
     // Group by transaction_id dan store
     const grouped = {};
     filtered.forEach((order) => {
@@ -587,24 +608,25 @@ const getGroupedOrders = (status) => {
         });
         grouped[key].total += order.total;
     });
-    
+
     // Convert to array
     let result = Object.values(grouped);
-    
+
     // Apply search filter
     if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase();
         result = result.filter((group) => {
             return (
                 (group.store || "").toLowerCase().includes(q) ||
-                group.items.some((item) =>
-                    (item.product || "").toLowerCase().includes(q) ||
-                    (item.category || "").toLowerCase().includes(q)
+                group.items.some(
+                    (item) =>
+                        (item.product || "").toLowerCase().includes(q) ||
+                        (item.category || "").toLowerCase().includes(q),
                 )
             );
         });
     }
-    
+
     return result;
 };
 
@@ -668,10 +690,7 @@ const fetchTransactions = async () => {
 
         // Fetch pembelian (transaksi sebagai pembeli)
         const purchaseResponse = await axios.get("/api/transactions");
-        let purchaseTransactions = purchaseResponse.data || [];
-        purchaseTransactions = purchaseTransactions.filter(
-            (t) => t.transaction_type !== "parent"
-        );
+        const purchaseTransactions = purchaseResponse.data || [];
 
         // Map transactions pembelian ke format yang diharapkan oleh UI
         orders.value = purchaseTransactions.flatMap((transaction) => {
@@ -679,39 +698,42 @@ const fetchTransactions = async () => {
             if (transaction.items && transaction.items.length > 0) {
                 // Filter out items yang product-nya sudah dihapus (null atau undefined)
                 // Pastikan product ada dan punya id
-                return transaction.items
-                    .map((item) => {
-                        const status = mapTransactionStatus(transaction.status);
-                        const actions = getPurchaseActions(status, transaction);
+                return transaction.items.map((item) => {
+                    const status = mapTransactionStatus(transaction.status);
+                    const actions = getPurchaseActions(status, transaction);
 
-                        // Generate image URL dari image field
-                        let imageUrl = null;
-                        if (item.product?.image) {
-                            imageUrl = `/storage/${item.product.image}`;
-                        } else {
-                            // Placeholder image atau null
-                            imageUrl = '/images/placeholder-product.png'; // Pastikan ada atau biarkan null
-                        }
+                    // Generate image URL dari image field
+                    let imageUrl = null;
+                    if (item.product?.image) {
+                        imageUrl = `/storage/${item.product.image}`;
+                    } else {
+                        // Placeholder image atau null
+                        imageUrl = "/images/placeholder-product.png"; // Pastikan ada atau biarkan null
+                    }
 
-                        return {
-                            id: `${transaction.id}-${item.id}`,
-                            transaction_id: transaction.id,
-                            status: status,
-                            store:
-                                item.product?.user?.name ||
-                                transaction.store_name ||
-                                "Toko",
-                            product: item.product?.name || "Produk Tidak Tersedia (Dihapus)",
-                            category: item.product?.description || "",
-                            qty: item.qty || 1,
-                            // Prioritaskan harga saat transaksi (item.price), jika tidak ada baru harga produk saat ini
-                            price: item.price || item.product?.price || 0,
-                            total: (item.price || item.product?.price || 0) * (item.qty || 1),
-                            image_url: imageUrl,
-                            actions: actions,
-                            transaction: transaction,
-                        };
-                    });
+                    return {
+                        id: `${transaction.id}-${item.id}`,
+                        transaction_id: transaction.id,
+                        status: status,
+                        store:
+                            item.product?.user?.name ||
+                            transaction.store_name ||
+                            "Toko",
+                        product:
+                            item.product?.name ||
+                            "Produk Tidak Tersedia (Dihapus)",
+                        category: item.product?.description || "",
+                        qty: item.qty || 1,
+                        // Prioritaskan harga saat transaksi (item.price), jika tidak ada baru harga produk saat ini
+                        price: item.price || item.product?.price || 0,
+                        total:
+                            (item.price || item.product?.price || 0) *
+                            (item.qty || 1),
+                        image_url: imageUrl,
+                        actions: actions,
+                        transaction: transaction,
+                    };
+                });
             } else {
                 // Fallback jika tidak ada items
                 const status = mapTransactionStatus(transaction.status);
@@ -796,7 +818,7 @@ const handleContinuePayment = (orderGroup) => {
 
     if (!snapToken) {
         alert(
-            "Token pembayaran tidak tersedia. Silakan hubungi customer service."
+            "Token pembayaran tidak tersedia. Silakan hubungi customer service.",
         );
         return;
     }
@@ -819,18 +841,18 @@ const handleContinuePayment = (orderGroup) => {
                     fetchTransactions();
                 }, 2000);
             },
-                    onError: function (result) {
-                        console.error("Payment error:", result);
-                        // Jika error expired, hapus transaksi
-                        if (
-                            result.status_message &&
-                            result.status_message.includes("expired")
-                        ) {
-                            deleteExpiredTransaction(orderGroup.transaction_id);
-                        } else {
-                            alert("Pembayaran gagal. Silakan coba lagi.");
-                        }
-                    },
+            onError: function (result) {
+                console.error("Payment error:", result);
+                // Jika error expired, hapus transaksi
+                if (
+                    result.status_message &&
+                    result.status_message.includes("expired")
+                ) {
+                    deleteExpiredTransaction(orderGroup.transaction_id);
+                } else {
+                    alert("Pembayaran gagal. Silakan coba lagi.");
+                }
+            },
             onClose: function () {
                 console.log("Payment modal closed");
             },
@@ -896,7 +918,10 @@ const contactSellerWhatsApp = (orderGroup) => {
     let sellerName = orderGroup.store || "Penjual";
 
     // Coba ambil dari transaction.items[0].product.user.phone
-    if (orderGroup.transaction?.items && orderGroup.transaction.items.length > 0) {
+    if (
+        orderGroup.transaction?.items &&
+        orderGroup.transaction.items.length > 0
+    ) {
         const firstItem = orderGroup.transaction.items[0];
         phoneNumber = firstItem.product?.user?.phone;
         sellerName = firstItem.product?.user?.name || sellerName;
@@ -910,7 +935,7 @@ const contactSellerWhatsApp = (orderGroup) => {
 
     if (!phoneNumber) {
         alert(
-            "Nomor WhatsApp penjual tidak tersedia. Silakan hubungi customer service."
+            "Nomor WhatsApp penjual tidak tersedia. Silakan hubungi customer service.",
         );
         return;
     }
@@ -930,7 +955,9 @@ const contactSellerWhatsApp = (orderGroup) => {
 
     // Buat pesan default dengan detail pesanan
     const orderId = orderGroup.transaction_id || orderGroup.id;
-    const itemsList = orderGroup.items.map(item => `- ${item.product} (${item.qty} pcs)`).join('\n');
+    const itemsList = orderGroup.items
+        .map((item) => `- ${item.product} (${item.qty} pcs)`)
+        .join("\n");
     const message = `Halo ${sellerName},\n\nSaya ingin menanyakan tentang pesanan saya.\n\nID Pesanan: #${orderId}\nProduk:\n${itemsList}\nTotal: Rp. ${formatPrice(orderGroup.total)}\n\nTerima kasih.`;
 
     // Encode pesan untuk URL
@@ -974,7 +1001,7 @@ const handleLogout = () => {
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
-        message: "Apakah Anda yakin ingin keluar?"
+        message: "Apakah Anda yakin ingin keluar?",
     };
 };
 
@@ -984,7 +1011,7 @@ const closeConfirmModal = () => {
 
 const handleConfirmLogout = async () => {
     closeConfirmModal();
-    
+
     try {
         await axios.post("/logout");
         window.location.href = "/login";
@@ -1029,7 +1056,7 @@ const fetchCartCount = async () => {
     }
     try {
         const response = await axios.get("/api/cart/count", {
-            params: { _t: Date.now() } // Cache busting untuk memastikan data terbaru
+            params: { _t: Date.now() }, // Cache busting untuk memastikan data terbaru
         });
         const newCount = response.data?.count ?? 0;
         cartCount.value = newCount;

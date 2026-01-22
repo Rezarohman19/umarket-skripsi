@@ -517,57 +517,15 @@ const handleConfirmPayment = async () => {
         };
 
         const response = await axios.post("/api/checkout", checkoutData);
-        const parentTx = response.data?.transaction;
-        const snapToken = response.data?.snap_token;
-        const children = response.data?.children || [];
-
-        if (!parentTx || !snapToken) {
-            alert("Gagal menyiapkan pembayaran");
+        if (
+            response.data &&
+            Array.isArray(response.data.transactions) &&
+            response.data.transactions.length > 0
+        ) {
+            localStorage.removeItem("checkout_items");
+            await payTransactionsSequentially(response.data.transactions);
             return;
         }
-
-        localStorage.removeItem("checkout_items");
-
-        const confirmationData = {
-            transactionId: parentTx.id,
-            orderId: parentTx.order_id,
-            totalPrice: parentTx.total_price,
-            paymentMethod: "midtrans",
-            paymentStatus: parentTx.status || "pending",
-            orderItems: checkoutItems.value,
-            shippingAddress: shippingAddress.value,
-            snapToken: snapToken,
-            children: children,
-            orderDate: new Date().toLocaleDateString("id-ID", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-            }),
-        };
-        localStorage.setItem(
-            "order_confirmation",
-            JSON.stringify(confirmationData),
-        );
-
-        ensureMidtransLoaded(() => {
-            window.snap.pay(snapToken, {
-                onSuccess: function () {
-                    window.location.href = `/order-confirmation?transaction_id=${parentTx.id}`;
-                },
-                onPending: function () {
-                    window.location.href = `/order-confirmation?transaction_id=${parentTx.id}`;
-                },
-                onError: function () {
-                    alert("Pembayaran gagal. Silakan coba lagi.");
-                    window.location.href = `/order-confirmation?transaction_id=${parentTx.id}`;
-                },
-                onClose: function () {
-                    window.location.href = `/order-confirmation?transaction_id=${parentTx.id}`;
-                },
-            });
-        });
     } catch (error) {
         console.error("Error during checkout:", error);
         console.error("Error response:", error.response);
@@ -612,6 +570,65 @@ const ensureMidtransLoaded = (callback) => {
     document.head.appendChild(script);
 };
 
+const payTransactionsSequentially = async (transactions) => {
+    const process = (index) => {
+        if (index >= transactions.length) {
+            const lastId =
+                transactions[transactions.length - 1]?.transaction?.id;
+            if (lastId) {
+                window.location.href = `/order-confirmation?transaction_id=${lastId}`;
+            } else {
+                window.location.href = `/order-confirmation`;
+            }
+            return;
+        }
+        const t = transactions[index];
+        const transactionId = t.transaction?.id;
+
+        const confirmationData = {
+            transactionId: transactionId,
+            orderId: t.transaction?.order_id || `ORDER-${transactionId}`,
+            totalPrice: t.total,
+            paymentMethod: "midtrans",
+            paymentStatus: t.transaction?.status || "pending",
+            orderItems: Array.isArray(t.items) ? t.items : checkoutItems.value,
+            shippingAddress: shippingAddress.value,
+            snapToken: t.snap_token,
+            orderDate: new Date().toLocaleDateString("id-ID", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+            }),
+        };
+        localStorage.setItem(
+            "order_confirmation",
+            JSON.stringify(confirmationData),
+        );
+
+        ensureMidtransLoaded(() => {
+            window.snap.pay(t.snap_token, {
+                onSuccess: function () {
+                    process(index + 1);
+                },
+                onPending: function () {
+                    process(index + 1);
+                },
+                onError: function () {
+                    alert(
+                        "Pembayaran gagal untuk salah satu toko. Anda dapat mencoba lagi dari halaman pesanan.",
+                    );
+                    process(index + 1);
+                },
+                onClose: function () {
+                    process(index + 1);
+                },
+            });
+        });
+    };
+    process(0);
+};
 onMounted(async () => {
     await fetchUserProfile();
     await fetchCheckoutItems();

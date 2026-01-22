@@ -126,68 +126,23 @@ class TransactionController extends Controller
             Config::$isSanitized = config('midtrans.is_sanitized') ?? true;
             Config::$is3ds = config('midtrans.is_3ds') ?? true;
 
-            $overallTotal = 0;
-            $allItemDetails = [];
-            foreach ($cartItems as $it) {
-                $subtotal = ($it->product->price ?? 0) * $it->qty;
-                $overallTotal += $subtotal;
-                $allItemDetails[] = [
-                    'id' => $it->product->id,
-                    'price' => $it->product->price ?? 0,
-                    'quantity' => $it->qty,
-                    'name' => $it->product->name ?? 'Produk',
-                ];
-            }
-
-            $parent = Transaction::create([
-                'user_id' => $user->id,
-                'total_price' => $overallTotal,
-                'status' => 'pending',
-                'payment_method' => 'midtrans',
-                'shipping_name' => $shippingAddress['name'] ?? $user->name,
-                'shipping_phone' => $shippingAddress['phone'] ?? $user->phone,
-                'shipping_address' => $shippingAddress['address'] ?? $user->address,
-                'transaction_type' => 'parent',
-            ]);
-
-            $orderId = 'ORDER-' . $parent->id . '-' . time();
-            $parent->order_id = $orderId;
-            $parent->save();
-
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $orderId,
-                    'gross_amount' => $overallTotal,
-                ],
-                'item_details' => $allItemDetails,
-                'customer_details' => [
-                    'first_name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ];
-
-            $enabledPayments = config('midtrans.enabled_payments');
-            if ($enabledPayments && is_array($enabledPayments)) {
-                $params['enabled_payments'] = $enabledPayments;
-            }
-
-            if (app()->runningUnitTests() || app()->environment('testing')) {
-                $snapToken = 'test-snap-token';
-            } else {
-                $snapToken = Snap::getSnapToken($params);
-            }
-
-            $parent->snap_token = $snapToken;
-            $parent->save();
-
-            $children = [];
             foreach ($groups as $sellerId => $items) {
                 $groupTotal = 0;
+                $itemDetails = [];
+
                 foreach ($items as $it) {
-                    $groupTotal += (($it->product->price ?? 0) * $it->qty);
+                    $subtotal = ($it->product->price ?? 0) * $it->qty;
+                    $groupTotal += $subtotal;
+                    $itemDetails[] = [
+                        'id' => $it->product->id,
+                        'price' => $it->product->price ?? 0,
+                        'quantity' => $it->qty,
+                        'name' => $it->product->name ?? 'Produk',
+                    ];
                 }
 
-                $child = Transaction::create([
+                // Buat transaksi per penjual
+                $transaction = Transaction::create([
                     'user_id' => $user->id,
                     'total_price' => $groupTotal,
                     'status' => 'pending',
@@ -195,21 +150,53 @@ class TransactionController extends Controller
                     'shipping_name' => $shippingAddress['name'] ?? $user->name,
                     'shipping_phone' => $shippingAddress['phone'] ?? $user->phone,
                     'shipping_address' => $shippingAddress['address'] ?? $user->address,
-                    'order_id' => $orderId,
-                    'transaction_type' => 'child',
                 ]);
 
                 foreach ($items as $it) {
                     TransactionItem::create([
-                        'transaction_id' => $child->id,
+                        'transaction_id' => $transaction->id,
                         'product_id' => $it->product_id,
                         'qty' => $it->qty,
                         'price' => $it->product->price ?? 0,
                     ]);
                 }
 
-                $children[] = [
-                    'transaction' => $child,
+                // Generate order_id unik per transaksi
+                $orderId = 'ORDER-' . $transaction->id . '-' . time();
+                $transaction->order_id = $orderId;
+                $transaction->save();
+
+                // Siapkan parameter Midtrans untuk group ini
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $orderId,
+                        'gross_amount' => $groupTotal,
+                    ],
+                    'item_details' => $itemDetails,
+                    'customer_details' => [
+                        'first_name' => $user->name,
+                        'email' => $user->email,
+                    ],
+                ];
+
+                $enabledPayments = config('midtrans.enabled_payments');
+                if ($enabledPayments && is_array($enabledPayments)) {
+                    $params['enabled_payments'] = $enabledPayments;
+                }
+
+                // Dapatkan snap token
+                if (app()->runningUnitTests() || app()->environment('testing')) {
+                    $snapToken = 'test-snap-token';
+                } else {
+                    $snapToken = Snap::getSnapToken($params);
+                }
+
+                $transaction->snap_token = $snapToken;
+                $transaction->save();
+
+                $responseTransactions[] = [
+                    'transaction' => $transaction,
+                    'snap_token' => $snapToken,
                     'seller_id' => $sellerId,
                     'seller_name' => optional(optional($items[0])->product->user)->name,
                     'items' => collect($items)->map(function ($it) {
@@ -232,9 +219,7 @@ class TransactionController extends Controller
 
             return response()->json([
                 'message' => 'Checkout success',
-                'transaction' => $parent,
-                'snap_token' => $snapToken,
-                'children' => $children,
+                'transactions' => $responseTransactions,
             ]);
         } catch (\Exception $e) {
             // Log exception detail to laravel.log for easier debugging
@@ -347,8 +332,8 @@ class TransactionController extends Controller
                 return response()->json(['message' => 'Invalid signature'], 401);
             }
 
-            $transactions = Transaction::where('order_id', $orderId)->get();
-            if ($transactions->isEmpty()) {
+            $transaction = Transaction::where('order_id', $orderId)->first();
+            if (!$transaction) {
                 Log::warning('Transaksi tidak ditemukan di database (by order_id)', ['order_id' => $orderId]);
                 return response()->json(['message' => 'Transaction not found'], 404);
             }
@@ -370,7 +355,7 @@ class TransactionController extends Controller
             $customerEmail = data_get($request->all(), 'customer_details.email');
 
             // Mapping status midtrans -> status internal
-            $newStatus = 'pending';
+            $newStatus = $transaction->status;
 
             if (in_array($txStatus, ['capture', 'settlement'], true)) {
                 // capture biasanya kartu kredit; settlement umumnya final
@@ -388,35 +373,34 @@ class TransactionController extends Controller
                 $newStatus = 'expired'; // lebih spesifik daripada failed
             }
 
-            foreach ($transactions as $transaction) {
-                $transaction->status = $newStatus;
-                if ($paymentType) {
-                    $transaction->payment_method = $paymentType;
-                }
-                $transaction->midtrans_transaction_id = $txId;
-                $transaction->merchant_id = $merchantId;
-                $transaction->transaction_type = $transactionType ?: $transaction->transaction_type;
-                $transaction->status_code = $statusCode;
-                $transaction->status_message = $statusMessage;
-                $transaction->fraud_status = $fraudStatus;
-                $transaction->signature_key = $signatureKey;
-                $transaction->currency = $currency;
-                if ($transactionTime) $transaction->transaction_time = $transactionTime;
-                if ($expiryTime) $transaction->expiry_time = $expiryTime;
-                $transaction->midtrans_payload = $request->all();
-                if ($customerName)  $transaction->customer_full_name = $customerName;
-                if ($customerEmail) $transaction->customer_email = $customerEmail;
-                if (is_numeric($grossAmount) && $transaction->transaction_type === 'parent') {
-                    $transaction->total_price = (float) $grossAmount;
-                }
-                $transaction->save();
-                Log::info('MIDTRANS: STATUS UPDATE BERHASIL', [
-                    'transaction_id' => $transaction->id,
-                    'order_id' => $orderId,
-                    'midtrans_transaction_id' => $txId,
-                    'status' => $transaction->status,
-                ]);
+            $transaction->status = $newStatus;
+            if ($paymentType) {
+                $transaction->payment_method = $paymentType;
             }
+            $transaction->midtrans_transaction_id = $txId;
+            $transaction->merchant_id = $merchantId;
+            $transaction->transaction_type = $transactionType ?: $transaction->transaction_type;
+            $transaction->status_code = $statusCode;
+            $transaction->status_message = $statusMessage;
+            $transaction->fraud_status = $fraudStatus;
+            $transaction->signature_key = $signatureKey;
+            $transaction->currency = $currency;
+            if ($transactionTime) $transaction->transaction_time = $transactionTime;
+            if ($expiryTime) $transaction->expiry_time = $expiryTime;
+            $transaction->midtrans_payload = $request->all();
+            if ($customerName)  $transaction->customer_full_name = $customerName;
+            if ($customerEmail) $transaction->customer_email = $customerEmail;
+            if (is_numeric($grossAmount)) {
+                $transaction->total_price = (float) $grossAmount;
+            }
+            $transaction->save();
+
+            Log::info('MIDTRANS: STATUS UPDATE BERHASIL', [
+                'transaction_id' => $transaction->id,
+                'order_id' => $orderId,
+                'midtrans_transaction_id' => $txId,
+                'status' => $transaction->status,
+            ]);
 
             return response()->json(['message' => 'OK'], 200);
         } catch (\Throwable $e) {
