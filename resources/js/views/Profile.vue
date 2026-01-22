@@ -78,98 +78,86 @@
                 </div>
 
                 <div
-                    class="mt-6 grid grid-cols-1 gap-y-4 gap-x-6 text-sm"
+                    class="mt-6 space-y-4 text-sm"
                 >
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Nama</span
-                        >
+                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Nama</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <input
-                            v-if="isEditing"
-                            v-model="form.name"
-                            type="text"
-                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
-                        />
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.name
-                        }}</span>
+                        <div class="min-w-0">
+                            <input
+                                v-if="isEditing"
+                                v-model="form.name"
+                                type="text"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                            />
+                            <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.name }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Deskripsi</span
-                        >
+                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Deskripsi</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <textarea
-                            v-if="isEditing"
-                            v-model="form.description"
-                            rows="2"
-                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
-                        ></textarea>
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.description
-                        }}</span>
+                        <div class="min-w-0">
+                            <textarea
+                                v-if="isEditing"
+                                v-model="form.description"
+                                rows="2"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                            ></textarea>
+                            <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.description }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Telepon</span
-                        >
+                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Telepon</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <input
-                            v-if="isEditing"
-                            v-model="form.phone"
-                            type="text"
-                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
-                        />
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.phone
-                        }}</span>
+                        <div class="min-w-0">
+                            <input
+                                v-if="isEditing"
+                                v-model="form.phone"
+                                type="text"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                            />
+                            <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.phone }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Email</span
-                        >
+                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Email</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <input
-                            v-if="isEditing"
-                            v-model="form.email"
-                            type="email"
-                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
-                        />
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.email
-                        }}</span>
+                        <div class="min-w-0">
+                            <input
+                                v-if="isEditing"
+                                v-model="form.email"
+                                type="email"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                            />
+                            <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.email }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Alamat Lengkap</span
-                        >
+                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Alamat Lengkap</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <textarea
-                            v-if="isEditing"
-                            v-model="form.address"
-                            rows="2"
-                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
-                        ></textarea>
-                        <span v-else class="text-gray-900 dark:text-white">{{
-                            profile.address
-                        }}</span>
+                        <div class="min-w-0">
+                            <textarea
+                                v-if="isEditing"
+                                v-model="form.address"
+                                rows="2"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                            ></textarea>
+                            <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.address }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-start sm:items-center gap-2">
-                        <span class="text-gray-700 dark:text-gray-300 w-32"
-                            >Password</span
-                        >
+                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Password</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
-                        <input
-                            v-if="isEditing"
-                            v-model="form.password"
-                            type="password"
-                            placeholder="Isi untuk ubah password"
-                            class="flex-1 px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
-                        />
-                        <span v-else class="text-gray-900 dark:text-white"
-                            >********</span
-                        >
+                        <div class="min-w-0">
+                            <input
+                                v-if="isEditing"
+                                v-model="form.password"
+                                type="password"
+                                placeholder="Isi untuk ubah password"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                            />
+                            <span v-else class="text-gray-900 dark:text-white">********</span>
+                        </div>
                     </div>
                 </div>
 
