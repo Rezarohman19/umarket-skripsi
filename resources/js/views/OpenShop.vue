@@ -916,38 +916,42 @@
                             </div>
                         </transition>
 
-                        <div class="overflow-x-auto">
-                            <div class="min-w-full">
-                                <div
-                                    class="grid grid-cols-6 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-sm font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] rounded-lg px-4 py-3"
-                                >
-                                    <div>Nama Toko</div>
-                                    <div>Nama</div>
-                                    <div>Kategori</div>
-                                    <div>Stok</div>
-                                    <div>Harga</div>
-                                    <div>Aksi</div>
-                                </div>
-
-                                <div
-                                    class="space-y-2 mt-2"
-                                    v-if="products.length"
-                                >
+                        <!-- Product Table - Scrollable on mobile -->
+                        <div class="overflow-x-auto -mx-4 sm:mx-0">
+                            <div class="inline-block min-w-full align-middle">
+                                <div class="overflow-hidden">
+                                    <!-- Table Header -->
                                     <div
-                                        v-for="p in products"
-                                        :key="p.id"
-                                        class="grid grid-cols-6 items-center bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg px-4 py-4 gap-2"
+                                        class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-sm font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] rounded-lg px-4 py-3 gap-2"
+                                    >
+                                        <div class="truncate">Nama Toko</div>
+                                        <div class="truncate">Nama</div>
+                                        <div class="truncate">Kategori</div>
+                                        <div class="truncate">Stok</div>
+                                        <div class="truncate">Harga</div>
+                                        <div class="truncate">Aksi</div>
+                                    </div>
+
+                                    <!-- Table Rows -->
+                                    <div
+                                        class="space-y-2 mt-2"
+                                        v-if="products.length"
                                     >
                                         <div
-                                            class="text-sm text-gray-700 dark:text-gray-300"
+                                            v-for="p in products"
+                                            :key="p.id"
+                                            class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 items-center bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg px-4 py-4 gap-2"
                                         >
-                                            {{ store.name }}
-                                        </div>
-                                        <div
-                                            class="text-sm text-[#1D1842] dark:text-[#FDA1A2] font-semibold"
-                                        >
-                                            {{ p.name }}
-                                        </div>
+                                            <div
+                                                class="text-sm text-gray-700 dark:text-gray-300 truncate"
+                                            >
+                                                {{ store.name }}
+                                            </div>
+                                            <div
+                                                class="text-sm text-[#1D1842] dark:text-[#FDA1A2] font-semibold truncate"
+                                            >
+                                                {{ p.name }}
+                                            </div>
                                         <div
                                             class="text-sm text-[#EF3B33] dark:text-[#EF3B33]"
                                         >

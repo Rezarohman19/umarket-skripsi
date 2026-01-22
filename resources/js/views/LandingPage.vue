@@ -1,11 +1,13 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
-            <!-- Left Sidebar - Hanya muncul jika user sudah login -->
+            <!-- Left Sidebar - Hanya muncul di desktop jika user sudah login -->
             <aside
                 v-if="user"
                 :class="[
-                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex-col z-10',
+                    // Hidden on mobile, visible on desktop
+                    'hidden md:flex',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
