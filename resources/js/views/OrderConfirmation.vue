@@ -253,10 +253,10 @@ const fetchOrderData = async () => {
             try {
                 const response = await axios.get(`/api/transactions`);
                 const transactions = response.data || [];
-                const transaction = transactions.find(t => t.id == transactionIdParam);
+                let transaction = transactions.find(t => t.id == transactionIdParam);
                 
                 if (transaction) {
-                    orderId.value = `ORDER-${transaction.id}`;
+                    orderId.value = transaction.order_id || `ORDER-${transaction.id}`;
                     totalPrice.value = transaction.total_price || 0;
                     paymentStatus.value = transaction.status || 'pending';
                     paymentMethod.value = transaction.payment_method || 'midtrans';
@@ -297,6 +297,21 @@ const fetchOrderData = async () => {
                             phone: transaction.shipping_phone || '',
                             address: transaction.shipping_address || ''
                         };
+                    }
+                } else {
+                    const savedData = localStorage.getItem('order_confirmation');
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        orderId.value = data.orderId || '';
+                        transactionId.value = data.transactionId || '';
+                        totalPrice.value = data.totalPrice || 0;
+                        paymentMethod.value = data.paymentMethod || '';
+                        paymentStatus.value = data.paymentStatus || 'pending';
+                        orderItems.value = data.orderItems || [];
+                        shippingAddress.value = data.shippingAddress || null;
+                        orderDate.value = data.orderDate || new Date().toLocaleDateString('id-ID');
+                        snapToken.value = data.snapToken || '';
+                        localStorage.removeItem('order_confirmation');
                     }
                 }
             } catch (error) {
