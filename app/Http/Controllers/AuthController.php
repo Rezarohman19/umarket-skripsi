@@ -79,6 +79,8 @@ class AuthController extends Controller
             'role'     => 'pengguna', // default role
         ]);
 
+        Auth::login($user);
+
         // Kirim email verifikasi
         try {
             $user->sendEmailVerificationNotification();
@@ -87,7 +89,7 @@ class AuthController extends Controller
             \Log::error('Gagal mengirim email verifikasi: '.$e->getMessage());
         }
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil. Silakan cek email Anda untuk verifikasi sebelum login.');
+        return redirect()->route('verification.notice');
     }
 
     /**
