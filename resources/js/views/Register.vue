@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Register Form - Form submission tradisional Laravel -->
-                <form method="POST" action="/register" class="space-y-6">
+                <form method="POST" action="/register" class="space-y-6" @submit="handleSubmit">
                     <!-- Nama Input -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-800 dark:text-gray-300 mb-2">
@@ -175,10 +175,14 @@
                     <!-- Submit Button -->
                     <button
                         type="submit"
-                        class="w-full bg-[#8E0D3C] dark:bg-[#8E0D3C] text-white font-semibold py-3.5 px-4 rounded-xl shadow-md shadow-[#8E0D3C]/20 dark:shadow-[#8E0D3C]/20 flex items-center justify-center"
+                        :disabled="isLoading"
+                        :class="{'opacity-50 cursor-not-allowed': isLoading, 'hover:shadow-lg': !isLoading}"
+                        class="w-full bg-[#8E0D3C] dark:bg-[#8E0D3C] text-white font-semibold py-3.5 px-4 rounded-xl shadow-md shadow-[#8E0D3C]/20 dark:shadow-[#8E0D3C]/20 flex items-center justify-center transition-all duration-200"
                     >
-                        <span>Daftar</span>
+                        <span v-if="!isLoading">Daftar</span>
+                        <span v-else>Memproses...</span>
                         <svg
+                            v-if="!isLoading"
                             class="w-5 h-5 ml-2"
                             fill="none"
                             stroke="currentColor"
@@ -190,6 +194,15 @@
                                 stroke-width="2"
                                 d="M13 7l5 5m0 0l-5 5m5-5H6"
                             />
+                        </svg>
+                        <svg
+                            v-else
+                            class="w-5 h-5 ml-2 animate-spin"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                     </button>
                 </form>
@@ -224,6 +237,17 @@ const laravelErrors = reactive({
     password: '',
     password_confirmation: ''
 });
+const isLoading = ref(false);
+
+const handleSubmit = (e) => {
+    // Prevent double submission
+    if (isLoading.value) {
+        e.preventDefault();
+        return;
+    }
+    isLoading.value = true;
+    // Form will continue to submit standard POST
+};
 
 // Get CSRF token from meta tag dan error dari Laravel
 onMounted(() => {
