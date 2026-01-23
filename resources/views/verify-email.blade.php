@@ -45,19 +45,7 @@
             </button>
         </form>
 
-        @if (app()->environment('local'))
-        <div class="mt-4">
-            <form method="POST" action="{{ route('verification.dev') }}">
-                @csrf
-                <button
-                    type="submit"
-                    class="w-full bg-[#EF3B33] text-white font-semibold py-3 px-4 rounded-xl shadow-md flex items-center justify-center"
-                >
-                    Verifikasi Sekarang (Dev)
-                </button>
-            </form>
-        </div>
-        @endif
+
 
         <div class="mt-6 text-center">
             <p class="text-xs text-gray-500 dark:text-gray-400">
