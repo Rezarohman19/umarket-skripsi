@@ -153,21 +153,21 @@
                         <!-- Quantity Selector & Actions -->
                         <div class="space-y-4">
                             <!-- Quantity Selector -->
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2 sm:gap-3">
                                 <label
-                                    class="text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]"
+                                    class="text-xs sm:text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]"
                                     >Jumlah:</label
                                 >
                                 <div
-                                    class="flex items-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50"
+                                    class="flex items-center border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50"
                                 >
                                     <button
                                         @click="decreaseQuantity"
                                         :disabled="quantity <= 0"
-                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
+                                        class="px-2 py-1 sm:px-3 sm:py-1.5 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
                                     >
                                         <svg
-                                            class="w-5 h-5"
+                                            class="w-3.5 h-3.5 sm:w-4 sm:h-4"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -181,17 +181,17 @@
                                         </svg>
                                     </button>
                                     <span
-                                        class="px-6 py-2 text-[#1D1842] dark:text-[#FDA1A2] font-medium min-w-[60px] text-center"
+                                        class="px-3 py-1 sm:px-4 sm:py-1.5 text-[#1D1842] dark:text-[#FDA1A2] font-medium min-w-[45px] sm:min-w-[50px] text-center text-sm sm:text-base"
                                     >
                                         {{ quantity }}
                                     </span>
                                     <button
                                         @click="increaseQuantity"
                                         :disabled="quantity >= product.stock"
-                                        class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
+                                        class="px-2 py-1 sm:px-3 sm:py-1.5 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
                                     >
                                         <svg
-                                            class="w-5 h-5"
+                                            class="w-3.5 h-3.5 sm:w-4 sm:h-4"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -242,46 +242,54 @@
         <transition name="modal">
             <div
                 v-if="showLoginModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-white bg-opacity-10 dark:bg-gray-900 dark:bg-opacity-10 flex items-center justify-center z-50 p-4 backdrop-blur-md"
                 @click.self="showLoginModal = false"
             >
                 <div
-                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all modal-content"
                 >
-                    <div class="flex flex-col items-center text-center">
-                        <div
-                            class="w-16 h-16 bg-white dark:bg-white rounded-full flex items-center justify-center mb-4"
-                        >
-                            <img
-                                src="/images/logo-u.png"
-                                alt="U Marketplace Logo"
-                                class="w-10 h-10 object-contain"
-                            />
+                    <!-- Card Header -->
+                    <div class="bg-[#FDA1A2] rounded-t-2xl p-4 sm:p-6">
+                        <div class="flex items-center justify-center mb-2">
+                            <div
+                                class="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-md"
+                            >
+                                <img
+                                    src="/images/logo-u.png"
+                                    alt="U Marketplace Logo"
+                                    class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                                />
+                            </div>
                         </div>
-                        <h3
-                            class="text-xl font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-2"
-                        >
+                        <h3 class="text-lg sm:text-xl font-bold text-white text-center drop-shadow-sm">
                             Login Diperlukan
                         </h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-4 sm:p-6 bg-white dark:bg-[#1D1842]">
+                        <p class="text-sm sm:text-base text-gray-800 dark:text-gray-200 text-center mb-4 sm:mb-6 leading-relaxed">
                             Anda perlu login untuk menambahkan produk ke
                             keranjang atau melakukan checkout.
                         </p>
-                        <div class="flex gap-3 w-full">
+                        <div class="flex gap-2 sm:gap-3 w-full">
                             <button
                                 @click="showLoginModal = false"
-                                class="flex-1 px-4 py-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg font-medium"
+                                class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm sm:text-base font-semibold rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-150 shadow-sm"
                             >
                                 Batal
                             </button>
                             <button
                                 @click="goToLogin"
-                                class="flex-1 px-4 py-2 bg-[#FDA1A2] text-white rounded-lg font-semibold shadow-lg"
+                                class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-[#EF3B33] hover:bg-[#d92f25] text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-150 transform hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 Login
                             </button>
                         </div>
                     </div>
+
+                    <!-- Decorative bottom border -->
+                    <div class="h-1 bg-[#FDA1A2] rounded-b-2xl"></div>
                 </div>
             </div>
         </transition>

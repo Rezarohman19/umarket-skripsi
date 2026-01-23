@@ -80,8 +80,8 @@
                 <div
                     class="mt-6 space-y-4 text-sm"
                 >
-                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
-                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Nama</span>
+                    <div class="grid grid-cols-[120px_auto_1fr] sm:grid-cols-[140px_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap text-right sm:text-left">Nama</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
                         <div class="min-w-0">
                             <input
@@ -93,8 +93,8 @@
                             <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.name }}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
-                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Deskripsi</span>
+                    <div class="grid grid-cols-[120px_auto_1fr] sm:grid-cols-[140px_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap text-right sm:text-left">Deskripsi</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
                         <div class="min-w-0">
                             <textarea
@@ -106,8 +106,8 @@
                             <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.description }}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
-                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Telepon</span>
+                    <div class="grid grid-cols-[120px_auto_1fr] sm:grid-cols-[140px_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap text-right sm:text-left">Telepon</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
                         <div class="min-w-0">
                             <input
@@ -119,8 +119,8 @@
                             <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.phone }}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
-                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Email</span>
+                    <div class="grid grid-cols-[120px_auto_1fr] sm:grid-cols-[140px_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap text-right sm:text-left">Email</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
                         <div class="min-w-0">
                             <input
@@ -132,8 +132,8 @@
                             <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.email }}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
-                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Alamat Lengkap</span>
+                    <div class="grid grid-cols-[120px_auto_1fr] sm:grid-cols-[140px_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap text-right sm:text-left">Alamat Lengkap</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
                         <div class="min-w-0">
                             <textarea
@@ -145,8 +145,8 @@
                             <span v-else class="text-gray-900 dark:text-white break-words">{{ profile.address }}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-start">
-                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap">Password</span>
+                    <div class="grid grid-cols-[120px_auto_1fr] sm:grid-cols-[140px_auto_1fr] gap-x-2 gap-y-1 items-start">
+                        <span class="text-gray-700 dark:text-gray-300 whitespace-nowrap text-right sm:text-left">Password</span>
                         <span class="text-gray-700 dark:text-gray-300">:</span>
                         <div class="min-w-0">
                             <input

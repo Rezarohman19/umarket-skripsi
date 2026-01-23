@@ -59,6 +59,7 @@
                 ]">
                     <a
                         href="#"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -146,6 +147,7 @@
                 >
                     <a
                         href="/terms-and-conditions"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -172,6 +174,7 @@
 
                     <a
                         href="/contact-us"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -244,7 +247,13 @@
                 >
                     <div class="flex items-center justify-between gap-2 sm:gap-4">
                         <!-- Greeting -->
-                        <div class="flex-1 min-w-0" :class="user ? '' : 'mx-2 sm:mx-6'">
+                        <div class="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2" :class="user ? '' : 'mx-2 sm:mx-6'">
+                            <img
+                                v-if="!user"
+                                src="/images/logo-u.png"
+                                alt="U Marketplace"
+                                class="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 object-contain flex-shrink-0"
+                            />
                             <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
                                 <template v-if="user?.name">
@@ -264,8 +273,8 @@
                         </div>
 
                         <!-- Search Bar (Desktop) -->
-                        <div class="hidden md:flex flex-1 mx-2 md:mx-4">
-                            <div class="relative">
+                        <div class="hidden md:flex flex-1 max-w-md mx-2 md:mx-2">
+                            <div class="relative w-full">
                                 <input
                                     v-model="searchQuery"
                                     type="text"
@@ -540,22 +549,22 @@
                                     }}
                                 </p>
                                 <h3
-                                    class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2"
+                                    class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-0.5"
                                 >
                                     {{ product.name }}
                                 </h3>
                                 <p
-                                    class="text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-1"
+                                    class="text-sm sm:text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-1"
                                 >
                                     Rp. {{ formatPrice(product.price) }}
                                 </p>
 
                                 <div
-                                    class="mt-2 flex items-center gap-1.5 sm:gap-2"
+                                    class="mt-2 flex items-center gap-1 sm:gap-1.5"
                                     @click.stop
                                 >
                                     <div
-                                        class="flex-shrink-0 flex items-center justify-between px-1 sm:px-1.5 py-0.5 sm:py-1 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 min-w-[65px] sm:min-w-[70px]"
+                                        class="flex-shrink-0 flex items-center justify-between px-0.5 sm:px-1 py-0.5 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 min-w-[55px] sm:min-w-[65px]"
                                     >
                                         <button
                                             @click.stop="
@@ -578,7 +587,7 @@
                                             </svg>
                                         </button>
                                         <span
-                                            class="text-xs text-gray-900 dark:text-white font-medium text-center flex-1 px-1 min-w-[20px]"
+                                            class="text-xs text-gray-900 dark:text-white font-medium text-center flex-1 px-0.5 min-w-[18px]"
                                             >{{ getQuantity(product.id) }}</span
                                         >
                                         <button
@@ -604,9 +613,12 @@
                                     </div>
                                     <button
                                         @click.stop="handleAddToCart(product)"
-                                        class="flex-1 bg-[#EF3B33] text-white font-medium py-1.5 px-1 sm:px-2 rounded-md text-[9px] sm:text-xs cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f] leading-tight"
+                                        class="flex-1 bg-[#EF3B33] text-white font-medium py-1 px-0.5 sm:px-1.5 rounded-md text-[8px] sm:text-[10px] cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f] leading-tight text-center"
                                     >
-                                        Tambah
+                                        <span class="block leading-tight">
+                                            <span class="block">Tambah ke</span>
+                                            <span class="block">Keranjang</span>
+                                        </span>
                                     </button>
                                 </div>
 
@@ -627,50 +639,50 @@
                 @click.self="closeLoginModal"
             >
                 <div
-                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full transform transition-all modal-content"
+                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all modal-content"
                 >
                     <!-- Card Header -->
-                    <div class="bg-[#FDA1A2] rounded-t-2xl p-6">
+                    <div class="bg-[#FDA1A2] rounded-t-2xl p-4 sm:p-6">
                         <div class="flex items-center justify-center mb-2">
                             <div
-                                class="w-16 h-16 bg-white rounded-full flex items-center justify-center"
+                                class="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-md"
                             >
                                 <img
                                     src="/images/logo-u.png"
                                     alt="U Marketplace Logo"
-                                    class="w-10 h-10 object-contain"
+                                    class="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                                 />
                             </div>
                         </div>
-                        <h3 class="text-xl font-bold text-white text-center">
+                        <h3 class="text-lg sm:text-xl font-bold text-white text-center drop-shadow-sm">
                             Login Diperlukan
                         </h3>
                     </div>
 
                     <!-- Card Body -->
-                    <div class="p-6">
+                    <div class="p-4 sm:p-6 bg-white dark:bg-[#1D1842]">
                         <p
-                            class="text-gray-700 dark:text-gray-300 text-center mb-6 leading-relaxed"
+                            class="text-sm sm:text-base text-gray-800 dark:text-gray-200 text-center mb-4 sm:mb-6 leading-relaxed"
                         >
                             Anda harus melakukan
                             <span
-                                class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2]"
+                                class="font-semibold text-[#EF3B33] dark:text-[#FDA1A2]"
                                 >login</span
                             >
                             sebelum melakukan aksi lebih lanjut.
                         </p>
 
                         <!-- Action Buttons -->
-                        <div class="flex gap-3">
+                        <div class="flex gap-2 sm:gap-3">
                             <button
                                 @click="closeLoginModal"
-                                class="flex-1 px-4 py-3 bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] font-medium rounded-lg"
+                                class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm sm:text-base font-semibold rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-150 shadow-sm"
                             >
                                 Batal
                             </button>
                             <button
                                 @click="goToLogin"
-                                class="flex-1 px-4 py-3 bg-[#FDA1A2] text-white font-medium rounded-lg shadow-lg"
+                                class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-[#EF3B33] hover:bg-[#d92f25] text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-150 transform hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 Login
                             </button>
@@ -739,6 +751,14 @@ const goToLoginFromWelcome = () => {
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
+};
+
+const collapseSidebarOnNavigation = () => {
+    // Auto-collapse sidebar di mobile ketika menu diklik
+    // Cek jika lebar layar <= 768px (mobile)
+    if (window.innerWidth <= 768 && !sidebarCollapsed.value) {
+        sidebarCollapsed.value = true;
+    }
 };
 
 const filteredProducts = computed(() => {
@@ -930,6 +950,7 @@ const fetchCartCount = async () => {
 };
 
 const handleMyOrders = () => {
+    collapseSidebarOnNavigation();
     if (!user.value) {
         showLoginModal.value = true;
         return;
@@ -938,6 +959,7 @@ const handleMyOrders = () => {
 };
 
 const handleOpenShop = () => {
+    collapseSidebarOnNavigation();
     if (!user.value) {
         showLoginModal.value = true;
         return;

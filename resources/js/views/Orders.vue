@@ -65,6 +65,7 @@
                 <nav :class="['space-y-3', sidebarCollapsed ? 'px-2' : 'px-4']">
                     <a
                         href="/"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed
@@ -157,6 +158,7 @@
                 >
                     <a
                         href="/terms-and-conditions"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed
@@ -185,6 +187,7 @@
 
                     <a
                         href="/contact-us"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed
@@ -638,6 +641,14 @@ const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
+const collapseSidebarOnNavigation = () => {
+    // Auto-collapse sidebar di mobile ketika menu diklik
+    // Cek jika lebar layar <= 768px (mobile)
+    if (window.innerWidth <= 768 && !sidebarCollapsed.value) {
+        sidebarCollapsed.value = true;
+    }
+};
+
 const sections = [
     { key: "belum_bayar", title: "Belum Bayar" },
     { key: "dikemas", title: "Dikemas" },
@@ -1088,6 +1099,7 @@ const contactSellerWhatsApp = (orderGroup) => {
 };
 
 const handleOpenShop = () => {
+    collapseSidebarOnNavigation();
     if (!user.value) {
         window.location.href = "/login";
         return;

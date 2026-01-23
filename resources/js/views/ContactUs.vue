@@ -57,6 +57,7 @@
             ]">
                 <a
                     href="/"
+                    @click="collapseSidebarOnNavigation"
                     :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -83,6 +84,7 @@
 
                 <a
                     href="/orders"
+                    @click="collapseSidebarOnNavigation"
                     :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -109,6 +111,7 @@
 
                 <a
                     href="/open-shop"
+                    @click="collapseSidebarOnNavigation"
                     :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -142,6 +145,7 @@
             >
                 <a
                     href="/terms-and-conditions"
+                    @click="collapseSidebarOnNavigation"
                     :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -345,6 +349,14 @@ const confirmModal = ref({ visible: false, title: "", message: "" });
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
+};
+
+const collapseSidebarOnNavigation = () => {
+    // Auto-collapse sidebar di mobile ketika menu diklik
+    // Cek jika lebar layar <= 768px (mobile)
+    if (window.innerWidth <= 768 && !sidebarCollapsed.value) {
+        sidebarCollapsed.value = true;
+    }
 };
 
 const form = ref({
