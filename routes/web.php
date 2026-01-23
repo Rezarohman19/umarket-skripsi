@@ -72,7 +72,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Link verifikasi email
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
+        \Log::info('Verification request received for user: ' . $request->route('id'));
+        try {
+            $request->fulfill();
+            \Log::info('Verification fulfilled successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Verification failed: ' . $e->getMessage());
+        }
         return redirect('/')->with('success', 'Email Anda telah terverifikasi.');
     })->middleware(['signed'])->name('verification.verify');
 
