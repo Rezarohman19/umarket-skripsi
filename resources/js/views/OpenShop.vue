@@ -58,7 +58,6 @@
                 ]">
                     <a
                         href="/"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -85,7 +84,6 @@
 
                     <a
                         href="/orders"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -145,7 +143,6 @@
                 >
                     <a
                         href="/terms-and-conditions"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -172,7 +169,6 @@
 
                     <a
                         href="/contact-us"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -1282,7 +1278,8 @@ import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ToastNotification from "../components/ToastNotification.vue";
 
-const sidebarCollapsed = ref(false);
+// Default collapsed di mobile, expanded di desktop
+const sidebarCollapsed = ref(window.innerWidth <= 768);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");
@@ -1477,12 +1474,6 @@ const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
-const collapseSidebarOnNavigation = () => {
-    // Auto-collapse sidebar ketika menu diklik (kecuali jika sudah collapsed)
-    if (!sidebarCollapsed.value) {
-        sidebarCollapsed.value = true;
-    }
-};
 
 const handleLogout = () => {
     if (!user.value) {

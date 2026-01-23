@@ -59,7 +59,6 @@
                 ]">
                     <a
                         href="#"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -147,7 +146,6 @@
                 >
                     <a
                         href="/terms-and-conditions"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -174,7 +172,6 @@
 
                     <a
                         href="/contact-us"
-                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -720,7 +717,8 @@ import Logo from "../components/Logo.vue";
 import ToastNotification from "../components/ToastNotification.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-const sidebarCollapsed = ref(false);
+// Default collapsed di mobile, expanded di desktop
+const sidebarCollapsed = ref(window.innerWidth <= 768);
 const mobileMenuOpen = ref(false);
 const showMobileSearch = ref(false);
 const products = ref([]);
@@ -753,13 +751,6 @@ const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
-const collapseSidebarOnNavigation = () => {
-    // Auto-collapse sidebar di mobile ketika menu diklik
-    // Cek jika lebar layar <= 768px (mobile)
-    if (window.innerWidth <= 768 && !sidebarCollapsed.value) {
-        sidebarCollapsed.value = true;
-    }
-};
 
 const filteredProducts = computed(() => {
     if (!searchQuery.value) {
@@ -767,10 +758,11 @@ const filteredProducts = computed(() => {
     }
     const query = searchQuery.value.toLowerCase();
     return products.value.filter((product) => {
-        const productName = product.name.toLowerCase();
+        const productName = (product.name || "").toLowerCase();
         const storeName = (product.store_name || product.user?.name || "").toLowerCase();
         const description = (product.description || "").toLowerCase();
-        return productName.includes(query) || storeName.includes(query) || description.includes(query);
+        const category = String(product.category || "").toLowerCase();
+        return productName.includes(query) || storeName.includes(query) || description.includes(query) || category.includes(query);
     });
 });
 
@@ -950,7 +942,6 @@ const fetchCartCount = async () => {
 };
 
 const handleMyOrders = () => {
-    collapseSidebarOnNavigation();
     if (!user.value) {
         showLoginModal.value = true;
         return;
@@ -959,7 +950,6 @@ const handleMyOrders = () => {
 };
 
 const handleOpenShop = () => {
-    collapseSidebarOnNavigation();
     if (!user.value) {
         showLoginModal.value = true;
         return;
