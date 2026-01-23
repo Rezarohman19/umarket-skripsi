@@ -209,11 +209,11 @@
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10 w-full max-w-full overflow-hidden"
                 >
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                    <div class="flex flex-row items-center justify-between gap-2 sm:gap-0">
 
                         <!-- Greeting -->
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
+                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
                                 Halo, <span class="font-semibold">Admin</span>
                             </p>
                         </div>
@@ -225,10 +225,10 @@
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari"
-                                    class="w-full px-3 sm:px-4 py-2 pl-9 sm:pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-sm sm:text-base text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                                    class="w-full px-2 sm:px-4 py-1.5 sm:py-2 pl-7 sm:pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-xs sm:text-base text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                                 />
                                 <svg
-                                    class="w-4 h-4 sm:w-5 sm:h-5 absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                    class="w-3.5 h-3.5 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -246,7 +246,7 @@
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
+                            class="w-7 h-7 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
                             :class="
                                 admin?.photo_url
                                     ? ''
@@ -261,7 +261,7 @@
                             />
                             <svg
                                 v-else
-                                class="w-6 h-6 text-gray-600 dark:text-gray-400"
+                                class="w-4 h-4 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -283,18 +283,18 @@
                         <!-- Main Content Area -->
                         <div class="flex-1 space-y-4 sm:space-y-6 min-w-0">
                             <!-- Stats Cards -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-6">
                                 <!-- Jumlah Pengguna -->
                                 <div
-                                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
+                                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-2 sm:p-6"
                                 >
                                     <h3
-                                        class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-2"
+                                        class="text-[10px] sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2"
                                     >
                                         Jumlah Pengguna
                                     </h3>
                                     <p
-                                        class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]"
+                                        class="text-lg sm:text-3xl lg:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]"
                                     >
                                         {{ stats.totalUsers }}
                                     </p>
@@ -302,15 +302,15 @@
 
                                 <!-- Riwayat Transaksi -->
                                 <div
-                                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
+                                    class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-2 sm:p-6"
                                 >
                                     <h3
-                                        class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-2"
+                                        class="text-[10px] sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2"
                                     >
                                         Riwayat Transaksi
                                     </h3>
                                     <p
-                                        class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33] break-words"
+                                        class="text-xs sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33] break-words"
                                     >
                                         Rp.
                                         {{
@@ -320,47 +320,117 @@
                                 </div>
                             </div>
 
-                            <!-- Diagram Penjualan -->
-                            <div
-                                class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
-                            >
+                            <!-- Diagram Penjualan dan Produk Populer - Sejajar di Mobile, Terpisah di Desktop -->
+                            <div class="flex flex-row lg:flex-col gap-4 sm:gap-6">
+                                <!-- Diagram Penjualan -->
                                 <div
-                                    class="flex items-center justify-between mb-4"
+                                    class="flex-1 lg:flex-none bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6"
                                 >
-                                    <h3
-                                        class="text-base sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
+                                    <div
+                                        class="flex items-center justify-between mb-3 sm:mb-4"
                                     >
-                                        Diagram Penjualan
-                                    </h3>
-                                    <button class="p-2 rounded-lg">
-                                        <svg
-                                            class="w-5 h-5 text-gray-600 dark:text-gray-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
+                                        <h3
+                                            class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
                                         >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
-                                            />
-                                        </svg>
-                                    </button>
+                                            Diagram Penjualan
+                                        </h3>
+                                        <button class="p-1.5 sm:p-2 rounded-lg cursor-pointer active:scale-95">
+                                            <svg
+                                                class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div
+                                        class="h-48 sm:h-64 flex items-center justify-center text-gray-400 dark:text-gray-600"
+                                    >
+                                        <p class="text-xs sm:text-sm">
+                                            Chart akan ditampilkan di sini
+                                        </p>
+                                    </div>
                                 </div>
-                                <div
-                                    class="h-64 flex items-center justify-center text-gray-400 dark:text-gray-600"
+
+                                <!-- Produk Populer - Hanya muncul di Mobile, di Desktop akan di sidebar -->
+                                <aside
+                                    class="flex-1 lg:hidden bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6 h-fit"
                                 >
-                                    <p class="text-sm">
-                                        Chart akan ditampilkan di sini
-                                    </p>
-                                </div>
+                                    <div class="flex items-center justify-between mb-3 sm:mb-4">
+                                        <h3
+                                            class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
+                                        >
+                                            Produk Populer
+                                        </h3>
+                                    </div>
+                                    <div class="space-y-2 sm:space-y-4">
+                                        <div
+                                            v-for="product in displayedProducts"
+                                            :key="product.id"
+                                            class="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg cursor-pointer hover:bg-[#FDA1A2]/5 dark:hover:bg-[#8E0D3C]/10 transition"
+                                        >
+                                            <div
+                                                class="w-10 h-10 sm:w-12 sm:h-12 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                                            >
+                                                <img
+                                                    v-if="product.image_url"
+                                                    :src="product.image_url"
+                                                    :alt="product.name"
+                                                    class="w-full h-full object-cover rounded-lg"
+                                                />
+                                                <svg
+                                                    v-else
+                                                    class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                    />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p
+                                                    class="text-xs sm:text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2] truncate"
+                                                >
+                                                    {{ product.name }}
+                                                </p>
+                                                <p
+                                                    class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate"
+                                                >
+                                                    {{
+                                                        product.description ||
+                                                        "Tidak ada deskripsi"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        v-if="popularProducts.length > 4"
+                                        @click="toggleShowAllProducts"
+                                        class="w-full mt-3 sm:mt-4 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#1D1842] dark:text-[#FDA1A2] rounded-lg text-xs sm:text-sm font-medium hover:bg-[#FDA1A2]/30 dark:hover:bg-[#8E0D3C]/30 transition cursor-pointer active:scale-95"
+                                    >
+                                        {{ showAllProducts ? "Tutup" : "Lihat Semua" }}
+                                    </button>
+                                </aside>
                             </div>
                         </div>
 
-                        <!-- Right Sidebar - Produk Populer -->
+                        <!-- Right Sidebar - Produk Populer (Desktop Only) -->
                         <aside
-                            class="w-full lg:w-80 bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 h-fit"
+                            class="hidden lg:block w-80 bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 h-fit"
                         >
                             <div class="flex items-center justify-between mb-4">
                                 <h3

@@ -209,10 +209,10 @@
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10 w-full max-w-full overflow-hidden"
                 >
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                    <div class="flex flex-row items-center justify-between gap-2 sm:gap-0">
                         <!-- Greeting -->
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
+                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
                                 Halo, <span class="font-semibold">Admin</span>
                             </p>
                         </div>
@@ -224,10 +224,10 @@
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari pengguna"
-                                    class="w-full px-3 sm:px-4 py-2 pl-9 sm:pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-sm sm:text-base text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                                    class="w-full px-2 sm:px-4 py-1.5 sm:py-2 pl-7 sm:pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-xs sm:text-base text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                                 />
                                 <svg
-                                    class="w-4 h-4 sm:w-5 sm:h-5 absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                    class="w-3.5 h-3.5 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -245,7 +245,7 @@
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
+                            class="w-7 h-7 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
                             :class="
                                 admin?.photo_url
                                     ? ''
@@ -260,7 +260,7 @@
                             />
                             <svg
                                 v-else
-                                class="w-6 h-6 text-gray-600 dark:text-gray-400"
+                                class="w-4 h-4 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -278,15 +278,15 @@
 
                 <!-- Users Table -->
                 <div class="p-3 sm:p-6 overflow-x-hidden">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
+                    <div class="flex flex-row items-center justify-between gap-2 sm:gap-0 mb-4">
                         <h2
-                            class="text-base sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
+                            class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
                         >
                             Daftar Pengguna
                         </h2>
                         <button
                             @click="openCreateModal"
-                            class="w-full sm:w-auto px-3 sm:px-4 py-2 bg-[#EF3B33] text-white rounded-lg text-xs sm:text-sm font-medium shadow cursor-pointer hover:bg-[#d92f25] transition active:scale-95"
+                            class="px-2 sm:px-4 py-1.5 sm:py-2 bg-[#EF3B33] text-white rounded-lg text-xs sm:text-sm font-medium shadow cursor-pointer hover:bg-[#d92f25] transition active:scale-95 whitespace-nowrap"
                         >
                             + Tambah Pengguna
                         </button>
