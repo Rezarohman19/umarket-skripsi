@@ -377,7 +377,7 @@
                                             class="px-4 py-3 align-middle text-center"
                                         >
                                             <button
-                                                class="px-3 py-1 text-xs rounded-full bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2]"
+                                                class="px-3 py-1 text-xs rounded-full bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2] cursor-pointer hover:bg-[#FDA1A2]/30 dark:hover:bg-[#8E0D3C]/30 transition active:scale-95"
                                                 @click="viewDetail(sale)"
                                             >
                                                 Detail
@@ -421,6 +421,119 @@
             @confirm="handleConfirmLogout"
             @cancel="closeConfirmModal"
         />
+
+        <!-- Detail Transaction Modal -->
+        <div
+            v-if="detailModal.visible"
+            class="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in"
+        >
+            <!-- Backdrop -->
+            <div 
+                class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                @click="closeDetailModal"
+            ></div>
+
+            <!-- Card -->
+            <div
+                class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl p-4 sm:p-6 max-w-md w-full relative z-10 border border-gray-100 dark:border-[#8E0D3C]/30 max-h-[90vh] overflow-y-auto"
+            >
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                    <h3 class="text-lg sm:text-xl font-bold text-[#1D1842] dark:text-[#FDA1A2]">
+                        Detail Transaksi
+                    </h3>
+                    <button
+                        @click="closeDetailModal"
+                        class="p-2 rounded-lg hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/10 transition cursor-pointer active:scale-95"
+                    >
+                        <svg
+                            class="w-5 h-5 text-gray-600 dark:text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div v-if="detailModal.data" class="space-y-4">
+                    <!-- ID Transaksi -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">ID Transaksi</span>
+                        <span class="text-sm sm:text-base font-semibold text-[#1D1842] dark:text-[#FDA1A2]">
+                            #{{ detailModal.data.id }}
+                        </span>
+                    </div>
+
+                    <!-- Nama Pembeli -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Nama Pembeli</span>
+                        <span class="text-sm sm:text-base font-medium text-[#1D1842] dark:text-[#FDA1A2]">
+                            {{ detailModal.data.user?.name || "Pengguna" }}
+                        </span>
+                    </div>
+
+                    <!-- Jumlah Produk -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Jumlah Produk</span>
+                        <span class="text-sm sm:text-base font-medium text-[#1D1842] dark:text-[#FDA1A2]">
+                            {{ detailModal.data.products_sold }} item
+                        </span>
+                    </div>
+
+                    <!-- Total Harga -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 pt-2 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Harga</span>
+                        <span class="text-base sm:text-lg font-bold text-[#EF3B33] dark:text-[#EF3B33]">
+                            Rp. {{ formatPrice(detailModal.data.total) }}
+                        </span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Status</span>
+                        <span
+                            :class="[
+                                'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
+                                detailModal.data.status === 'paid' ||
+                                detailModal.data.status === 'completed'
+                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                                    : detailModal.data.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+                            ]"
+                        >
+                            {{ detailModal.data.status }}
+                        </span>
+                    </div>
+
+                    <!-- Tanggal Transaksi -->
+                    <div v-if="detailModal.data.created_at" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 pt-2 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Tanggal Transaksi</span>
+                        <span class="text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]">
+                            {{ formatDate(detailModal.data.created_at) }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Close Button -->
+                <div class="mt-6 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
+                    <button
+                        @click="closeDetailModal"
+                        class="w-full px-4 py-2 bg-[#EF3B33] text-white rounded-lg text-sm font-medium hover:bg-[#d92f25] transition cursor-pointer active:scale-95"
+                    >
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -441,6 +554,7 @@ const toggleSidebar = () => {
 const sales = ref([]);
 const loading = ref(true);
 const confirmModal = ref({ visible: false, title: "", message: "" });
+const detailModal = ref({ visible: false, data: null });
 
 const formatPrice = (price) =>
     new Intl.NumberFormat("id-ID").format(price || 0);
@@ -490,11 +604,27 @@ const fetchSales = async () => {
 };
 
 const viewDetail = (sale) => {
-    alert(
-        `Transaksi #${sale.id}\nPembeli: ${
-            sale.user?.name || "Pengguna"
-        }\nTotal: Rp. ${formatPrice(sale.total)}`
-    );
+    detailModal.value = {
+        visible: true,
+        data: sale
+    };
+};
+
+const closeDetailModal = () => {
+    detailModal.value.visible = false;
+    detailModal.value.data = null;
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 };
 
 const handleProfile = () => {
@@ -541,3 +671,20 @@ onBeforeUnmount(() => {
     window.removeEventListener("userUpdated", handleUserUpdated);
 });
 </script>
+
+<style scoped>
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>

@@ -320,49 +320,47 @@
                                 </div>
                             </div>
 
-                            <!-- Diagram Penjualan dan Produk Populer - Sejajar di Mobile, Terpisah di Desktop -->
-                            <div class="flex flex-row lg:flex-col gap-4 sm:gap-6">
-                                <!-- Diagram Penjualan -->
+                            <!-- Diagram Penjualan -->
+                            <div
+                                class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6"
+                            >
                                 <div
-                                    class="flex-1 lg:flex-none bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6"
+                                    class="flex items-center justify-between mb-3 sm:mb-4"
                                 >
-                                    <div
-                                        class="flex items-center justify-between mb-3 sm:mb-4"
+                                    <h3
+                                        class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
                                     >
-                                        <h3
-                                            class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
+                                        Diagram Penjualan
+                                    </h3>
+                                    <button class="p-1.5 sm:p-2 rounded-lg cursor-pointer active:scale-95">
+                                        <svg
+                                            class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
                                         >
-                                            Diagram Penjualan
-                                        </h3>
-                                        <button class="p-1.5 sm:p-2 rounded-lg cursor-pointer active:scale-95">
-                                            <svg
-                                                class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div
-                                        class="h-48 sm:h-64 flex items-center justify-center text-gray-400 dark:text-gray-600"
-                                    >
-                                        <p class="text-xs sm:text-sm">
-                                            Chart akan ditampilkan di sini
-                                        </p>
-                                    </div>
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
+                                            />
+                                        </svg>
+                                    </button>
                                 </div>
-
-                                <!-- Produk Populer - Hanya muncul di Mobile, di Desktop akan di sidebar -->
-                                <aside
-                                    class="flex-1 lg:hidden bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6 h-fit"
+                                <div
+                                    class="h-48 sm:h-64 flex items-center justify-center text-gray-400 dark:text-gray-600"
                                 >
+                                    <p class="text-xs sm:text-sm">
+                                        Chart akan ditampilkan di sini
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Produk Populer - Hanya muncul di Mobile, di Desktop akan di sidebar -->
+                            <aside
+                                class="lg:hidden bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6 h-fit"
+                            >
                                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                                         <h3
                                             class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
@@ -425,7 +423,6 @@
                                         {{ showAllProducts ? "Tutup" : "Lihat Semua" }}
                                     </button>
                                 </aside>
-                            </div>
                         </div>
 
                         <!-- Right Sidebar - Produk Populer (Desktop Only) -->
