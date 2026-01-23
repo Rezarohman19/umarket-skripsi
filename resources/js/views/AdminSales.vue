@@ -1,29 +1,74 @@
 <template>
-    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
             <!-- Left Sidebar -->
             <aside
-                class="w-64 bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm fixed left-0 top-0 bottom-0 flex flex-col z-10"
+                :class="[
+                    'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
+                    sidebarCollapsed ? 'w-16' : 'w-64',
+                ]"
             >
-                <!-- Logo -->
-                <div
-                    class="p-4 flex items-center justify-center border-b border-[#EF3B33]/30"
-                >
-                    <img
-                        src="/images/logo-u-marketplace.png"
-                        alt="U Marketplace"
-                        class="h-20 w-auto object-contain"
-                    />
+                <!-- Logo & Toggle Button -->
+                <div :class="[
+                    'p-4 border-b border-[#EF3B33]/30',
+                    sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
+                ]">
+                    <div :class="[
+                        'flex items-center justify-center',
+                        sidebarCollapsed ? 'w-full' : 'flex-1'
+                    ]">
+                        <img
+                            src="/images/logo-u-marketplace.png"
+                            alt="U Marketplace"
+                            :class="[
+                                'object-contain',
+                                sidebarCollapsed ? 'h-10 w-10' : 'h-20 w-auto'
+                            ]"
+                        />
+                    </div>
+                    <button 
+                        @click="toggleSidebar" 
+                        :class="[
+                            'p-2 rounded-lg hover:bg-[#EF3B33]/20 transition cursor-pointer active:scale-95',
+                            sidebarCollapsed ? 'w-full flex justify-center' : ''
+                        ]"
+                    >
+                        <svg
+                            :class="[
+                                'text-white transition-transform duration-300',
+                                sidebarCollapsed ? 'w-5 h-5 rotate-180' : 'w-5 h-5'
+                            ]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Navigation -->
-                <nav class="flex-1 p-4 space-y-2">
+                <nav :class="[
+                    'flex-1 space-y-3',
+                    sidebarCollapsed ? 'px-2' : 'px-4'
+                ]">
                     <a
                         href="/admin/dashboard"
-                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                        :class="[
+                            'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                        ]"
                     >
                         <svg
-                            class="w-5 h-5 text-white mr-3"
+                            :class="[
+                                'text-white flex-shrink-0',
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                            ]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -35,15 +80,21 @@
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                             />
                         </svg>
-                        Beranda
+                        <span v-if="!sidebarCollapsed">Beranda</span>
                     </a>
 
                     <a
                         href="/admin/products"
-                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                        :class="[
+                            'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                        ]"
                     >
                         <svg
-                            class="w-5 h-5 text-white mr-3"
+                            :class="[
+                                'text-white flex-shrink-0',
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                            ]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -55,15 +106,21 @@
                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                             />
                         </svg>
-                        Produk
+                        <span v-if="!sidebarCollapsed">Produk</span>
                     </a>
 
                     <a
                         href="/admin/users"
-                        class="flex items-center px-4 py-3 rounded-lg text-white/80"
+                        :class="[
+                            'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
+                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                        ]"
                     >
                         <svg
-                            class="w-5 h-5 text-white mr-3"
+                            :class="[
+                                'text-white flex-shrink-0',
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                            ]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -75,15 +132,21 @@
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                             />
                         </svg>
-                        Pengguna
+                        <span v-if="!sidebarCollapsed">Pengguna</span>
                     </a>
 
                     <a
                         href="/admin/transactions"
-                        class="flex items-center px-4 py-3 rounded-lg bg-[#FDA1A2]/30 text-white font-medium"
+                        :class="[
+                            'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
+                            sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
+                        ]"
                     >
                         <svg
-                            class="w-5 h-5 text-white mr-3"
+                            :class="[
+                                'text-white flex-shrink-0',
+                                sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'
+                            ]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -95,19 +158,31 @@
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                             />
                         </svg>
-                        Penjualan
+                        <span v-if="!sidebarCollapsed">Penjualan</span>
                     </a>
                 </nav>
 
                 <!-- Logout Button -->
-                <div class="mt-auto p-4 border-t border-[#EF3B33]/30">
+                <div :class="[
+                    'mt-auto border-t border-[#EF3B33]/30',
+                    sidebarCollapsed ? 'p-2' : 'p-4'
+                ]">
                     <button
                         @click="handleLogout"
-                        class="w-full bg-[#EF3B33]/30 text-white font-medium py-3 px-4 rounded-lg"
+                        :class="[
+                            'w-full bg-[#EF3B33]/30 text-white font-medium rounded-lg transition cursor-pointer hover:bg-[#EF3B33]/40 active:scale-95',
+                            sidebarCollapsed ? 'py-2 px-2 flex justify-center' : 'py-3 px-4'
+                        ]"
                     >
-                        <span class="flex items-center justify-center">
+                        <span :class="[
+                            'flex items-center',
+                            sidebarCollapsed ? 'justify-center' : 'justify-center'
+                        ]">
                             <svg
-                                class="w-5 h-5 mr-2"
+                                :class="[
+                                    'flex-shrink-0',
+                                    sidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5 mr-2'
+                                ]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -119,44 +194,40 @@
                                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                                 />
                             </svg>
-                            Keluar
+                            <span v-if="!sidebarCollapsed">Keluar</span>
                         </span>
                     </button>
                 </div>
             </aside>
 
             <!-- Main Content -->
-            <main class="flex-1 ml-64">
+            <main :class="[
+                'flex-1 transition-all duration-300 overflow-x-hidden',
+                sidebarCollapsed ? 'ml-16' : 'ml-64'
+            ]">
                 <!-- Top Header (same style as dashboard) -->
                 <header
-                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
+                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10 w-full max-w-full overflow-hidden"
                 >
-                    <div class="flex items-center justify-between">
-                        <!-- Logo -->
-                        <img
-                            src="/images/logo.png"
-                            alt="U Marketplace"
-                            class="w-10 h-10 object-contain"
-                        />
-
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                         <!-- Greeting -->
-                        <div class="flex-1 mx-6">
-                            <p class="text-[#1D1842] dark:text-[#FDA1A2]">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
                                 Halo, <span class="font-semibold">Admin</span>
                             </p>
                         </div>
 
                         <!-- Search Bar -->
-                        <div class="flex-1 max-w-md mx-4">
+                        <div class="flex-1 max-w-md w-full sm:w-auto mx-0 sm:mx-4 min-w-0">
                             <div class="relative">
                                 <input
                                     v-model="searchQuery"
                                     type="text"
                                     placeholder="Cari riwayat penjualan"
-                                    class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                                    class="w-full px-3 sm:px-4 py-2 pl-9 sm:pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-sm sm:text-base text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                                 />
                                 <svg
-                                    class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                    class="w-4 h-4 sm:w-5 sm:h-5 absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -174,7 +245,7 @@
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
+                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
                             :class="
                                 admin?.photo_url
                                     ? ''
@@ -206,9 +277,9 @@
                 </header>
 
                 <!-- Sales Table -->
-                <div class="p-6">
+                <div class="p-3 sm:p-6 overflow-x-hidden">
                     <h2
-                        class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
+                        class="text-base sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
                     >
                         Riwayat Penjualan
                     </h2>
@@ -217,7 +288,7 @@
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm overflow-hidden"
                     >
                         <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm">
+                            <table class="min-w-full text-xs sm:text-sm">
                                 <thead
                                     class="bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2]"
                                 >
@@ -341,6 +412,15 @@
                 </div>
             </main>
         </div>
+
+        <!-- Confirm Modal untuk Logout -->
+        <ConfirmModal
+            :visible="confirmModal.visible"
+            :title="confirmModal.title"
+            :message="confirmModal.message"
+            @confirm="handleConfirmLogout"
+            @cancel="closeConfirmModal"
+        />
     </div>
 </template>
 
@@ -348,11 +428,19 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import Logo from "../components/Logo.vue";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
+// Default collapsed di mobile, expanded di desktop
+const sidebarCollapsed = ref(window.innerWidth <= 768);
 const searchQuery = ref("");
 const admin = ref(null);
+
+const toggleSidebar = () => {
+    sidebarCollapsed.value = !sidebarCollapsed.value;
+};
 const sales = ref([]);
 const loading = ref(true);
+const confirmModal = ref({ visible: false, title: "", message: "" });
 
 const formatPrice = (price) =>
     new Intl.NumberFormat("id-ID").format(price || 0);
@@ -413,15 +501,29 @@ const handleProfile = () => {
     window.location.href = "/admin/profile";
 };
 
-const handleLogout = async () => {
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-        try {
-            await axios.post("/logout");
-            window.location.href = "/admin/login";
-        } catch (error) {
-            console.error("Error logging out:", error);
-            window.location.href = "/admin/login";
-        }
+const handleLogout = () => {
+    // Tampilkan confirm modal
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Keluar",
+        message: "Apakah Anda yakin ingin keluar?"
+    };
+};
+
+const closeConfirmModal = () => {
+    confirmModal.value.visible = false;
+};
+
+const handleConfirmLogout = async () => {
+    closeConfirmModal();
+    
+    try {
+        await axios.post("/logout");
+        window.location.href = "/";
+    } catch (error) {
+        console.error("Error logging out:", error);
+        // Tetap redirect meskipun ada error
+        window.location.href = "/";
     }
 };
 
