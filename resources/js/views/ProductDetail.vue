@@ -163,7 +163,7 @@
                                 >
                                     <button
                                         @click="decreaseQuantity"
-                                        :disabled="quantity <= 1"
+                                        :disabled="quantity <= 0"
                                         class="px-4 py-2 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:scale-105 active:scale-95 active:shadow-inner"
                                     >
                                         <svg
@@ -208,18 +208,20 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="flex flex-col gap-3">
+                            <div class="flex flex-row gap-2 sm:gap-3">
                                 <button
                                     @click="handleAddToCart"
-                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#f88a8c] hover:shadow-lg active:scale-95 active:shadow-inner text-sm sm:text-base"
+                                    class="flex-1 bg-[#FDA1A2] dark:bg-[#FDA1A2] text-[#8E0D3C] dark:text-[#8E0D3C] font-semibold py-2.5 sm:py-3 px-2 sm:px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#f88a8c] hover:shadow-lg active:scale-95 active:shadow-inner text-xs sm:text-base"
                                 >
-                                    Tambah ke Keranjang
+                                    <span class="hidden sm:inline">Tambah ke Keranjang</span>
+                                    <span class="sm:hidden">Tambah</span>
                                 </button>
                                 <button
                                     @click="handleCheckout"
-                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner text-sm sm:text-base"
+                                    class="flex-1 bg-[#EF3B33] dark:bg-[#EF3B33] text-white font-semibold py-2.5 sm:py-3 px-2 sm:px-6 rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner text-xs sm:text-base"
                                 >
-                                    Checkout Langsung
+                                    <span class="hidden sm:inline">Checkout Langsung</span>
+                                    <span class="sm:hidden">Checkout</span>
                                 </button>
                             </div>
                         </div>
@@ -298,7 +300,7 @@ const getProductId = () => {
 };
 const product = ref(null);
 const loading = ref(true);
-const quantity = ref(1);
+const quantity = ref(0);
 const showLoginModal = ref(false);
 const user = ref(null);
 const toast = ref({ visible: false, message: "", type: "success" });
@@ -353,7 +355,7 @@ const increaseQuantity = () => {
 };
 
 const decreaseQuantity = () => {
-    if (quantity.value > 1) {
+    if (quantity.value > 0) {
         quantity.value -= 1;
     }
 };
@@ -420,6 +422,19 @@ const handleCheckout = async () => {
 
     if (!product.value) return;
 
+    // Validasi: quantity harus lebih dari 0
+    if (quantity.value <= 0) {
+        toast.value = { visible: true, message: "Jumlah produk harus lebih dari 0", type: "error" };
+        return;
+    }
+
+    // Validasi: quantity tidak boleh melebihi stok
+    const stock = product.value.stock || 0;
+    if (quantity.value > stock) {
+        toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
+        return;
+    }
+
     try {
         // Tambahkan ke cart dulu
         await axios.post("/api/cart/add", {
@@ -434,10 +449,11 @@ const handleCheckout = async () => {
         window.location.href = "/cart";
     } catch (error) {
         console.error("Error adding to cart:", error);
-        alert(
-            "Gagal menambahkan produk ke keranjang: " +
-                (error.response?.data?.message || error.message)
-        );
+        toast.value = { 
+            visible: true, 
+            message: "Gagal menambahkan produk ke keranjang: " + (error.response?.data?.message || error.message), 
+            type: "error" 
+        };
     }
 };
 

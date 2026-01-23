@@ -262,7 +262,8 @@
                             </p>
                         </div>
 
-                        <div class="hidden sm:flex flex-1 max-w-md mx-2 md:mx-4">
+                        <!-- Search Bar (Desktop) -->
+                        <div class="hidden md:flex flex-1 mx-2 md:mx-4">
                             <div class="relative">
                                 <input
                                     v-model="searchQuery"
@@ -285,6 +286,26 @@
                                 </svg>
                             </div>
                         </div>
+
+                        <!-- Search Icon (Mobile only) -->
+                        <button
+                            @click="showMobileSearch = !showMobileSearch"
+                            class="md:hidden p-1.5 sm:p-2 text-gray-600 dark:text-gray-400"
+                        >
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </button>
 
                         <button
                             @click="handleCart"
@@ -349,6 +370,44 @@
                         </button>
                     </div>
                 </header>
+
+                <!-- Mobile Search Bar (Expandable) -->
+                <transition
+                    enter-active-class="transition duration-200 ease-out"
+                    enter-from-class="transform -translate-y-4 opacity-0"
+                    enter-to-class="transform translate-y-0 opacity-100"
+                    leave-active-class="transition duration-150 ease-in"
+                    leave-from-class="transform translate-y-0 opacity-100"
+                    leave-to-class="transform -translate-y-4 opacity-0"
+                >
+                    <div
+                        v-if="showMobileSearch"
+                        class="md:hidden bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 px-4 py-3 sticky top-[4.5rem] z-10 shadow-sm"
+                    >
+                        <div class="relative">
+                            <input
+                                v-model="searchQuery"
+                                type="text"
+                                placeholder="Cari pesanan..."
+                                class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                autoFocus
+                            />
+                            <svg
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </transition>
 
                 <!-- Loading -->
                 <div v-if="loading" class="p-4 sm:p-6 text-center">
@@ -571,6 +630,7 @@ const mobileMenuOpen = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");
+const showMobileSearch = ref(false);
 const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
 const toast = ref({ visible: false, message: "", type: "success" });
 

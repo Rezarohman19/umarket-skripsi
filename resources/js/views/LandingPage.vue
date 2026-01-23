@@ -493,7 +493,7 @@
                     <div
                         v-else
                         class="grid gap-2 sm:gap-3"
-                        style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));"
+                        style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));"
                     >
                         <div
                             v-for="product in filteredProducts"
@@ -503,7 +503,7 @@
                         >
                             <!-- Product Image -->
                             <div
-                                class="w-full h-28 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden"
+                                class="w-full aspect-[3/2] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden"
                             >
                                 <svg
                                     v-if="!product.image_url"
@@ -551,17 +551,17 @@
                                 </p>
 
                                 <div
-                                    class="mt-2 flex flex-col gap-2"
+                                    class="mt-2 flex items-center gap-1.5 sm:gap-2"
                                     @click.stop
                                 >
                                     <div
-                                        class="w-full flex items-center justify-between px-1 py-0.5 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10"
+                                        class="flex-shrink-0 flex items-center justify-between px-1 sm:px-1.5 py-0.5 sm:py-1 border border-[#EF3B33]/30 dark:border-[#EF3B33]/30 rounded-md bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 min-w-[65px] sm:min-w-[70px]"
                                     >
                                         <button
                                             @click.stop="
                                                 decreaseQuantity(product.id)
                                             "
-                                            class="p-1 text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95 flex items-center justify-center"
+                                            class="p-0.5 text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95 flex items-center justify-center"
                                         >
                                             <svg
                                                 class="w-3 h-3"
@@ -578,14 +578,14 @@
                                             </svg>
                                         </button>
                                         <span
-                                            class="text-xs text-gray-900 dark:text-white font-medium text-center flex-1"
+                                            class="text-xs text-gray-900 dark:text-white font-medium text-center flex-1 px-1 min-w-[20px]"
                                             >{{ getQuantity(product.id) }}</span
                                         >
                                         <button
                                             @click.stop="
                                                 increaseQuantity(product.id)
                                             "
-                                            class="p-1 text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95 flex items-center justify-center"
+                                            class="p-0.5 text-gray-600 dark:text-gray-400 cursor-pointer transition-all duration-150 hover:text-[#EF3B33] hover:bg-[#EF3B33]/20 active:scale-95 flex items-center justify-center"
                                         >
                                             <svg
                                                 class="w-3 h-3"
@@ -604,9 +604,9 @@
                                     </div>
                                     <button
                                         @click.stop="handleAddToCart(product)"
-                                        class="w-full bg-[#EF3B33] text-white font-medium py-1.5 px-2 rounded-md text-xs cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f]"
+                                        class="flex-1 bg-[#EF3B33] text-white font-medium py-1.5 px-1 sm:px-2 rounded-md text-[9px] sm:text-xs cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f] leading-tight"
                                     >
-                                        Tambah Keranjang
+                                        Tambah
                                     </button>
                                 </div>
 

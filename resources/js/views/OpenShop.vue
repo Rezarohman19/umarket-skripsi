@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
             <!-- Sidebar -->
             <aside
@@ -58,6 +58,7 @@
                 ]">
                     <a
                         href="/"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -84,6 +85,7 @@
 
                     <a
                         href="/orders"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -143,6 +145,7 @@
                 >
                     <a
                         href="/terms-and-conditions"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -169,6 +172,7 @@
 
                     <a
                         href="/contact-us"
+                        @click="collapseSidebarOnNavigation"
                         :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
@@ -227,15 +231,15 @@
             <!-- Main Content -->
             <main
                 :class="[
-                    'flex-1 transition-all duration-300',
+                    'flex-1 transition-all duration-300 overflow-x-hidden',
                     sidebarCollapsed ? 'ml-16' : 'ml-64',
                 ]"
             >
                 <!-- Header -->
                 <header
-                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-6 py-4 sticky top-0 z-10"
+                    class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-4 sticky top-0 z-10 w-full"
                 >
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between w-full max-w-full overflow-hidden">
 
                         <div class="flex-1 mr-6">
                             <p class="text-gray-700 dark:text-gray-300">
@@ -246,7 +250,8 @@
                             </p>
                         </div>
 
-                        <div class="flex-1 max-w-md mx-4">
+                        <!-- Search Bar (Desktop) -->
+                        <div class="hidden md:flex flex-1 max-w-md mx-2 sm:mx-4 min-w-0">
                             <div class="relative">
                                 <input
                                     v-model="searchQuery"
@@ -269,6 +274,26 @@
                                 </svg>
                             </div>
                         </div>
+
+                        <!-- Search Icon (Mobile only) -->
+                        <button
+                            @click="showMobileSearch = !showMobileSearch"
+                            class="md:hidden p-1.5 sm:p-2 text-gray-600 dark:text-gray-400"
+                        >
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </button>
 
                         <button
                             @click="handleCart"
@@ -334,8 +359,46 @@
                     </div>
                 </header>
 
+                <!-- Mobile Search Bar (Expandable) -->
+                <transition
+                    enter-active-class="transition duration-200 ease-out"
+                    enter-from-class="transform -translate-y-4 opacity-0"
+                    enter-to-class="transform translate-y-0 opacity-100"
+                    leave-active-class="transition duration-150 ease-in"
+                    leave-from-class="transform translate-y-0 opacity-100"
+                    leave-to-class="transform -translate-y-4 opacity-0"
+                >
+                    <div
+                        v-if="showMobileSearch"
+                        class="md:hidden bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 px-4 py-3 sticky top-[4.5rem] z-10 shadow-sm"
+                    >
+                        <div class="relative">
+                            <input
+                                v-model="searchQuery"
+                                type="text"
+                                placeholder="Cari produk..."
+                                class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                autoFocus
+                            />
+                            <svg
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </transition>
+
                 <!-- Store Overview -->
-                <div class="p-6 space-y-8">
+                <div class="p-4 sm:p-6 space-y-8 w-full max-w-full overflow-x-hidden">
                     <!-- Store Overview -->
                     <section
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
@@ -761,7 +824,7 @@
 
                     <!-- Product Table -->
                     <section
-                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 space-y-4"
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 space-y-4 w-full max-w-full overflow-hidden"
                     >
                         <div class="flex items-center justify-between">
                             <h2
@@ -917,7 +980,7 @@
                         </transition>
 
                         <!-- Product Table - Scrollable on mobile -->
-                        <div class="overflow-x-auto -mx-4 sm:mx-0">
+                        <div class="overflow-x-auto -mx-4 sm:mx-0 max-w-full">
                             <div class="inline-block min-w-full align-middle">
                                 <div class="overflow-hidden">
                                     <!-- Table Header -->
@@ -1223,6 +1286,7 @@ const sidebarCollapsed = ref(false);
 const user = ref(null);
 const cartCount = ref(0);
 const searchQuery = ref("");
+const showMobileSearch = ref(false);
 const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
 const toast = ref({ visible: false, message: "", type: "success" });
 
@@ -1411,6 +1475,13 @@ const showOrdersSection = (section) => {
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
+};
+
+const collapseSidebarOnNavigation = () => {
+    // Auto-collapse sidebar ketika menu diklik (kecuali jika sudah collapsed)
+    if (!sidebarCollapsed.value) {
+        sidebarCollapsed.value = true;
+    }
 };
 
 const handleLogout = () => {
@@ -2061,5 +2132,18 @@ onBeforeUnmount(() => {
 .fade-leave-to {
     opacity: 0;
     transform: translateY(-6px);
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 640px) {
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
 }
 </style>
