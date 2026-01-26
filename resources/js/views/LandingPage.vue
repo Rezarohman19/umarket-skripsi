@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
+    <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
             <!-- Left Sidebar - Hanya muncul di desktop jika user sudah login -->
             <aside
@@ -230,7 +230,7 @@
             <!-- Main Content -->
             <main
                 :class="[
-                    'flex-1 transition-all duration-300',
+                    'flex-1 transition-all duration-300 overflow-x-hidden',
                     user && sidebarCollapsed
                         ? 'ml-16'
                         : user
@@ -428,59 +428,191 @@
                 </transition>
 
                 <!-- Website Info Card (hanya tampil jika bukan dari tombol back login) -->
-                <div v-if="showWelcomeCard && !user" class="p-3 sm:p-6 pb-0">
-                    <div class="bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50">
-                        <div class="p-4 sm:p-6 md:p-8">
-                            <div class="flex flex-col md:flex-row items-center gap-6">
-                                <!-- Info Content -->
-                                <div class="flex-1 text-center md:text-left">
-                                    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">
-                                        Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
-                                    </h2>
-                                    <p class="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed mb-4">
-                                        Platform e-commerce terpercaya untuk mahasiswa dan masyarakat umum. 
-                                        Temukan berbagai produk berkualitas dari penjual lokal atau mulai buka toko Anda sendiri!
-                                    </p>
+                <div v-if="showWelcomeCard && slides.length > 0" class="p-3 sm:p-6 pb-0 max-w-full overflow-x-hidden" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+                    <div class="relative bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 group w-full">
+                        
+                        <!-- Slides Track -->
+                        <div 
+                            class="flex transition-transform duration-500 ease-in-out h-full" 
+                            :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
+                        >
+                            <div 
+                                v-for="(slide, index) in slides" 
+                                :key="index" 
+                                class="min-w-full flex-shrink-0"
+                            >
+                                <!-- Slide 0: Welcome Card (Original Layout) -->
+                                <div v-if="slide.type === 'welcome'" class="relative p-4 md:p-6 h-full flex flex-col justify-center min-h-[180px] sm:min-h-[200px] md:min-h-[220px] overflow-hidden">
+                                    <!-- Decorative Background Elements -->
+                                    <div class="absolute inset-0 opacity-10 dark:opacity-5">
+                                        <!-- Large Shopping Bag Icon -->
+                                        <svg class="absolute top-2 right-2 w-20 h-20 md:w-28 md:h-28 text-[#EF3B33] transform rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                        </svg>
+                                        <!-- Shopping Cart Icon -->
+                                        <svg class="absolute bottom-4 left-4 w-16 h-16 md:w-24 md:h-24 text-[#8E0D3C] dark:text-[#FDA1A2] transform -rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        <!-- Star Icon -->
+                                        <svg class="absolute top-1/2 left-4 w-12 h-12 md:w-16 md:h-16 text-[#EF3B33] transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                        </svg>
+                                    </div>
                                     
-                                    <!-- Features -->
-                                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                                        <div class="flex items-center gap-2 bg-white/60 dark:bg-[#1D1842]/60 px-3 py-1.5 rounded-full">
-                                            <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs font-medium">Gratis Daftar</span>
+                                    <!-- Gradient Overlay -->
+                                    <div class="absolute inset-0 bg-gradient-to-br from-[#FDA1A2]/20 via-transparent to-[#EF3B33]/10 dark:from-[#8E0D3C]/20 dark:via-transparent dark:to-[#FDA1A2]/10"></div>
+                                    
+                                    <!-- Main Content -->
+                                    <div class="relative z-10 flex flex-col items-center gap-2 md:gap-3">
+                                        <!-- Info Content -->
+                                        <div class="flex-1 text-center w-full">
+                                            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1.5 drop-shadow-sm">
+                                                Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
+                                            </h2>
+                                            <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-2.5 max-w-2xl mx-auto px-4">
+                                                Platform e-commerce terpercaya untuk mahasiswa dan masyarakat umum. 
+                                                Temukan berbagai produk berkualitas dari penjual lokal atau mulai buka toko Anda sendiri!
+                                            </p>
+                                            
+                                            <!-- Features -->
+                                            <div class="flex flex-wrap justify-center gap-2 mb-3">
+                                                <div class="flex items-center gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-4 py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform">
+                                                    <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs sm:text-sm font-semibold">Gratis Daftar</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-4 py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform">
+                                                    <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                    </svg>
+                                                    <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs sm:text-sm font-semibold">Transaksi Aman</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-4 py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform">
+                                                    <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                                    </svg>
+                                                    <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs sm:text-sm font-semibold">Buka Toko Sendiri</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="flex items-center gap-2 bg-white/60 dark:bg-[#1D1842]/60 px-3 py-1.5 rounded-full">
-                                            <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
-                                            <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs font-medium">Transaksi Aman</span>
-                                        </div>
-                                        <div class="flex items-center gap-2 bg-white/60 dark:bg-[#1D1842]/60 px-3 py-1.5 rounded-full">
-                                            <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                            </svg>
-                                            <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs font-medium">Buka Toko Sendiri</span>
+                                        
+                                        <!-- CTA Button -->
+                                        <div class="flex-shrink-0" v-if="!user">
+                                            <button
+                                                @click="goToLoginFromWelcome"
+                                                class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-5 py-2 rounded-xl shadow-md border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 text-sm hover:scale-105 hover:shadow-lg transition-all transform"
+                                            >
+                                                Mulai Sekarang
+                                                <svg class="w-4 h-4 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <!-- CTA Button -->
-                                <div class="flex-shrink-0">
-                                    <button
-                                        @click="goToLoginFromWelcome"
-                                        class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 text-sm sm:text-base"
-                                    >
-                                        Mulai Sekarang
-                                    </button>
+
+                                <!-- Slides 1-3: Popular Products -->
+                                <div v-else class="relative h-full min-h-[200px] sm:min-h-[250px] flex items-center justify-center p-4 sm:p-6 overflow-hidden" @click="goToProductDetail(slide.data.id)">
+                                    <!-- Background dengan gambar produk atau gradient -->
+                                    <div class="absolute inset-0 z-0">
+                                        <img 
+                                            v-if="slide.data.image_url"
+                                            :src="slide.data.image_url" 
+                                            :alt="slide.data.name"
+                                            class="w-full h-full object-cover opacity-20 dark:opacity-10"
+                                        />
+                                        <div v-else class="w-full h-full bg-gradient-to-br from-[#FDA1A2]/30 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#FDA1A2]/20"></div>
+                                        <!-- Overlay gradient -->
+                                        <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/70 dark:from-[#1D1842]/95 dark:via-[#1D1842]/90 dark:to-[#1D1842]/70"></div>
+                                    </div>
+
+                                    <!-- Content -->
+                                    <div class="relative z-10 w-full max-w-4xl flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                                        <!-- Product Image -->
+                                        <div class="flex-shrink-0 w-28 h-28 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-white dark:bg-[#1D1842] rounded-xl shadow-xl overflow-hidden border-4 border-white dark:border-[#8E0D3C]/50 transform rotate-1 hover:rotate-0 transition-transform duration-300 cursor-pointer group">
+                                            <div v-if="!slide.data.image_url" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#FDA1A2]/20 to-[#EF3B33]/20">
+                                                <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <img 
+                                                v-else
+                                                :src="slide.data.image_url" 
+                                                :alt="slide.data.name"
+                                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                            />
+                                        </div>
+
+                                        <!-- Text info -->
+                                        <div class="text-center md:text-left flex-1 min-w-0 px-2 sm:px-0">
+                                            <div class="inline-block px-2 py-0.5 bg-[#EF3B33] text-white text-[10px] sm:text-xs font-bold rounded-full mb-1 sm:mb-2 shadow-md">
+                                                ⭐ Produk Terpopuler
+                                            </div>
+                                            <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1 sm:mb-2 line-clamp-2 sm:line-clamp-1 drop-shadow-sm px-2 sm:px-0">
+                                                {{ slide.data.name }}
+                                            </h2>
+                                            <p class="text-sm sm:text-base md:text-lg font-bold text-[#EF3B33] mb-2 sm:mb-3">
+                                                Rp. {{ formatPrice(slide.data.price) }}
+                                            </p>
+                                            <p class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 max-w-lg mx-auto md:mx-0 px-2 sm:px-0">
+                                                {{ slide.data.description || 'Dapatkan produk berkualitas ini dengan harga terbaik. Jangan lewatkan penawaran menarik ini!' }}
+                                            </p>
+                                            
+                                            <button 
+                                                class="bg-[#EF3B33] hover:bg-[#d92f25] text-white font-semibold px-4 py-2 sm:px-5 sm:py-2.5 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1.5 mx-auto md:mx-0 text-xs sm:text-sm group"
+                                            >
+                                                <span>Lihat Detail</span>
+                                                <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Navigation Buttons (Hidden on mobile, show on hover/desktop) -->
+                        <button 
+                            @click="prevSlide"
+                            class="absolute left-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full bg-white/80 dark:bg-[#1D1842]/80 text-[#8E0D3C] dark:text-[#FDA1A2] shadow-md hover:bg-white dark:hover:bg-[#1D1842] transition-all opacity-0 group-hover:opacity-100 z-20 focus:outline-none"
+                            aria-label="Previous Slide"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button 
+                            @click="nextSlide"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full bg-white/80 dark:bg-[#1D1842]/80 text-[#8E0D3C] dark:text-[#FDA1A2] shadow-md hover:bg-white dark:hover:bg-[#1D1842] transition-all opacity-0 group-hover:opacity-100 z-20 focus:outline-none"
+                            aria-label="Next Slide"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                        <!-- Indicators -->
+                        <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-20">
+                            <button
+                                v-for="(slide, index) in slides"
+                                :key="index"
+                                @click="currentSlide = index"
+                                :class="[
+                                    'w-1.5 h-1.5 rounded-full transition-all duration-300',
+                                    currentSlide === index 
+                                        ? 'bg-[#EF3B33] w-4' 
+                                        : 'bg-gray-300/80 dark:bg-gray-600/80 hover:bg-[#EF3B33]/50'
+                                ]"
+                                :aria-label="'Go to slide ' + (index + 1)"
+                            ></button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
-                <div class="p-3 sm:p-6">
+                <div class="p-3 sm:p-6 max-w-full overflow-x-hidden">
                     <div v-if="loading" class="text-center py-12">
                         <p class="text-gray-600 dark:text-gray-400">
                             Memuat produk...
@@ -499,7 +631,7 @@
                     <div
                         v-else
                         class="grid gap-2 sm:gap-3"
-                        style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));"
+                        style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));"
                     >
                         <div
                             v-for="product in filteredProducts"
@@ -800,6 +932,60 @@ const getProductCategory = (name) => {
     return "Produk";
 };
 
+// Carousel Logic
+const currentSlide = ref(0);
+const carouselInterval = ref(null);
+const isPaused = ref(false);
+
+const slides = computed(() => {
+    // Slide 0: Welcome Card
+    const welcomeSlide = {
+        type: 'welcome',
+        id: 'welcome-card'
+    };
+    
+    // Slides 1-3: Popular Products (Take top 3)
+    const productSlides = products.value.slice(0, 3).map(product => ({
+        type: 'product',
+        id: `product-${product.id}`,
+        data: product
+    }));
+
+    return [welcomeSlide, ...productSlides];
+});
+
+const nextSlide = () => {
+    currentSlide.value = (currentSlide.value + 1) % slides.value.length;
+};
+
+const prevSlide = () => {
+    currentSlide.value = (currentSlide.value - 1 + slides.value.length) % slides.value.length;
+};
+
+const startAutoSlide = () => {
+    stopAutoSlide(); // Ensure no duplicate intervals
+    carouselInterval.value = setInterval(() => {
+        if (!isPaused.value && slides.value.length > 1) {
+            nextSlide();
+        }
+    }, 5000); // 5 seconds per slide
+};
+
+const stopAutoSlide = () => {
+    if (carouselInterval.value) {
+        clearInterval(carouselInterval.value);
+        carouselInterval.value = null;
+    }
+};
+
+const pauseCarousel = () => {
+    isPaused.value = true;
+};
+
+const resumeCarousel = () => {
+    isPaused.value = false;
+};
+
 const getPhotoUrl = (photoUrl) => {
     if (!photoUrl) return null;
     
@@ -1036,6 +1222,9 @@ onMounted(async () => {
     await fetchProducts();
     await fetchCartCount();
 
+    // Start carousel auto-slide
+    startAutoSlide();
+
     // Listen untuk cart update event
     window.addEventListener("cartUpdated", fetchCartCount);
 
@@ -1044,6 +1233,9 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+    // Stop carousel auto-slide
+    stopAutoSlide();
+    
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
 });
