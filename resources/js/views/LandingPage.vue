@@ -427,8 +427,8 @@
                     </div>
                 </transition>
 
-                <!-- Website Info Card (hanya tampil jika bukan dari tombol back login) -->
-                <div v-if="showWelcomeCard && slides.length > 0" class="p-3 sm:p-6 pb-0 max-w-full overflow-x-hidden" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+                <!-- Website Info Card (hanya tampil jika belum login dan bukan dari tombol back login) -->
+                <div v-if="!user && showWelcomeCard && slides.length > 0" class="p-3 sm:p-6 pb-0 max-w-full overflow-x-hidden" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
                     <div class="relative bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 group w-full">
                         
                         <!-- Slides Track -->
@@ -1074,7 +1074,7 @@ const handleAddToCart = async (product) => {
     }
 
     // Optimistic update: tampilkan toast langsung tanpa menunggu API
-    toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang", type: "success" };
+    toast.value = { visible: true, message: "Berhasil", type: "success" };
     
     // Simpan product ID untuk reset quantity setelah toast tertutup
     lastAddedProductId.value = product.id;

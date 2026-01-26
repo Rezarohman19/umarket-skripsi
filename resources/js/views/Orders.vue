@@ -253,18 +253,29 @@
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between gap-2 sm:gap-4">
-                        <div class="flex-1 min-w-0 mr-2 sm:mr-6">
+                        <!-- Greeting -->
+                        <div class="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2">
                             <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
-                                <span class="font-semibold">{{
-                                    user?.name || "Pengunjung"
-                                }}</span>
+                                <template v-if="user?.name">
+                                    <span class="font-semibold">{{
+                                        user?.name
+                                    }}</span>
+                                </template>
+                                <template v-else>
+                                    <span>
+                                        Pengunjung
+                                        <span class="font-semibold italic"
+                                            >U Market</span
+                                        ></span
+                                    >
+                                </template>
                             </p>
                         </div>
 
                         <!-- Search Bar (Desktop) -->
-                        <div class="hidden md:flex flex-1 mx-2 md:mx-4">
-                            <div class="relative">
+                        <div class="hidden md:flex flex-1 max-w-md mx-2 md:mx-2">
+                            <div class="relative w-full">
                                 <input
                                     v-model="searchQuery"
                                     type="text"
@@ -289,6 +300,7 @@
 
                         <!-- Search Icon (Mobile only) -->
                         <button
+                            v-if="user"
                             @click="showMobileSearch = !showMobileSearch"
                             class="md:hidden p-1.5 sm:p-2 text-gray-600 dark:text-gray-400"
                         >
@@ -307,9 +319,11 @@
                             </svg>
                         </button>
 
+                        <!-- Cart Icon - Hanya muncul jika user sudah login -->
                         <button
+                            v-if="user"
                             @click="handleCart"
-                            class="relative p-2 text-gray-600 dark:text-gray-400 mr-1"
+                            class="relative p-1.5 sm:p-2 text-gray-600 dark:text-gray-400"
                         >
                             <svg
                                 class="w-6 h-6"
@@ -337,10 +351,11 @@
                             </span>
                         </button>
 
-                        <!-- Profile Icon -->
+                        <!-- Profile Icon / Login Button -->
                         <button
+                            v-if="user"
                             @click="handleProfile"
-                            class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center ml-2"
+                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center ml-1 sm:ml-2"
                             :class="
                                 user?.photo_url
                                     ? 'ring-2 ring-[#8E0D3C] dark:ring-[#FDA1A2]'
@@ -1055,9 +1070,11 @@ const contactSellerWhatsApp = (orderGroup) => {
     }
 
     if (!phoneNumber) {
-        alert(
-            "Nomor WhatsApp penjual tidak tersedia. Silakan hubungi customer service.",
-        );
+        toast.value = {
+            visible: true,
+            message: "Nomor WhatsApp penjual tidak tersedia. Silakan hubungi customer service.",
+            type: "error"
+        };
         return;
     }
 
