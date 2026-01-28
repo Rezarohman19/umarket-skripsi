@@ -443,6 +443,22 @@ Route::middleware('auth')->group(function () {
         ]));
     });
 
+    Route::get('/api/admin/sales-data', function () {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Ambil data penjualan 30 hari terakhir
+        $data = \App\Models\Transaction::where('status', 'paid')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->selectRaw('DATE(created_at) as date, SUM(total_price) as total')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return response()->json($data);
+    });
+
     // Cleanup orphaned transaction items (items yang produknya sudah dihapus)
     Route::post('/api/admin/cleanup-orphaned-items', function () {
         if (!Auth::check()) {

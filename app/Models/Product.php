@@ -20,6 +20,7 @@ class Product extends Model
     ];
 
     protected $with = ['category'];
+    protected $appends = ['image_url'];
 
     // Relasi ke user (penjual)
     public function user()

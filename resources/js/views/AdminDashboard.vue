@@ -348,12 +348,14 @@
                                         </svg>
                                     </button>
                                 </div>
-                                <div
-                                    class="h-48 sm:h-64 flex items-center justify-center text-gray-400 dark:text-gray-600"
-                                >
-                                    <p class="text-xs sm:text-sm">
-                                        Chart akan ditampilkan di sini
-                                    </p>
+                                <div class="h-48 sm:h-64 relative">
+                                    <canvas ref="salesChartCanvas"></canvas>
+                                    <div v-if="loadingChart" class="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-[#1D1842]/50">
+                                        <p class="text-xs sm:text-sm text-gray-500">Memuat grafik...</p>
+                                    </div>
+                                    <div v-if="!loadingChart && salesData.length === 0" class="absolute inset-0 flex items-center justify-center">
+                                        <p class="text-xs sm:text-sm text-gray-400">Belum ada data penjualan</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -508,8 +510,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
 import axios from "axios";
+import Chart from "chart.js/auto";
 import Logo from "../components/Logo.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
@@ -528,6 +531,12 @@ const stats = ref({
 const popularProducts = ref([]);
 const showAllProducts = ref(false);
 const confirmModal = ref({ visible: false, title: "", message: "" });
+
+// Chart State
+const salesChartCanvas = ref(null);
+let salesChart = null;
+const salesData = ref([]);
+const loadingChart = ref(true);
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID").format(price || 0);
@@ -569,6 +578,98 @@ const fetchStats = async () => {
     } catch (error) {
         console.error("Error fetching stats:", error);
     }
+};
+
+const fetchSalesData = async () => {
+    try {
+        loadingChart.value = true;
+        const response = await axios.get("/api/admin/sales-data");
+        salesData.value = response.data || [];
+        
+        await nextTick();
+        initChart();
+    } catch (error) {
+        console.error("Error fetching sales data:", error);
+    } finally {
+        loadingChart.value = false;
+    }
+};
+
+const initChart = () => {
+    if (!salesChartCanvas.value) return;
+    
+    // Destroy existing chart if it exists
+    if (salesChart) {
+        salesChart.destroy();
+    }
+    
+    const ctx = salesChartCanvas.value.getContext('2d');
+    
+    // Group and format data
+    const labels = salesData.value.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+    });
+    
+    const totals = salesData.value.map(item => parseFloat(item.total));
+    
+    salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Penjualan (Rp)',
+                data: totals,
+                borderColor: '#EF3B33',
+                backgroundColor: 'rgba(239, 59, 51, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#EF3B33'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rp. ' + formatPrice(context.raw);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) return (value / 1000000).toFixed(1) + 'jt';
+                            if (value >= 1000) return (value / 1000) + 'rb';
+                            return value;
+                        },
+                        font: { size: 10 }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 10 }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
 };
 
 const fetchPopularProducts = async () => {
@@ -631,6 +732,7 @@ onMounted(async () => {
     await checkAuth();
     await fetchStats();
     await fetchPopularProducts();
+    await fetchSalesData();
     window.addEventListener("userUpdated", handleUserUpdated);
 });
 
