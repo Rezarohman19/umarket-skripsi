@@ -42,7 +42,7 @@
     "name": "runtime-dom.esm-bundler"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Cl85TEZ9.css",
+    "file": "assets/app-CI6A6tca.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -51,7 +51,7 @@
     ]
   },
   "resources/js/app-admin-dashboard.js": {
-    "file": "assets/app-admin-dashboard-BSj4HjBK.js",
+    "file": "assets/app-admin-dashboard-BlcvC1jK.js",
     "name": "app-admin-dashboard",
     "src": "resources/js/app-admin-dashboard.js",
     "isEntry": true,

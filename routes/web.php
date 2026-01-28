@@ -443,14 +443,16 @@ Route::middleware('auth')->group(function () {
         ]));
     });
 
-    Route::get('/api/admin/sales-data', function () {
+    Route::get('/api/admin/sales-data', function (Request $request) {
         if (!Auth::check() || Auth::user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Ambil data penjualan 30 hari terakhir
+        $days = (int) ($request->query('days', 30));
+
+        // Ambil data penjualan X hari terakhir
         $data = \App\Models\Transaction::where('status', 'paid')
-            ->where('created_at', '>=', now()->subDays(30))
+            ->where('created_at', '>=', now()->subDays($days))
             ->selectRaw('DATE(created_at) as date, SUM(total_price) as total')
             ->groupBy('date')
             ->orderBy('date', 'asc')
@@ -458,6 +460,7 @@ Route::middleware('auth')->group(function () {
 
         return response()->json($data);
     });
+
 
     // Cleanup orphaned transaction items (items yang produknya sudah dihapus)
     Route::post('/api/admin/cleanup-orphaned-items', function () {

@@ -332,21 +332,32 @@
                                     >
                                         Diagram Penjualan
                                     </h3>
-                                    <button class="p-1.5 sm:p-2 rounded-lg cursor-pointer active:scale-95">
-                                        <svg
-                                            class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
-                                            />
-                                        </svg>
-                                    </button>
+                                    <div class="relative group">
+                                        <button class="p-1.5 sm:p-2 rounded-lg cursor-pointer active:scale-95 flex items-center gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                                            <svg
+                                                class="w-4 h-4 sm:w-5 sm:h-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
+                                                />
+                                            </svg>
+                                            <span class="hidden sm:inline">{{ selectedPeriodLabel }}</span>
+                                        </button>
+                                        <!-- Dropdown content -->
+                                        <div class="absolute right-0 top-full mt-1 bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg shadow-xl z-20 hidden group-hover:block min-w-[120px] overflow-hidden">
+                                            <div class="py-1">
+                                                <button @click="changePeriod(7)" class="w-full text-left px-4 py-2 text-xs sm:text-sm hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/10 text-[#1D1842] dark:text-[#FDA1A2]" :class="{'bg-[#FDA1A2]/20 font-bold': selectedPeriod === 7}">7 Hari</button>
+                                                <button @click="changePeriod(30)" class="w-full text-left px-4 py-2 text-xs sm:text-sm hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/10 text-[#1D1842] dark:text-[#FDA1A2]" :class="{'bg-[#FDA1A2]/20 font-bold': selectedPeriod === 30}">30 Hari</button>
+                                                <button @click="changePeriod(90)" class="w-full text-left px-4 py-2 text-xs sm:text-sm hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/10 text-[#1D1842] dark:text-[#FDA1A2]" :class="{'bg-[#FDA1A2]/20 font-bold': selectedPeriod === 90}">90 Hari</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="h-48 sm:h-64 relative">
                                     <canvas ref="salesChartCanvas"></canvas>
@@ -537,6 +548,20 @@ const salesChartCanvas = ref(null);
 let salesChart = null;
 const salesData = ref([]);
 const loadingChart = ref(true);
+const selectedPeriod = ref(30);
+
+const selectedPeriodLabel = computed(() => {
+    switch (selectedPeriod.value) {
+        case 7: return "7 Hari";
+        case 90: return "90 Hari";
+        default: return "30 Hari";
+    }
+});
+
+const changePeriod = (days) => {
+    selectedPeriod.value = days;
+    fetchSalesData();
+};
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID").format(price || 0);
@@ -583,7 +608,9 @@ const fetchStats = async () => {
 const fetchSalesData = async () => {
     try {
         loadingChart.value = true;
-        const response = await axios.get("/api/admin/sales-data");
+        const response = await axios.get("/api/admin/sales-data", {
+            params: { days: selectedPeriod.value }
+        });
         salesData.value = response.data || [];
         
         await nextTick();
