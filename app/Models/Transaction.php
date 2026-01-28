@@ -19,6 +19,7 @@ class Transaction extends Model
         'payment_method',
         'tracking_number',
         'shipping_courier',
+        'order_id',
     ];
 
     public function user()
@@ -29,5 +30,19 @@ class Transaction extends Model
     public function items()
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    /**
+     * Kurangi stok produk untuk setiap item dalam transaksi ini.
+     */
+    public function reduceStock()
+    {
+        foreach ($this->items as $item) {
+            $product = $item->product;
+            if ($product) {
+                $product->stock -= $item->qty;
+                $product->save();
+            }
+        }
     }
 }
