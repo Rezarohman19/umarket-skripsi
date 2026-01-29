@@ -1204,6 +1204,7 @@
                                 Rekening Tujuan
                             </label>
                             <select
+                                v-if="userBanks.length > 0"
                                 v-model="withdrawBankId"
                                 class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white"
                             >
@@ -1219,7 +1220,19 @@
                                     }})
                                 </option>
                             </select>
+                            <div v-else class="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
+                                    Anda belum menambahkan rekening bank.
+                                </p>
+                                <a
+                                    href="/profile"
+                                    class="text-[#EF3B33] font-semibold text-sm hover:underline"
+                                >
+                                    Tambah rekening di profil &rarr;
+                                </a>
+                            </div>
                             <p
+                                v-if="userBanks.length > 0"
                                 class="text-xs text-gray-500 dark:text-gray-400 mt-1"
                             >
                                 <a

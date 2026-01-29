@@ -93,6 +93,64 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($banks);
     });
 
+    // Add User Bank Account
+    Route::post('/user/banks', function () {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $request = request();
+        $validated = $request->validate([
+            'bank_name' => 'required|string',
+            'account_number' => 'required|string',
+            'account_holder' => 'required|string',
+        ]);
+
+        $bank = \App\Models\BankAccount::create([
+            'user_id' => Auth::id(),
+            'bank_name' => $validated['bank_name'],
+            'account_number' => $validated['account_number'],
+            'account_holder' => $validated['account_holder'],
+            'is_active' => true,
+        ]);
+
+        return response()->json($bank, 201);
+    });
+
+    // Delete User Bank Account
+    Route::delete('/user/banks/{id}', function ($id) {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $bank = \App\Models\BankAccount::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$bank) {
+            return response()->json(['message' => 'Rekening tidak ditemukan'], 404);
+        }
+
+        // Kita nonaktifkan saja daripada hapus permanen jika ada relasi
+        $bank->update(['is_active' => false]);
+
+        return response()->json(['message' => 'Rekening berhasil dihapus']);
+    });
+
+    // Get Withdrawal History
+    Route::get('/user/withdrawals', function () {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $withdrawals = \App\Models\Withdrawal::with('bankAccount')
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($withdrawals);
+    });
+
     // Withdraw Balance
     Route::post('/seller/withdraw', function () {
         if (!Auth::check()) {

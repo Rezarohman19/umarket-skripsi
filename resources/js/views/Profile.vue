@@ -185,7 +185,163 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Bank Accounts Management -->
+            <div
+                class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
+            >
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Rekening Bank
+                    </h3>
+                    <button
+                        @click="showAddBankModal = true"
+                        class="px-4 py-2 bg-[#EF3B33] text-white text-sm rounded-lg shadow-sm hover:bg-[#d92f25] transition"
+                    >
+                        Tambah Rekening
+                    </button>
+                </div>
+
+                <div v-if="loadingBanks" class="text-center py-4">
+                    <p class="text-gray-500 text-sm">Memuat rekening...</p>
+                </div>
+                <div v-else-if="banks.length === 0" class="text-center py-4">
+                    <p class="text-gray-500 text-sm">Belum ada rekening terdaftar.</p>
+                </div>
+                <div v-else class="space-y-3">
+                    <div
+                        v-for="bank in banks"
+                        :key="bank.id"
+                        class="flex items-center justify-between p-4 bg-[#FDA1A2]/10 dark:bg-[#8E0D3C]/10 rounded-xl border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                    >
+                        <div>
+                            <p class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2]">
+                                {{ bank.bank_name }}
+                            </p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                {{ bank.account_number }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                a.n. {{ bank.account_holder }}
+                            </p>
+                        </div>
+                        <button
+                            @click="deleteBank(bank.id)"
+                            class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawal History -->
+            <div
+                class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
+            >
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Riwayat Penarikan Saldo
+                </h3>
+
+                <div v-if="loadingWithdrawals" class="text-center py-4">
+                    <p class="text-gray-500 text-sm">Memuat riwayat...</p>
+                </div>
+                <div v-else-if="withdrawals.length === 0" class="text-center py-4">
+                    <p class="text-gray-500 text-sm">Belum ada riwayat penarikan.</p>
+                </div>
+                <div v-else class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th class="px-4 py-3">Tanggal</th>
+                                <th class="px-4 py-3">Jumlah</th>
+                                <th class="px-4 py-3">Rekening</th>
+                                <th class="px-4 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                            <tr v-for="w in withdrawals" :key="w.id" class="text-gray-700 dark:text-gray-300">
+                                <td class="px-4 py-3">{{ formatDate(w.created_at) }}</td>
+                                <td class="px-4 py-3 font-semibold">Rp {{ formatPrice(w.amount) }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="text-xs">
+                                        {{ w.bank_account?.bank_name }}<br>
+                                        {{ w.bank_account?.account_number }}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="px-2 py-1 rounded-full text-xs font-medium"
+                                        :class="getWithdrawalStatusClass(w.status)"
+                                    >
+                                        {{ getWithdrawalStatusLabel(w.status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
+        <!-- Add Bank Modal -->
+        <transition name="modal">
+            <div
+                v-if="showAddBankModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                @click.self="showAddBankModal = false"
+            >
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                        Tambah Rekening Baru
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Bank</label>
+                            <input
+                                v-model="bankForm.bank_name"
+                                type="text"
+                                placeholder="Contoh: BCA, Mandiri, BRI"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor Rekening</label>
+                            <input
+                                v-model="bankForm.account_number"
+                                type="text"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Pemilik Rekening</label>
+                            <input
+                                v-model="bankForm.account_holder"
+                                type="text"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white"
+                            />
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3">
+                        <button
+                            @click="showAddBankModal = false"
+                            class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            @click="addBank"
+                            :disabled="submittingBank"
+                            class="flex-1 px-4 py-2 bg-[#EF3B33] text-white rounded-lg font-semibold disabled:bg-gray-400"
+                        >
+                            {{ submittingBank ? 'Menyimpa...' : 'Simpan' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
 
         <!-- Notification Toast -->
         <transition name="fade">
@@ -305,6 +461,19 @@ const photoFile = ref(null);
 const notification = ref({ show: false, message: "", type: "success" });
 const showSuccessModal = ref(false);
 const showPhotoMenu = ref(false);
+
+// Bank Accounts and Withdrawals
+const banks = ref([]);
+const withdrawals = ref([]);
+const loadingBanks = ref(false);
+const loadingWithdrawals = ref(false);
+const showAddBankModal = ref(false);
+const submittingBank = ref(false);
+const bankForm = ref({
+    bank_name: "",
+    account_number: "",
+    account_holder: "",
+});
 
 const goBack = () => window.history.back();
 
@@ -475,6 +644,93 @@ const showNotification = (message, type = "success") => {
     }, 3000);
 };
 
+const fetchBanks = async () => {
+    loadingBanks.value = true;
+    try {
+        const response = await axios.get("/api/user/banks");
+        banks.value = response.data;
+    } catch (error) {
+        console.error("Error fetching banks:", error);
+    } finally {
+        loadingBanks.value = false;
+    }
+};
+
+const addBank = async () => {
+    if (!bankForm.value.bank_name || !bankForm.value.account_number || !bankForm.value.account_holder) {
+        showNotification("Semua field harus diisi", "error");
+        return;
+    }
+    submittingBank.value = true;
+    try {
+        await axios.post("/api/user/banks", bankForm.value);
+        showAddBankModal.value = false;
+        bankForm.value = { bank_name: "", account_number: "", account_holder: "" };
+        showNotification("Rekening berhasil ditambahkan");
+        fetchBanks();
+    } catch (error) {
+        showNotification(error.response?.data?.message || "Gagal menambah rekening", "error");
+    } finally {
+        submittingBank.value = false;
+    }
+};
+
+const deleteBank = async (id) => {
+    if (!confirm("Hapus rekening ini?")) return;
+    try {
+        await axios.delete(`/api/user/banks/${id}`);
+        showNotification("Rekening berhasil dihapus");
+        fetchBanks();
+    } catch (error) {
+        showNotification("Gagal menghapus rekening", "error");
+    }
+};
+
+const fetchWithdrawals = async () => {
+    loadingWithdrawals.value = true;
+    try {
+        const response = await axios.get("/api/user/withdrawals");
+        withdrawals.value = response.data;
+    } catch (error) {
+        console.error("Error fetching withdrawals:", error);
+    } finally {
+        loadingWithdrawals.value = false;
+    }
+};
+
+const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
+
+const formatDate = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+};
+
+const getWithdrawalStatusLabel = (status) => {
+    const labels = {
+        pending: "Menunggu",
+        processing: "Diproses",
+        completed: "Selesai",
+        rejected: "Ditolak",
+    };
+    return labels[status] || status;
+};
+
+const getWithdrawalStatusClass = (status) => {
+    const classes = {
+        pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+        processing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+        completed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+        rejected: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+    };
+    return classes[status] || "bg-gray-100 text-gray-700";
+};
+
 // Fungsi untuk menutup menu saat klik di luar
 const handleClickOutside = (event) => {
     const target = event.target;
@@ -490,6 +746,8 @@ const handleClickOutside = (event) => {
 
 onMounted(async () => {
     await fetchProfile();
+    await fetchBanks();
+    await fetchWithdrawals();
     document.addEventListener('click', handleClickOutside);
 });
 
