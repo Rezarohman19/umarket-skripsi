@@ -104,4 +104,12 @@ class AuthController extends Controller
 
         return redirect('/');
     }
+
+    /**
+     * Get authenticated user profile (JSON)
+     */
+    public function profile()
+    {
+        return response()->json(Auth::user());
+    }
 }

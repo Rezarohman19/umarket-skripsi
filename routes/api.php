@@ -29,8 +29,8 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 
 Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
 
-// API dengan token sanctum
-Route::middleware('auth:sanctum')->group(function () {
+// API dengan authentication (Session-based)
+Route::middleware('auth')->group(function () {
 
     // Profile API
     Route::get('/profile', [AuthController::class, 'profile']);
