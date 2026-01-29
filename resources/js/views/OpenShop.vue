@@ -2044,7 +2044,7 @@ const confirmWithdraw = async () => {
             try {
                 withdrawProcessing.value = true;
 
-                const response = await axios.post("/api/seller/withdraw", {
+                const response = await axios.post("/seller-withdraw", {
                     amount: withdrawAmountNumber.value,
                     bank_account_id: withdrawBankId.value,
                 });
@@ -2083,7 +2083,7 @@ const fetchSellerBalance = async () => {
     if (!user.value) return;
 
     try {
-        const response = await axios.get("/api/seller/balance");
+        const response = await axios.get("/seller-balance");
         store.value.balance = response.data.balance || 0;
         store.value.totalSold = response.data.total_sold || 0;
     } catch (error) {
@@ -2098,7 +2098,7 @@ const fetchUserBanks = async () => {
     if (!user.value) return;
 
     try {
-        const response = await axios.get("/api/user/banks");
+        const response = await axios.get("/user-banks");
         userBanks.value = response.data || [];
     } catch (error) {
         // Error handling: set default empty array jika API error

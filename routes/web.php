@@ -305,7 +305,7 @@ Route::get('/storage/{path}', function ($path) {
 | API ROUTES — USER AUTH
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
+Route::middleware(['web', 'auth:web'])->group(function () {
 
     Route::get('/api/user', function() {
         // Get current authenticated user
@@ -323,6 +323,14 @@ Route::middleware('auth')->group(function () {
     // Profile API (dipanggil dari frontend Vue)
     Route::get('/api/profile', [ProfileController::class, 'show']);
     Route::post('/api/profile', [ProfileController::class, 'update']);
+
+    // SELLER BALANCE & WITHDRAWAL
+    Route::get('/seller-balance', [ProfileController::class, 'getBalance']);
+    Route::get('/user-banks', [ProfileController::class, 'getBanks']);
+    Route::post('/user-banks', [ProfileController::class, 'addBank']);
+    Route::delete('/user-banks/{id}', [ProfileController::class, 'deleteBank']);
+    Route::get('/user-withdrawals', [ProfileController::class, 'getWithdrawals']);
+    Route::post('/seller-withdraw', [ProfileController::class, 'withdraw']);
 
     // Admin API endpoints
     Route::get('/api/admin/users', function () {
