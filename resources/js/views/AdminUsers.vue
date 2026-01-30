@@ -395,7 +395,7 @@
                                                 </button>
                                                 <button
                                                     class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#EF3B33] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-[#EF3B33]/30 dark:hover:bg-[#EF3B33]/30 transition active:scale-95"
-                                                    @click="confirmDelete(user)"
+                                                    @click="openDeleteConfirm(user)"
                                                     :disabled="user.is_current"
                                                 >
                                                     Hapus
@@ -533,6 +533,24 @@
             @confirm="handleConfirmLogout"
             @cancel="closeConfirmModal"
         />
+
+        <!-- Confirm Modal untuk Hapus Pengguna -->
+        <ConfirmModal
+            :visible="deleteConfirm.visible"
+            :title="deleteConfirm.title"
+            :message="deleteConfirm.message"
+            @confirm="handleConfirmDelete"
+            @cancel="closeDeleteConfirm"
+        />
+
+        <!-- Toast notifikasi -->
+        <ToastNotification
+            :visible="toast.visible"
+            :message="toast.message"
+            :type="toast.type"
+            :duration="2500"
+            @close="toast.visible = false"
+        />
     </div>
 </template>
 
@@ -541,12 +559,15 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import Logo from "../components/Logo.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
+import ToastNotification from "../components/ToastNotification.vue";
 
 // Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const searchQuery = ref("");
 const admin = ref(null);
 const confirmModal = ref({ visible: false, title: "", message: "" });
+const deleteConfirm = ref({ visible: false, title: "", message: "", user: null });
+const toast = ref({ visible: false, message: "", type: "success" });
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -656,30 +677,61 @@ const saveUser = async () => {
 
         await fetchUsers();
         closeModal();
+        toast.value = {
+            visible: true,
+            message: "Berhasil menyimpan pengguna",
+            type: "success",
+        };
     } catch (error) {
         console.error("Error saving user:", error);
         const message =
             error.response?.data?.message || "Gagal menyimpan pengguna";
-        alert(message);
+        toast.value = { visible: true, message, type: "error" };
     }
 };
 
-const confirmDelete = async (user) => {
+const openDeleteConfirm = (user) => {
     if (user.is_current) {
-        alert("Anda tidak dapat menghapus akun yang sedang digunakan.");
+        toast.value = {
+            visible: true,
+            message: "Anda tidak dapat menghapus akun yang sedang digunakan.",
+            type: "error",
+        };
         return;
     }
+    deleteConfirm.value = {
+        visible: true,
+        title: "Konfirmasi Hapus Pengguna",
+        message: `Apakah Anda yakin ingin menghapus pengguna "${user.name}"? Data pengguna akan terhapus permanen.`,
+        user,
+    };
+};
 
-    if (!confirm(`Hapus pengguna "${user.name}"?`)) return;
+const closeDeleteConfirm = () => {
+    deleteConfirm.value = { visible: false, title: "", message: "", user: null };
+};
 
+const handleConfirmDelete = async () => {
+    const user = deleteConfirm.value.user;
+    if (!user) {
+        closeDeleteConfirm();
+        return;
+    }
     try {
         await axios.delete(`/api/admin/users/${user.id}`);
+        closeDeleteConfirm();
         await fetchUsers();
+        toast.value = {
+            visible: true,
+            message: "Berhasil menghapus pengguna",
+            type: "success",
+        };
     } catch (error) {
         console.error("Error deleting user:", error);
+        closeDeleteConfirm();
         const message =
             error.response?.data?.message || "Gagal menghapus pengguna";
-        alert(message);
+        toast.value = { visible: true, message, type: "error" };
     }
 };
 

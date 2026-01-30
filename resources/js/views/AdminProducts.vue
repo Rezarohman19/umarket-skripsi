@@ -384,24 +384,12 @@
                                         <td
                                             class="px-4 py-3 align-middle text-center"
                                         >
-                                            <div class="inline-flex gap-2">
-                                                <button
-                                                    class="px-3 py-1 text-xs rounded-full bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2] cursor-pointer hover:bg-[#FDA1A2]/30 dark:hover:bg-[#8E0D3C]/30 transition active:scale-95"
-                                                    @click="
-                                                        openEditModal(product)
-                                                    "
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#EF3B33] cursor-pointer hover:bg-[#EF3B33]/30 dark:hover:bg-[#EF3B33]/30 transition active:scale-95"
-                                                    @click="
-                                                        confirmDelete(product)
-                                                    "
-                                                >
-                                                    Hapus
-                                                </button>
-                                            </div>
+                                            <button
+                                                class="px-3 py-1 text-xs rounded-full bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#EF3B33] cursor-pointer hover:bg-[#EF3B33]/30 dark:hover:bg-[#EF3B33]/30 transition active:scale-95"
+                                                @click="openDeleteConfirm(product)"
+                                            >
+                                                Hapus
+                                            </button>
                                         </td>
                                     </tr>
                                     <tr
@@ -442,9 +430,7 @@
                         <h3
                             class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
                         >
-                            {{
-                                editingProduct ? "Edit Produk" : "Tambah Produk"
-                            }}
+                            Tambah Produk
                         </h3>
 
                         <div class="space-y-4 text-sm">
@@ -555,6 +541,24 @@
             @confirm="handleConfirmLogout"
             @cancel="closeConfirmModal"
         />
+
+        <!-- Confirm Modal untuk Hapus Produk -->
+        <ConfirmModal
+            :visible="deleteConfirm.visible"
+            :title="deleteConfirm.title"
+            :message="deleteConfirm.message"
+            @confirm="handleConfirmDelete"
+            @cancel="closeDeleteConfirm"
+        />
+
+        <!-- Toast: Berhasil menghapus produk (tanpa tombol, auto-close seperti berhasil ke keranjang) -->
+        <ToastNotification
+            :visible="toast.visible"
+            :message="toast.message"
+            :type="toast.type"
+            :duration="2500"
+            @close="toast.visible = false"
+        />
     </div>
 </template>
 
@@ -563,6 +567,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import Logo from "../components/Logo.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
+import ToastNotification from "../components/ToastNotification.vue";
 
 // Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
@@ -576,8 +581,9 @@ const products = ref([]);
 const loading = ref(true);
 
 const showModal = ref(false);
-const editingProduct = ref(null);
 const confirmModal = ref({ visible: false, title: "", message: "" });
+const deleteConfirm = ref({ visible: false, title: "", message: "", product: null });
+const toast = ref({ visible: false, message: "", type: "success" });
 const form = ref({
     name: "",
     category: "",
@@ -686,7 +692,6 @@ const resetForm = () => {
         image: null,
     };
     priceInput.value = "";
-    editingProduct.value = null;
 };
 
 const openCreateModal = () => {
@@ -694,20 +699,34 @@ const openCreateModal = () => {
     showModal.value = true;
 };
 
-const openEditModal = (product) => {
-    editingProduct.value = product;
-    form.value = {
-        name: product.name || "",
-        category: product.category || "",
-        description: product.description || "",
-        price: product.price || 0,
-        stock: product.stock || 0,
-        image: null,
+const openDeleteConfirm = (product) => {
+    deleteConfirm.value = {
+        visible: true,
+        title: "Konfirmasi Hapus",
+        message: `Apakah Anda yakin ingin menghapus produk "${product.name}"? Produk akan terhapus dari beranda dan landing page.`,
+        product,
     };
-    // Set priceInput dengan format yang sudah diformat
-    priceInput.value =
-        product.price > 0 ? formatPriceString(product.price) : "";
-    showModal.value = true;
+};
+
+const closeDeleteConfirm = () => {
+    deleteConfirm.value = { visible: false, title: "", message: "", product: null };
+};
+
+const handleConfirmDelete = async () => {
+    const product = deleteConfirm.value.product;
+    if (!product) {
+        closeDeleteConfirm();
+        return;
+    }
+    try {
+        await axios.delete(`/api/products/${product.id}`);
+        closeDeleteConfirm();
+        await fetchProducts();
+        toast.value = { visible: true, message: "Berhasil menghapus produk", type: "success" };
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        alert("Gagal menghapus produk");
+    }
 };
 
 const closeModal = () => {
@@ -732,39 +751,14 @@ const saveProduct = async () => {
     }
 
     try {
-        if (editingProduct.value) {
-            // Laravel expects PUT/PATCH for updates. Use method spoofing when sending FormData.
-            payload.append("_method", "PUT");
-            await axios.post(
-                `/api/products/${editingProduct.value.id}`,
-                payload,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
-            );
-        } else {
-            await axios.post("/api/products", payload, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-        }
-
+        await axios.post("/api/products", payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
         await fetchProducts();
         closeModal();
     } catch (error) {
         console.error("Error saving product:", error);
         alert("Gagal menyimpan produk");
-    }
-};
-
-const confirmDelete = async (product) => {
-    if (!confirm(`Hapus produk "${product.name}"?`)) return;
-
-    try {
-        await axios.delete(`/api/products/${product.id}`);
-        await fetchProducts();
-    } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Gagal menghapus produk");
     }
 };
 
