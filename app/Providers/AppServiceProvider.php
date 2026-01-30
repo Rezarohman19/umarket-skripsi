@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Midtrans\Config;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +20,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Customizing the email verification message
+        VerifyEmail::toMailUsing(function ($notifiable, $url) {
+            return (new MailMessage)
+                ->subject('Verifikasi Alamat Email Anda - U-Market')
+                ->greeting('Halo, ' . $notifiable->name . '!')
+                ->line('Silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda.')
+                ->action('Verifikasi Email', $url)
+                ->line('Jika Anda tidak merasa membuat akun, abaikan email ini.')
+                ->salutation('Salam hangat, Tim U-Market');
+        });
+
         // Initialize Midtrans config from config/midtrans.php
         try {
             Config::$serverKey = config('midtrans.server_key');
