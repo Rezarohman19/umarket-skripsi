@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
+use Midtrans\Config;
 
 class AppServiceProvider extends ServiceProvider
 {
