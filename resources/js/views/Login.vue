@@ -170,7 +170,7 @@
                     <!-- Forgot Password & Remember Me -->
                     <div class="flex items-center justify-between">
                         <a
-                            href="/forgot-password"
+                            href="forgot-password"
                             class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2] hover:text-[#EF3B33] dark:hover:text-[#EF3B33] font-medium transition-colors duration-200"
                         >
                             Lupa Kata Sandi?

@@ -14,9 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
             'api/midtrans/notification',
-            'api/user/banks',
-            'api/seller/withdraw',
-            'api/user/withdrawals'
+            'user-banks',
+            'seller-withdraw',
+            'user-withdrawals'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
