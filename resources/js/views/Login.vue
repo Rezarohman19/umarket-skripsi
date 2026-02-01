@@ -170,8 +170,7 @@
                     <!-- Forgot Password & Remember Me -->
                     <div class="flex items-center justify-between">
                         <a
-                            href="#"
-                            @click.prevent="handleForgotPassword"
+                            href="/forgot-password"
                             class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2] hover:text-[#EF3B33] dark:hover:text-[#EF3B33] font-medium transition-colors duration-200"
                         >
                             Lupa Kata Sandi?
@@ -270,8 +269,7 @@ onMounted(() => {
 });
 
 const handleForgotPassword = () => {
-    // TODO: Implement forgot password functionality
-    alert("Fitur lupa kata sandi akan segera tersedia");
+    window.location.href = '/forgot-password';
 };
 
 // Kembali ke landing page dan reset flag welcome card
