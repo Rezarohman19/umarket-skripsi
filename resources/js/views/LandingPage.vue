@@ -227,10 +227,10 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
+            <!-- Main Content (min-w-0 agar flex child bisa shrink di mobile) -->
             <main
                 :class="[
-                    'flex-1 transition-all duration-300 overflow-x-hidden',
+                    'flex-1 min-w-0 transition-all duration-300 overflow-x-hidden max-w-full',
                     user && sidebarCollapsed
                         ? 'ml-16'
                         : user
@@ -428,23 +428,23 @@
                 </transition>
 
                 <!-- Website Info Card (hanya tampil jika belum login dan bukan dari tombol back login) -->
-                <div v-if="!user && showWelcomeCard && slides.length > 0" class="p-3 sm:p-6 pb-0 max-w-full overflow-x-hidden" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
-                    <div class="relative bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 group w-full">
+                <div v-if="!user && showWelcomeCard && slides.length > 0" class="p-2 sm:p-6 pb-0 w-full max-w-full min-w-0 overflow-x-hidden box-border" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+                    <div class="relative bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 group w-full max-w-full min-w-0 box-border" style="width: 100%; max-width: 100%;">
                         
-                        <!-- Slides Track -->
+                        <!-- Slides Track: w-full agar lebar tetap 100% parent, slide tidak melebar -->
                         <div 
-                            class="flex transition-transform duration-500 ease-in-out h-full" 
+                            class="flex transition-transform duration-500 ease-in-out h-full w-full min-w-0 shrink-0"
                             :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
                         >
                             <div 
                                 v-for="(slide, index) in slides" 
                                 :key="index" 
-                                class="min-w-full flex-shrink-0"
+                                class="min-w-full w-full flex-shrink-0 overflow-hidden flex-[0_0_100%]"
                             >
-                                <!-- Slide 0: Welcome Card (Original Layout) -->
-                                <div v-if="slide.type === 'welcome'" class="relative p-4 md:p-6 h-full flex flex-col justify-center min-h-[180px] sm:min-h-[200px] md:min-h-[220px] overflow-hidden">
+                                <!-- Slide 0: Welcome Card - mobile: lebih pendek, desktop tetap -->
+                                <div v-if="slide.type === 'welcome'" class="relative p-2.5 sm:p-4 md:p-6 h-full flex flex-col justify-center min-h-[120px] sm:min-h-[200px] md:min-h-[220px] overflow-hidden w-full min-w-0 max-w-full box-border">
                                     <!-- Decorative Background Elements -->
-                                    <div class="absolute inset-0 opacity-10 dark:opacity-5">
+                                    <div class="absolute inset-0 opacity-10 dark:opacity-5 pointer-events-none">
                                         <!-- Large Shopping Bag Icon -->
                                         <svg class="absolute top-2 right-2 w-20 h-20 md:w-28 md:h-28 text-[#EF3B33] transform rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -462,49 +462,49 @@
                                     <!-- Gradient Overlay -->
                                     <div class="absolute inset-0 bg-gradient-to-br from-[#FDA1A2]/20 via-transparent to-[#EF3B33]/10 dark:from-[#8E0D3C]/20 dark:via-transparent dark:to-[#FDA1A2]/10"></div>
                                     
-                                    <!-- Main Content -->
-                                    <div class="relative z-10 flex flex-col items-center gap-2 md:gap-3">
+                                    <!-- Main Content (mobile: min-w-0 agar tidak overflow) -->
+                                    <div class="relative z-10 flex flex-col items-center gap-1 sm:gap-2 md:gap-3 w-full max-w-full min-w-0 px-1 sm:px-0">
                                         <!-- Info Content -->
-                                        <div class="flex-1 text-center w-full">
-                                            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1.5 drop-shadow-sm">
+                                        <div class="flex-1 text-center w-full min-w-0 max-w-full">
+                                            <h2 class="text-base sm:text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-0.5 sm:mb-1.5 drop-shadow-sm break-words leading-tight">
                                                 Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
                                             </h2>
-                                            <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-2.5 max-w-2xl mx-auto px-4">
+                                            <p class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-snug mb-1 sm:mb-2.5 max-w-2xl mx-auto px-1 sm:px-4 break-words line-clamp-2 sm:line-clamp-none">
                                                 Platform e-commerce terpercaya untuk mahasiswa dan masyarakat umum. 
                                                 Temukan berbagai produk berkualitas dari penjual lokal atau mulai buka toko Anda sendiri!
                                             </p>
                                             
                                             <!-- Features -->
-                                            <div class="flex flex-wrap justify-center gap-2 mb-3">
-                                                <div class="flex items-center gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-4 py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform">
-                                                    <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="flex flex-wrap justify-center gap-1 sm:gap-2 mb-1 sm:mb-3 w-full max-w-full min-w-0">
+                                                <div class="flex items-center gap-1 sm:gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform flex-shrink-0 min-w-0 max-w-full">
+                                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-[#EF3B33] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                                     </svg>
-                                                    <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs sm:text-sm font-semibold">Gratis Daftar</span>
+                                                    <span class="text-[9px] sm:text-sm font-semibold break-words text-[#8E0D3C] dark:text-[#FDA1A2]">Gratis Daftar</span>
                                                 </div>
-                                                <div class="flex items-center gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-4 py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform">
-                                                    <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <div class="flex items-center gap-1 sm:gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform flex-shrink-0 min-w-0 max-w-full">
+                                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-[#EF3B33] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                                     </svg>
-                                                    <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs sm:text-sm font-semibold">Transaksi Aman</span>
+                                                    <span class="text-[9px] sm:text-sm font-semibold break-words text-[#8E0D3C] dark:text-[#FDA1A2]">Transaksi Aman</span>
                                                 </div>
-                                                <div class="flex items-center gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-4 py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform">
-                                                    <svg class="w-4 h-4 text-[#EF3B33]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <div class="flex items-center gap-1 sm:gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform flex-shrink-0 min-w-0 max-w-full">
+                                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-[#EF3B33] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                                     </svg>
-                                                    <span class="text-[#8E0D3C] dark:text-[#FDA1A2] text-xs sm:text-sm font-semibold">Buka Toko Sendiri</span>
+                                                    <span class="text-[9px] sm:text-sm font-semibold break-words text-[#8E0D3C] dark:text-[#FDA1A2]">Buka Toko Sendiri</span>
                                                 </div>
                                             </div>
                                         </div>
                                         
                                         <!-- CTA Button -->
-                                        <div class="flex-shrink-0" v-if="!user">
+                                        <div class="flex-shrink-0 w-full max-w-full flex justify-center px-1" v-if="!user">
                                             <button
                                                 @click="goToLoginFromWelcome"
-                                                class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-5 py-2 rounded-xl shadow-md border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 text-sm hover:scale-105 hover:shadow-lg transition-all transform"
+                                                class="bg-white dark:bg-[#1D1842] text-[#8E0D3C] dark:text-[#FDA1A2] font-semibold px-3 py-1.5 sm:px-5 sm:py-2 rounded-lg sm:rounded-xl shadow-md border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 text-xs sm:text-sm hover:scale-105 hover:shadow-lg transition-all transform max-w-full"
                                             >
                                                 Mulai Sekarang
-                                                <svg class="w-4 h-4 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block ml-1.5 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                                 </svg>
                                             </button>
@@ -512,8 +512,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Slides 1-3: Popular Products -->
-                                <div v-else class="relative h-full min-h-[200px] sm:min-h-[250px] flex items-center justify-center p-4 sm:p-6 overflow-hidden" @click="goToProductDetail(slide.data.id)">
+                                <!-- Slides 1-3: Popular Products - mobile: layout menyamping (gambar kiri teks kanan) = kotak lebih pendek -->
+                                <div v-else class="relative h-full min-h-[100px] sm:min-h-[250px] flex items-center justify-center p-2 sm:p-6 overflow-hidden" @click="goToProductDetail(slide.data.id)">
                                     <!-- Background dengan gambar produk atau gradient -->
                                     <div class="absolute inset-0 z-0">
                                         <img 
@@ -527,12 +527,12 @@
                                         <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/70 dark:from-[#1D1842]/95 dark:via-[#1D1842]/90 dark:to-[#1D1842]/70"></div>
                                     </div>
 
-                                    <!-- Content -->
-                                    <div class="relative z-10 w-full max-w-4xl flex flex-col md:flex-row items-center gap-4 md:gap-8">
-                                        <!-- Product Image -->
-                                        <div class="flex-shrink-0 w-28 h-28 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-white dark:bg-[#1D1842] rounded-xl shadow-xl overflow-hidden border-4 border-white dark:border-[#8E0D3C]/50 transform rotate-1 hover:rotate-0 transition-transform duration-300 cursor-pointer group">
+                                    <!-- Content: mobile = gambar kiri teks kanan (lebih pendek), desktop = sama -->
+                                    <div class="relative z-10 w-full max-w-4xl flex flex-row items-center gap-2 sm:gap-4 md:gap-8 pb-7 sm:pb-0">
+                                        <!-- Product Image - kiri (mobile & desktop) -->
+                                        <div class="flex-shrink-0 w-14 h-14 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-white dark:bg-[#1D1842] rounded-lg sm:rounded-xl shadow-xl overflow-hidden border-2 sm:border-4 border-white dark:border-[#8E0D3C]/50 transform rotate-1 hover:rotate-0 transition-transform duration-300 cursor-pointer group">
                                             <div v-if="!slide.data.image_url" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#FDA1A2]/20 to-[#EF3B33]/20">
-                                                <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-6 h-6 sm:w-16 sm:h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
                                             </div>
@@ -544,26 +544,27 @@
                                             />
                                         </div>
 
-                                        <!-- Text info -->
-                                        <div class="text-center md:text-left flex-1 min-w-0 px-2 sm:px-0">
-                                            <div class="inline-block px-2 py-0.5 bg-[#EF3B33] text-white text-[10px] sm:text-xs font-bold rounded-full mb-1 sm:mb-2 shadow-md">
+                                        <!-- Text info - kanan, mobile: rata kiri & nama+harga satu baris -->
+                                        <div class="text-left flex-1 min-w-0 px-0 flex flex-col justify-center gap-y-1 sm:gap-y-1.5">
+                                            <div class="inline-block w-fit px-1.5 py-0.5 sm:px-2 sm:py-0.5 bg-[#EF3B33] text-white text-[9px] sm:text-xs font-bold rounded-full shadow-md">
                                                 ⭐ Produk Terpopuler
                                             </div>
-                                            <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1 sm:mb-2 line-clamp-2 sm:line-clamp-1 drop-shadow-sm px-2 sm:px-0">
+                                            <!-- Urutan: nama → harga → deskripsi (jarak seragam pakai gap-y) -->
+                                            <h2 class="text-xs sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-[#8E0D3C] dark:text-[#FDA1A2] line-clamp-1 drop-shadow-sm">
                                                 {{ slide.data.name }}
                                             </h2>
-                                            <p class="text-sm sm:text-base md:text-lg font-bold text-[#EF3B33] mb-2 sm:mb-3">
+                                            <p class="text-[10px] sm:text-base md:text-lg font-bold text-[#EF3B33]">
                                                 Rp. {{ formatPrice(slide.data.price) }}
                                             </p>
-                                            <p class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4 max-w-lg mx-auto md:mx-0 px-2 sm:px-0">
+                                            <p class="text-gray-700 dark:text-gray-300 text-[10px] sm:text-sm line-clamp-2 max-w-lg leading-tight">
                                                 {{ slide.data.description || 'Dapatkan produk berkualitas ini dengan harga terbaik. Jangan lewatkan penawaran menarik ini!' }}
                                             </p>
-                                            
+                                            <!-- Tombol lebih kecil dari badge Produk Terpopuler di mobile -->
                                             <button 
-                                                class="bg-[#EF3B33] hover:bg-[#d92f25] text-white font-semibold px-4 py-2 sm:px-5 sm:py-2.5 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1.5 mx-auto md:mx-0 text-xs sm:text-sm group"
+                                                class="bg-[#EF3B33] hover:bg-[#d92f25] text-white font-semibold px-2 py-0.5 sm:px-5 sm:py-2.5 rounded-full shadow-md sm:shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-0.5 sm:gap-1 w-fit text-[9px] sm:text-sm group"
                                             >
                                                 <span>Lihat Detail</span>
-                                                <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                                 </svg>
                                             </button>
