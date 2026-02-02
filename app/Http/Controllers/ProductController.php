@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -26,7 +28,9 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
-            'image'       => 'nullable|image|max:2048',
+            // Naikkan limit agar file asli bisa di-upload,
+            // nanti kita resize & kompres di server.
+            'image'       => 'nullable|image|max:5120',
         ]);
 
         // Jika ada input kategori, auto-create jika belum ada
@@ -48,7 +52,23 @@ class ProductController extends Controller
 
         // Upload image jika ada
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $uploadedImage = $request->file('image');
+
+            // Resize & kompres gambar supaya ukuran file lebih kecil
+            $manager = new ImageManager(new Driver());
+
+            $image = $manager
+                ->read($uploadedImage->getRealPath())
+                // Perkecil sehingga sisi terpanjang max 1200px
+                ->scaleDown(width: 1200, height: 1200)
+                // Simpan sebagai JPG dengan kualitas 80 (lebih kecil tapi tetap jelas)
+                ->encodeByExtension('jpg', quality: 80);
+
+            $filename = 'products/' . uniqid('product_', true) . '.jpg';
+
+            Storage::disk('public')->put($filename, (string) $image);
+
+            $validated['image'] = $filename;
         }
 
         $validated['user_id'] = Auth::id();
@@ -78,7 +98,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
-            'image'       => 'nullable|image|max:2048',
+            'image'       => 'nullable|image|max:5120',
         ]);
 
         // Jika ada input kategori, auto-create jika belum ada
@@ -97,7 +117,20 @@ class ProductController extends Controller
         unset($validated['category']);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $uploadedImage = $request->file('image');
+
+            $manager = new ImageManager(new Driver());
+
+            $image = $manager
+                ->read($uploadedImage->getRealPath())
+                ->scaleDown(width: 1200, height: 1200)
+                ->encodeByExtension('jpg', quality: 80);
+
+            $filename = 'products/' . uniqid('product_', true) . '.jpg';
+
+            Storage::disk('public')->put($filename, (string) $image);
+
+            $validated['image'] = $filename;
         }
 
         $product->update($validated);
