@@ -1787,11 +1787,83 @@ const submitForm = async () => {
     }
 };
 
-const onImageChange = (event) => {
+// Helper untuk resize gambar di sisi client
+const resizeImage = (file, maxWidth, maxHeight) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                // Hitung rasio untuk resize
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert canvas ke Blob (JPEG quality 0.8)
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            // Convert Blob kembali ke File agar FormData mengenali sebagai file
+                            const resizedFile = new File([blob], file.name, {
+                                type: "image/jpeg",
+                                lastModified: Date.now(),
+                            });
+                            resolve(resizedFile);
+                        } else {
+                            reject(new Error("Canvas to Blob failed"));
+                        }
+                    },
+                    "image/jpeg",
+                    0.8
+                );
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+};
+
+const onImageChange = async (event) => {
     const file = event.target.files?.[0];
     if (file) {
-        form.value.imageFile = file;
-        form.value.imagePreview = URL.createObjectURL(file);
+        try {
+            // Tampilkan loading preview sementara (opsional, bisa pakai file asli)
+            form.value.imagePreview = URL.createObjectURL(file);
+            
+            // Resize gambar secara otomatis (max 1200px)
+            const resizedFile = await resizeImage(file, 1200, 1200);
+            
+            form.value.imageFile = resizedFile;
+            // Update preview dengan gambar hasil resize yang lebih ringan
+            form.value.imagePreview = URL.createObjectURL(resizedFile);
+            
+            console.log(`Original size: ${(file.size / 1024).toFixed(2)} KB`);
+            console.log(`Resized size: ${(resizedFile.size / 1024).toFixed(2)} KB`);
+        } catch (error) {
+            console.error("Error resizing image:", error);
+            // Fallback ke file asli jika resize gagal
+            form.value.imageFile = file;
+            form.value.imagePreview = URL.createObjectURL(file);
+        }
     }
 };
 
