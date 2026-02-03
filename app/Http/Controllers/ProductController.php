@@ -22,26 +22,23 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
-            'category'    => 'nullable|string|max:255',
+            'category'    => 'required|string|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
-            // Naikkan limit agar file asli bisa di-upload,
-            // nanti kita resize & kompres di server.
-            'image'       => 'nullable|image|max:5120',
+            // Foto produk wajib saat tambah produk baru
+            'image'       => 'required|image|max:5120',
         ]);
 
-        // Jika ada input kategori, auto-create jika belum ada
+        // Kategori sekarang wajib, auto-create jika belum ada
+        $catName = trim($request->input('category'));
         $categoryId = null;
-        if ($request->filled('category')) {
-            $catName = trim($request->input('category'));
-            if ($catName) {
-                $category = Category::firstOrCreate(
-                    ['name' => $catName],
-                    ['slug' => Str::slug($catName)]
-                );
-                $categoryId = $category->id;
-            }
+        if ($catName) {
+            $category = Category::firstOrCreate(
+                ['name' => $catName],
+                ['slug' => Str::slug($catName)]
+            );
+            $categoryId = $category->id;
         }
         
         // Unset string category, set category_id
@@ -77,10 +74,11 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name'        => 'sometimes|required|string|max:255',
-            'category'    => 'sometimes|nullable|string|max:255',
+            'category'    => 'required|string|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
+            // Foto produk opsional saat update (jika tidak diubah, pakai yang lama)
             'image'       => 'nullable|image|max:5120',
         ]);
 

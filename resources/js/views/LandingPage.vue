@@ -134,7 +134,7 @@
                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                             />
                         </svg>
-                        <span v-if="!sidebarCollapsed">Buka Toko</span>
+                        <span v-if="!sidebarCollapsed">Toko Saya</span>
                     </a>
                 </nav>
 
@@ -275,7 +275,7 @@
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    placeholder="Cari"
+                                    placeholder="Cari nama produk atau nama toko..."
                                     class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
                                 <svg
@@ -406,7 +406,7 @@
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Cari produk..."
+                                placeholder="Cari nama produk atau nama toko..."
                                 class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 autoFocus
                             />
@@ -471,7 +471,7 @@
                                             </h2>
                                             <p class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-snug mb-1 sm:mb-2.5 max-w-2xl mx-auto px-1 sm:px-4 break-words line-clamp-2 sm:line-clamp-none">
                                                 Platform e-commerce terpercaya untuk mahasiswa dan masyarakat umum. 
-                                                Temukan berbagai produk berkualitas dari penjual lokal atau mulai buka toko Anda sendiri!
+                                                Temukan berbagai produk berkualitas dari penjual lokal atau kelola toko Anda sendiri!
                                             </p>
                                             
                                             <!-- Features -->
@@ -492,7 +492,7 @@
                                                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-[#EF3B33] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                                     </svg>
-                                                    <span class="text-[9px] sm:text-sm font-semibold break-words text-[#8E0D3C] dark:text-[#FDA1A2]">Buka Toko Sendiri</span>
+                                                    <span class="text-[9px] sm:text-sm font-semibold break-words text-[#8E0D3C] dark:text-[#FDA1A2]">Toko Saya</span>
                                                 </div>
                                             </div>
                                         </div>

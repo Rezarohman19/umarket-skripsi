@@ -218,31 +218,6 @@
                             </p>
                         </div>
 
-                        <!-- Search Bar -->
-                        <div class="flex-1 max-w-md w-full sm:w-auto mx-0 sm:mx-4 min-w-0">
-                            <div class="relative">
-                                <input
-                                    v-model="searchQuery"
-                                    type="text"
-                                    placeholder="Cari"
-                                    class="w-full px-2 sm:px-4 py-1.5 sm:py-2 pl-7 sm:pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-xs sm:text-base text-[#1D1842] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
-                                />
-                                <svg
-                                    class="w-3.5 h-3.5 sm:w-5 sm:h-5 absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
-                                </svg>
-                            </div>
-                        </div>
-
                         <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
@@ -529,7 +504,6 @@ import ConfirmModal from "../components/ConfirmModal.vue";
 
 // Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
-const searchQuery = ref("");
 const admin = ref(null);
 
 const toggleSidebar = () => {

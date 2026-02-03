@@ -131,7 +131,7 @@
                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                             />
                         </svg>
-                        <span v-if="!sidebarCollapsed">Buka Toko</span>
+                        <span v-if="!sidebarCollapsed">Toko Saya</span>
                     </a>
                 </nav>
 
@@ -262,7 +262,7 @@
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    placeholder="Cari"
+                                    placeholder="Cari produk, kategori, atau deskripsi..."
                                     class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
                                 <svg
@@ -386,7 +386,7 @@
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Cari produk..."
+                                placeholder="Cari produk, kategori, atau deskripsi..."
                                 class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 autoFocus
                             />
@@ -1008,10 +1008,10 @@
                                     <!-- Table Rows -->
                                     <div
                                         class="space-y-2 mt-2"
-                                        v-if="products.length"
+                                        v-if="filteredProducts.length"
                                     >
                                         <div
-                                            v-for="p in products"
+                                            v-for="p in filteredProducts"
                                             :key="p.id"
                                             class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 items-center bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg px-4 py-4 gap-2"
                                         >
@@ -1058,10 +1058,16 @@
                                 </div>
 
                                 <div
-                                    v-else
+                                    v-else-if="products.length === 0"
                                     class="text-sm text-gray-500 dark:text-gray-400 mt-3"
                                 >
                                     Belum ada produk.
+                                </div>
+                                <div
+                                    v-else-if="searchQuery && filteredProducts.length === 0"
+                                    class="text-sm text-gray-500 dark:text-gray-400 mt-3"
+                                >
+                                    Tidak ada produk yang cocok dengan pencarian "{{ searchQuery }}".
                                 </div>
                                 </div>
                             </div>
@@ -1361,6 +1367,26 @@ const orderFilterStatus = ref("");
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
+// Computed untuk filtered products dengan search
+const filteredProducts = computed(() => {
+    if (!searchQuery.value || !searchQuery.value.trim()) {
+        return products.value;
+    }
+    
+    const q = searchQuery.value.toLowerCase().trim();
+    return products.value.filter((product) => {
+        const name = (product.name || "").toLowerCase();
+        const category = (product.category?.name || "").toLowerCase();
+        const description = (product.description || "").toLowerCase();
+        
+        return (
+            name.includes(q) ||
+            category.includes(q) ||
+            description.includes(q)
+        );
+    });
+});
+
 // Helper untuk parse harga dari format string ke number
 const parsePrice = (priceString) => {
     if (!priceString) return 0;
@@ -1651,11 +1677,35 @@ const deleteProduct = (id) => {
 };
 
 const submitForm = async () => {
-    if (!form.value.name || form.value.price < 0 || form.value.stock < 0) {
+    // Validasi dasar di sisi frontend agar user dapat pesan yang lebih jelas
+    // Field wajib: Nama, Kategori, Harga, Stok, Foto Produk
+    // Deskripsi opsional
+    const missingFields = [];
+
+    if (!form.value.name || !form.value.name.trim()) {
+        missingFields.push("Nama produk");
+    }
+    if (!form.value.category || !form.value.category.trim()) {
+        missingFields.push("Kategori");
+    }
+    if (form.value.price === null || form.value.price === "" || Number(form.value.price) <= 0) {
+        missingFields.push("Harga");
+    }
+    if (form.value.stock === null || form.value.stock === "" || Number(form.value.stock) < 0) {
+        missingFields.push("Stok");
+    }
+    // Foto produk wajib saat tambah produk baru (tidak ada id)
+    if (!form.value.id && !form.value.imageFile && !form.value.imagePreview) {
+        missingFields.push("Foto produk");
+    }
+
+    if (missingFields.length > 0) {
         toast.value = {
             visible: true,
-            message: "Nama, harga, dan stok wajib diisi dengan benar",
-            type: "error"
+            message:
+                "Lengkapi data produk terlebih dahulu: " +
+                missingFields.join(", "),
+            type: "error",
         };
         return;
     }
@@ -1709,10 +1759,30 @@ const submitForm = async () => {
         showForm.value = false;
     } catch (error) {
         console.error("Error saving product:", error);
+
+        let message = "Gagal menyimpan produk. ";
+
+        // Jika ini error validasi dari backend (422), ambil pesan yang lebih ramah
+        if (error.response?.status === 422 && error.response.data?.errors) {
+            const errors = error.response.data.errors;
+            const firstField = Object.keys(errors)[0];
+            const firstError = errors[firstField]?.[0];
+            message += firstError || "Pastikan semua data produk sudah diisi dengan benar.";
+        } else if (error.response?.data?.message) {
+            // Hindari menampilkan 'Server Error' yang membingungkan user
+            if (error.response.data.message === "Server Error") {
+                message += "Terjadi kesalahan pada server. Coba lagi beberapa saat lagi.";
+            } else {
+                message += error.response.data.message;
+            }
+        } else {
+            message += "Silakan cek koneksi internet Anda dan coba lagi.";
+        }
+
         toast.value = {
             visible: true,
-            message: "Gagal menyimpan produk: " + (error.response?.data?.message || error.message),
-            type: "error"
+            message,
+            type: "error",
         };
     }
 };
