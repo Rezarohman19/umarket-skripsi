@@ -505,12 +505,36 @@
                                     class="block text-[#1D1842] dark:text-[#FDA1A2] mb-1"
                                     >Gambar Produk</label
                                 >
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    @change="onImageChange"
-                                    class="block w-full text-sm text-[#1D1842] dark:text-[#FDA1A2]"
-                                />
+                                <div class="flex items-center gap-3">
+                                    <label
+                                        class="w-28 h-28 border border-dashed border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg flex items-center justify-center bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 cursor-pointer hover:bg-[#FDA1A2]/20 dark:hover:bg-[#1D1842]/60 transition"
+                                    >
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            class="hidden"
+                                            @change="onImageChange"
+                                        />
+                                        <template v-if="form.imagePreview">
+                                            <img
+                                                :src="form.imagePreview"
+                                                alt="preview"
+                                                class="w-full h-full object-cover rounded-lg"
+                                            />
+                                        </template>
+                                        <template v-else>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">Upload</span>
+                                        </template>
+                                    </label>
+                                    <button
+                                        v-if="form.imagePreview"
+                                        type="button"
+                                        class="text-xs text-red-500 hover:text-red-600 transition"
+                                        @click="removeImage"
+                                    >
+                                        Hapus Foto
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -590,7 +614,8 @@ const form = ref({
     description: "",
     price: 0,
     stock: 0,
-    image: null,
+    imageFile: null,
+    imagePreview: null,
 });
 
 const formatPrice = (price) =>
@@ -689,7 +714,8 @@ const resetForm = () => {
         description: "",
         price: 0,
         stock: 0,
-        image: null,
+        imageFile: null,
+        imagePreview: null,
     };
     priceInput.value = "";
 };
@@ -732,22 +758,64 @@ const handleConfirmDelete = async () => {
 const closeModal = () => {
     showModal.value = false;
     priceInput.value = "";
+    form.value.imagePreview = null;
 };
 
 const onImageChange = (event) => {
     const file = event.target.files?.[0];
-    form.value.image = file || null;
+    if (file) {
+        form.value.imageFile = file;
+        form.value.imagePreview = URL.createObjectURL(file);
+    }
+};
+
+const removeImage = () => {
+    form.value.imageFile = null;
+    form.value.imagePreview = null;
 };
 
 const saveProduct = async () => {
+    // Validasi dasar di sisi frontend agar user dapat pesan yang lebih jelas
+    // Field wajib: Nama, Kategori, Harga, Stok, Foto Produk
+    // Deskripsi opsional
+    const missingFields = [];
+
+    if (!form.value.name || !form.value.name.trim()) {
+        missingFields.push("Nama produk");
+    }
+    if (!form.value.category || !form.value.category.trim()) {
+        missingFields.push("Kategori");
+    }
+    if (form.value.price === null || form.value.price === "" || Number(form.value.price) <= 0) {
+        missingFields.push("Harga");
+    }
+    if (form.value.stock === null || form.value.stock === "" || Number(form.value.stock) < 0) {
+        missingFields.push("Stok");
+    }
+    // Foto produk wajib saat tambah produk baru
+    if (!form.value.imageFile && !form.value.imagePreview) {
+        missingFields.push("Foto produk");
+    }
+
+    if (missingFields.length > 0) {
+        toast.value = {
+            visible: true,
+            message:
+                "Lengkapi data produk terlebih dahulu: " +
+                missingFields.join(", "),
+            type: "error",
+        };
+        return;
+    }
+
     const payload = new FormData();
     payload.append("name", form.value.name);
     payload.append("category", form.value.category || "");
     payload.append("description", form.value.description || "");
     payload.append("price", String(form.value.price || 0));
     payload.append("stock", String(form.value.stock || 0));
-    if (form.value.image) {
-        payload.append("image", form.value.image);
+    if (form.value.imageFile) {
+        payload.append("image", form.value.imageFile);
     }
 
     try {
@@ -756,9 +824,38 @@ const saveProduct = async () => {
         });
         await fetchProducts();
         closeModal();
+        toast.value = {
+            visible: true,
+            message: "Produk berhasil disimpan",
+            type: "success",
+        };
     } catch (error) {
         console.error("Error saving product:", error);
-        alert("Gagal menyimpan produk");
+
+        let message = "Gagal menyimpan produk. ";
+
+        // Jika ini error validasi dari backend (422), ambil pesan yang lebih ramah
+        if (error.response?.status === 422 && error.response.data?.errors) {
+            const errors = error.response.data.errors;
+            const firstField = Object.keys(errors)[0];
+            const firstError = errors[firstField]?.[0];
+            message += firstError || "Pastikan semua data produk sudah diisi dengan benar.";
+        } else if (error.response?.data?.message) {
+            // Hindari menampilkan 'Server Error' yang membingungkan user
+            if (error.response.data.message === "Server Error") {
+                message += "Terjadi kesalahan pada server. Coba lagi beberapa saat lagi.";
+            } else {
+                message += error.response.data.message;
+            }
+        } else {
+            message += "Silakan cek koneksi internet Anda dan coba lagi.";
+        }
+
+        toast.value = {
+            visible: true,
+            message,
+            type: "error",
+        };
     }
 };
 

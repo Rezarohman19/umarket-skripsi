@@ -145,7 +145,7 @@
                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                             />
                         </svg>
-                        <span v-if="!sidebarCollapsed">Buka Toko</span>
+                        <span v-if="!sidebarCollapsed">Toko Saya</span>
                     </a>
                 </nav>
 
@@ -279,7 +279,7 @@
                                 <input
                                     v-model="searchQuery"
                                     type="text"
-                                    placeholder="Cari"
+                                    placeholder="Cari pesanan, nama toko, atau produk..."
                                     class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 />
                                 <svg
@@ -403,7 +403,7 @@
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Cari pesanan..."
+                                placeholder="Cari pesanan, nama toko, atau produk..."
                                 class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 autoFocus
                             />
@@ -608,7 +608,12 @@
                             v-if="getFilteredOrders(section.key).length === 0"
                             class="text-sm text-gray-500 dark:text-gray-400 py-4 text-center"
                         >
-                            Tidak ada pesanan di status ini.
+                            <template v-if="searchQuery">
+                                Tidak ada pesanan yang cocok dengan pencarian "{{ searchQuery }}" di status {{ section.title }}.
+                            </template>
+                            <template v-else>
+                                Tidak ada pesanan di status ini.
+                            </template>
                         </div>
                     </section>
                 </div>
@@ -698,28 +703,29 @@ const getGroupedOrders = (status) => {
     });
 
     // Convert to array
-    let result = Object.values(grouped);
-
-    // Apply search filter
-    if (searchQuery.value) {
-        const q = searchQuery.value.toLowerCase();
-        result = result.filter((group) => {
-            return (
-                (group.store || "").toLowerCase().includes(q) ||
-                group.items.some(
-                    (item) =>
-                        (item.product || "").toLowerCase().includes(q) ||
-                        (item.category || "").toLowerCase().includes(q),
-                )
-            );
-        });
-    }
-
-    return result;
+    return Object.values(grouped);
 };
 
+// Computed untuk filtered orders dengan search
 const getFilteredOrders = (status) => {
-    return getGroupedOrders(status);
+    const grouped = getGroupedOrders(status);
+    
+    // Apply search filter jika ada query
+    if (!searchQuery.value) {
+        return grouped;
+    }
+    
+    const q = searchQuery.value.toLowerCase().trim();
+    return grouped.filter((group) => {
+        return (
+            (group.store || "").toLowerCase().includes(q) ||
+            group.items.some(
+                (item) =>
+                    (item.product || "").toLowerCase().includes(q) ||
+                    (item.category || "").toLowerCase().includes(q),
+            )
+        );
+    });
 };
 
 const getStatusLabel = (status) => {
