@@ -463,14 +463,26 @@ Route::middleware(['web', 'auth:web'])->group(function () {
         }
 
         $days = (int) ($request->query('days', 30));
+        $endDate = now()->endOfDay();
+        $startDate = now()->subDays($days - 1)->startOfDay();
 
         // Ambil data penjualan X hari terakhir
-        $data = \App\Models\Transaction::where('status', 'paid')
-            ->where('created_at', '>=', now()->subDays($days))
+        $sales = \App\Models\Transaction::where('status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('DATE(created_at) as date, SUM(total_price) as total')
             ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->get();
+            ->get()
+            ->pluck('total', 'date');
+
+        // Buat range tanggal lengkap dan isi dengan 0 jika tidak ada data
+        $data = [];
+        for ($i = 0; $i < $days; $i++) {
+            $date = now()->subDays($days - 1 - $i)->format('Y-m-d');
+            $data[] = [
+                'date' => $date,
+                'total' => $sales->get($date, 0)
+            ];
+        }
 
         return response()->json($data);
     });
