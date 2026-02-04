@@ -741,6 +741,7 @@ const getStatusLabel = (status) => {
         completed: "Selesai",
         delivered: "Selesai",
         failed: "Gagal",
+        expired: "Batal/Kadaluarsa",
     };
     return statusMap[status] || status;
 };
@@ -767,6 +768,7 @@ const getStatusBadgeClass = (status) => {
         delivered:
             "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
         failed: "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
+        expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
     };
     return (
         classMap[status] ||
@@ -874,6 +876,7 @@ const mapTransactionStatus = (status) => {
         completed: "riwayat",
         delivered: "riwayat",
         failed: "riwayat",
+        expired: "riwayat",
     };
     return statusMap[status] || "riwayat";
 };

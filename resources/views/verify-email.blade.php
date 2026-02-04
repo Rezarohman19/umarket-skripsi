@@ -53,5 +53,26 @@
             </p>
         </div>
     </div>
+
+    <script>
+        // Polling status verifikasi email setiap 3 detik
+        const checkVerification = setInterval(async () => {
+            try {
+                const response = await fetch('/api/user');
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    // Jika email_verified_at tidak null, berarti sudah terverifikasi
+                    if (user && user.email_verified_at) {
+                        clearInterval(checkVerification);
+                        // Redirect ke halaman utama
+                        window.location.href = '/?verified=1';
+                    }
+                }
+            } catch (error) {
+                console.error('Gagal memeriksa status verifikasi:', error);
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

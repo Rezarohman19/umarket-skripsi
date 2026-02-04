@@ -1445,6 +1445,7 @@ const getStatusLabel = (status) => {
         delivered: "Sudah Diterima",
         completed: "Selesai",
         cancelled: "Dibatalkan",
+        expired: "Batal/Kadaluarsa",
     };
     return labels[status] || status;
 };
@@ -1464,6 +1465,7 @@ const getStatusClass = (status) => {
             "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
         cancelled:
             "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
+        expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
     };
     return (
         classes[status] ||
@@ -1498,10 +1500,12 @@ const filteredOrdersBySection = computed(() => {
         // Dikirim: status shipping (sedang dikirim)
         filtered = filtered.filter((order) => order.status === "shipping");
     } else if (activeOrderSection.value === "history") {
-        // Riwayat: status completed atau delivered (selesai/diterima)
+        // Riwayat: status completed, delivered, atau expired (selesai/diterima/batal)
         filtered = filtered.filter(
             (order) =>
-                order.status === "completed" || order.status === "delivered"
+                order.status === "completed" || 
+                order.status === "delivered" ||
+                order.status === "expired"
         );
     }
 

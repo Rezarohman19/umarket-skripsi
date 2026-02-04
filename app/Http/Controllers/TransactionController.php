@@ -34,10 +34,8 @@ class TransactionController extends Controller
             ->get();
 
         foreach ($expiredTransactions as $transaction) {
-            // Hapus transaction items dulu
-            \App\Models\TransactionItem::where('transaction_id', $transaction->id)->delete();
-            // Hapus transaction
-            $transaction->delete();
+            $transaction->status = 'expired';
+            $transaction->save();
         }
 
         $transactions = Transaction::where('user_id', $user->id)
@@ -460,9 +458,7 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Hapus transaction items dulu
-        \App\Models\TransactionItem::where('transaction_id', $transaction->id)->delete();
-        // Hapus transaction
+        // Update status to expired instead of deleting items and keeping status update
         $transaction->status = 'expired';
         $transaction->save();
 
