@@ -637,7 +637,7 @@
                         <div
                             v-for="product in filteredProducts"
                             :key="product.id"
-                            class="relative bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer"
+                            class="relative bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer flex flex-col h-full"
                             @click="goToProductDetail(product.id)"
                         >
                             <!-- Product Image -->
@@ -667,30 +667,32 @@
                             </div>
 
                             <!-- Product Info -->
-                            <div class="p-2 pb-1">
-                                <p
-                                    @click.stop="goToStore(product.user_id || product.user?.id)"
-                                    class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:text-[#EF3B33] cursor-pointer transition-colors"
-                                >
-                                    {{
-                                        product.store_name ||
-                                        product.user?.name ||
-                                        "Toko"
-                                    }}
-                                </p>
-                                <h3
-                                    class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-0.5"
-                                >
-                                    {{ product.name }}
-                                </h3>
-                                <p
-                                    class="text-sm sm:text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-1"
-                                >
-                                    Rp. {{ formatPrice(product.price) }}
-                                </p>
+                            <div class="p-2 pb-1 flex flex-col flex-1">
+                                <div>
+                                    <p
+                                        @click.stop="goToStore(product.user_id || product.user?.id)"
+                                        class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:text-[#EF3B33] cursor-pointer transition-colors"
+                                    >
+                                        {{
+                                            product.store_name ||
+                                            product.user?.name ||
+                                            "Toko"
+                                        }}
+                                    </p>
+                                    <h3
+                                        class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-0.5 leading-4 sm:leading-5 min-h-[2rem] sm:min-h-[2.5rem]"
+                                    >
+                                        {{ product.name }}
+                                    </h3>
+                                    <p
+                                        class="text-sm sm:text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-1"
+                                    >
+                                        Rp. {{ formatPrice(product.price) }}
+                                    </p>
+                                </div>
 
                                 <div
-                                    class="mt-2 flex items-center gap-1 sm:gap-1.5"
+                                    class="mt-auto pt-1.5 flex items-center gap-1 sm:gap-1.5"
                                     @click.stop
                                 >
                                     <div
@@ -743,12 +745,10 @@
                                     </div>
                                     <button
                                         @click.stop="handleAddToCart(product)"
-                                        class="flex-1 bg-[#EF3B33] text-white font-medium py-1 px-0.5 sm:px-1.5 rounded-md text-[8px] sm:text-[10px] cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f] leading-tight text-center"
+                                        class="flex-1 bg-[#EF3B33] text-white font-medium py-1 px-0.5 sm:px-1.5 rounded-md text-[8px] sm:text-[10px] cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner active:bg-[#c0271f] text-center flex flex-col items-center justify-center leading-[1.05]"
                                     >
-                                        <span class="block leading-tight">
-                                            <span class="block">Tambah ke</span>
-                                            <span class="block">Keranjang</span>
-                                        </span>
+                                        <span class="block sm:whitespace-nowrap">Tambah ke</span>
+                                        <span class="block">Keranjang</span>
                                     </button>
                                 </div>
 
