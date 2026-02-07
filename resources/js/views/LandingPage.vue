@@ -470,7 +470,7 @@
                                                 Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
                                             </h2>
                                             <p class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-snug mb-1 sm:mb-2.5 max-w-2xl mx-auto px-1 sm:px-4 break-words line-clamp-2 sm:line-clamp-none">
-                                                Platform e-commerce terpercaya untuk mahasiswa dan masyarakat umum. 
+                                                Platform e-commerce terpercaya untuk mahasiswa Unila dan masyarakat umum. 
                                                 Temukan berbagai produk berkualitas dari penjual lokal atau kelola toko Anda sendiri!
                                             </p>
                                             
