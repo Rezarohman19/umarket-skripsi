@@ -2,11 +2,13 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-use Illuminate\Support\Facades\Schedule;
+
 
 Schedule::command('payment:send-reminder')->hourly();
+Schedule::command('orders:auto-complete')->hourly();

@@ -175,7 +175,7 @@ class ProfileController extends Controller
                     $q->where('user_id', $user->id);
                 });
             })
-            ->whereIn('status', ['paid', 'processing', 'shipping', 'delivered', 'completed'])
+            ->whereIn('status', ['delivered', 'completed'])
             ->sum('total_price');
 
         $totalWithdrawn = \App\Models\Withdrawal::where('user_id', $user->id)
@@ -208,7 +208,7 @@ class ProfileController extends Controller
                     $q->where('user_id', $user->id);
                 });
             })
-            ->whereIn('status', ['paid', 'processing', 'shipping', 'delivered', 'completed'])
+            ->whereIn('status', ['delivered', 'completed'])
             ->sum('total_price');
         $totalWithdrawn = \App\Models\Withdrawal::where('user_id', $user->id)
             ->where('status', 'completed')
