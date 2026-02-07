@@ -354,7 +354,7 @@ Route::middleware(['web', 'auth:web'])->group(function () {
                 'name' => $u->name,
                 'email' => $u->email,
                 'role' => $u->role,
-                'status' => $u->id === $currentId ? 'online' : 'offline',
+                'status' => $u->last_seen_at && $u->last_seen_at > now()->subMinutes(5) ? 'online' : 'offline',
                 'products_count' => $u->products_count ?? 0,
                 'is_current' => $u->id === $currentId,
             ];
@@ -485,6 +485,27 @@ Route::middleware(['web', 'auth:web'])->group(function () {
         }
 
         return response()->json($data);
+    });
+
+    Route::get('/api/admin/popular-products', function () {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $products = \App\Models\Product::withSum(['transactionItems' => function($query) {
+            $query->whereHas('transaction', function($q) {
+                $q->whereIn('status', ['paid', 'shipping', 'delivered']);
+            });
+        }], 'qty')
+        ->orderByDesc('transaction_items_sum_qty')
+        ->take(10)
+        ->get()
+        ->map(function ($p) {
+            $p->image_url = $p->image ? Storage::url($p->image) : null;
+            return $p;
+        });
+
+        return response()->json($products);
     });
 
 

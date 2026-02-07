@@ -675,10 +675,8 @@ const initChart = () => {
 
 const fetchPopularProducts = async () => {
     try {
-        const response = await axios.get("/api/products");
-        const products = response.data || [];
-        // Ambil 10 produk teratas
-        popularProducts.value = products.slice(0, 10);
+        const response = await axios.get("/api/admin/popular-products");
+        popularProducts.value = response.data || [];
     } catch (error) {
         console.error("Error fetching popular products:", error);
     }
