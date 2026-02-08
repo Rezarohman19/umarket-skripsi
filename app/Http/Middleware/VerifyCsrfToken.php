@@ -12,6 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'https://e-commerce-u-market-production-c67a.up.railway.app/midtrans/notification',
+        'https://umarket.space/midtrans/notification',
+        'register',
+        'login',
+        'logout',
+        'api/*'
     ];
 }
