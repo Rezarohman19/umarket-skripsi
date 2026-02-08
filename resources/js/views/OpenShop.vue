@@ -1081,7 +1081,7 @@
         <transition name="modal">
             <div
                 v-if="showShippingForm"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showShippingForm = false"
             >
                 <div
@@ -1152,7 +1152,7 @@
         <transition name="modal">
             <div
                 v-if="showWithdrawModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showWithdrawModal = false"
             >
                 <div

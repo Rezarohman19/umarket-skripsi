@@ -290,7 +290,7 @@
         <transition name="modal">
             <div
                 v-if="showAddBankModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showAddBankModal = false"
             >
                 <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -392,7 +392,7 @@
         <transition name="modal">
             <div
                 v-if="showSuccessModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showSuccessModal = false"
             >
                 <div

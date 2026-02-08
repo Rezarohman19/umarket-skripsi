@@ -422,7 +422,7 @@
                 <!-- Modal Tambah / Edit Produk -->
                 <div
                     v-if="showModal"
-                    class="fixed inset-0 z-20 flex items-center justify-center bg-black/40 p-3 sm:p-4"
+                    class="fixed inset-0 z-20 flex items-center justify-center bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm p-3 sm:p-4"
                 >
                     <div
                         class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-xl w-full max-w-lg p-4 sm:p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 max-h-[90vh] overflow-y-auto"

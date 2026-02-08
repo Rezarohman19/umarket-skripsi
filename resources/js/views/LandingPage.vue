@@ -765,7 +765,7 @@
         <transition name="modal">
             <div
                 v-if="showLoginModal"
-                class="fixed inset-0 bg-white bg-opacity-10 dark:bg-gray-900 dark:bg-opacity-10 flex items-center justify-center z-50 p-4 backdrop-blur-md"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
                 @click.self="closeLoginModal"
             >
                 <div

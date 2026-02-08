@@ -6,12 +6,12 @@
         <!-- Backdrop (optional, clickable to close) - Hanya untuk error -->
         <div 
             v-if="type !== 'success'"
-            class="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            class="absolute inset-0 bg-[#FDA1A2]/20 dark:bg-[#1D1842]/80 backdrop-blur-sm"
             @click="$emit('close')"
         ></div>
         <div 
             v-else
-            class="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            class="absolute inset-0 bg-[#FDA1A2]/20 dark:bg-[#1D1842]/80 backdrop-blur-sm"
         ></div>
 
         <!-- Card -->

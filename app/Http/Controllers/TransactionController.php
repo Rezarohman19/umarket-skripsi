@@ -412,6 +412,32 @@ class TransactionController extends Controller
                 'status' => $transaction->status,
             ]);
 
+            // === KIRIM NOTIFIKASI WHATSAPP KE PENJUAL ===
+            if ($newStatus === 'paid' && $oldStatus !== 'paid') {
+                try {
+                    $transaction->load(['items.product.user']);
+                    $firstItem = $transaction->items->first();
+                    $seller = $firstItem->product->user ?? null;
+
+                    if ($seller && $seller->phone) {
+                        $waService = new \App\Services\WhatsAppService();
+                        $message = "*PESANAN BARU MASUK!* 🚀\n\n" .
+                            "Halo {$seller->name},\n" .
+                            "Ada pesanan baru yang telah DIBAYAR.\n\n" .
+                            "No. Pesanan: {$transaction->order_id}\n" .
+                            "Total: Rp " . number_format($transaction->total_price, 0, ',', '.') . "\n" .
+                            "Status: SUDAH DIBAYAR ✅\n\n" .
+                            "Mohon segera proses pengiriman pesanan ini melalui dashboard U Market Anda.\n\n" .
+                            "Terima kasih!";
+                        
+                        $waService->sendMessage($seller->phone, $message);
+                        Log::info("WA Notification sent to seller: {$seller->name} ({$seller->phone})");
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to send WA notification: " . $e->getMessage());
+                }
+            }
+
             return response()->json(['message' => 'OK'], 200);
         } catch (\Throwable $e) {
             Log::error('ERROR MIDTRANS NOTIFICATION: ' . $e->getMessage(), [

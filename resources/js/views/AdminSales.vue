@@ -429,7 +429,7 @@
         >
             <!-- Backdrop -->
             <div 
-                class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                class="absolute inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm"
                 @click="closeDetailModal"
             ></div>
 

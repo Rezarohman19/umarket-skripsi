@@ -234,7 +234,7 @@
         <transition name="modal">
             <div
                 v-if="showPaymentModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             >
                 <div
                     class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
@@ -356,7 +356,7 @@
         <transition name="modal">
             <div
                 v-if="showAddressModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showAddressModal = false"
             >
                 <div
@@ -632,8 +632,8 @@ const handleConfirmPayment = async () => {
             showPaymentModal.value = true;
             currentPaymentIndex.value = 0;
 
-            // Auto start first payment
-            processPayment(0);
+            // Do not auto start payment
+             // processPayment(0);
         }
     } catch (error) {
         console.error("Error during checkout:", error);
@@ -691,22 +691,18 @@ const updateTransactionStatus = (index, status) => {
     if (paymentTransactions.value[index]) {
         paymentTransactions.value[index].status = status;
 
-        // Auto advance logic
+        // Auto move to next item but DO NOT trigger popup automatically
         if (
             status === "success" ||
             status === "settlement" ||
             status === "pending"
         ) {
             if (index + 1 < paymentTransactions.value.length) {
-                setTimeout(() => {
-                    processPayment(index + 1);
-                }, 1000);
-            } else {
-                // All done
-                setTimeout(() => {
-                    finishPaymentProcess();
-                }, 1000);
-            }
+                currentPaymentIndex.value = index + 1;
+            } 
+            // else {
+            //     // All done logic is handled by "Selesai" button
+            // }
         }
     }
 };

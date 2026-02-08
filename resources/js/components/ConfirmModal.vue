@@ -4,7 +4,7 @@
         class="fixed inset-0 flex items-center justify-center z-[100] px-4 animate-fade-in"
     >
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm"></div>
 
         <!-- Card -->
         <div
