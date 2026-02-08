@@ -255,10 +255,7 @@
                             class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
                             :class="{
                                 'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50':
-                                    currentPaymentIndex === index,
-                                'opacity-50':
-                                    currentPaymentIndex < index &&
-                                    t.status !== 'success',
+                                    currentPaymentIndex === index
                             }"
                         >
                             <div class="flex justify-between items-start mb-2">
@@ -300,14 +297,9 @@
                                         t.status !== 'settlement'
                                     "
                                     @click="processPayment(index)"
-                                    :disabled="currentPaymentIndex !== index"
-                                    class="px-3 py-1.5 bg-[#EF3B33] text-white text-sm rounded-md shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-[#D12B24] transition-colors"
+                                    class="px-3 py-1.5 bg-[#EF3B33] text-white text-sm rounded-md shadow-sm hover:bg-[#D12B24] transition-colors"
                                 >
-                                    {{
-                                        currentPaymentIndex === index
-                                            ? "Bayar Sekarang"
-                                            : "Menunggu"
-                                    }}
+                                    Bayar Sekarang
                                 </button>
                                 <span
                                     v-else
@@ -708,13 +700,21 @@ const updateTransactionStatus = (index, status) => {
 };
 
 const finishPaymentProcess = () => {
-    const lastId =
-        paymentTransactions.value[paymentTransactions.value.length - 1]
-            ?.transaction?.id;
-    if (lastId) {
-        window.location.href = `/order-confirmation?transaction_id=${lastId}`;
+    const transactionIds = paymentTransactions.value
+        .map(t => t.transaction?.id)
+        .filter(id => id);
+    
+    if (transactionIds.length > 0) {
+        window.location.href = `/order-confirmation?transaction_ids=${transactionIds.join(',')}`;
     } else {
-        window.location.href = `/orders`;
+        const lastId =
+            paymentTransactions.value[paymentTransactions.value.length - 1]
+                ?.transaction?.id;
+        if (lastId) {
+            window.location.href = `/order-confirmation?transaction_id=${lastId}`;
+        } else {
+            window.location.href = `/orders`;
+        }
     }
 };
 onMounted(async () => {

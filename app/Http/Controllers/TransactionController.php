@@ -235,59 +235,6 @@ class TransactionController extends Controller
      * MIDTRANS NOTIFICATION
      * =========================
      */
-    //     public function notification(Request $request)
-    // {
-    //     Log::info('MIDTRANS NOTIFICATION MASUK', $request->all());
-
-    //     // Inisialisasi Config agar Notification SDK bekerja
-    //     Config::$serverKey = config('midtrans.server_key');
-    //     Config::$isProduction = config('midtrans.is_production');
-
-    //     try {
-    //         $notif = new Notification();
-    //         $orderId = $notif->order_id; // "ORDER-17-17368291"
-    //         $status  = $notif->transaction_status;
-
-    //         // --- PROSES AMBIL ID ASLI ---
-    //         // Pecah string berdasarkan tanda "-"
-    //         $parts = explode('-', $orderId);
-
-    //         // Ambil bagian index ke-1 (ini adalah angka ID transaksi Anda)
-    //         $transactionId = isset($parts[1]) ? $parts[1] : null;
-
-    //         if (!$transactionId) {
-    //             Log::error('Format Order ID salah: ' . $orderId);
-    //             return response()->json(['message' => 'Invalid ID format'], 400);
-    //         }
-
-    //         // Cari transaksi berdasarkan ID yang sudah bersih (angka saja)
-    //         $transaction = Transaction::find($transactionId);
-
-    //         if (!$transaction) {
-    //             Log::warning('Transaksi tidak ditemukan di database', ['id_mencari' => $transactionId]);
-    //             return response()->json(['message' => 'Transaction not found'], 404);
-    //         }
-
-    //         // --- UPDATE STATUS ---
-    //         if (in_array($status, ['capture', 'settlement'])) {
-    //             $transaction->status = 'paid';
-    //         } elseif ($status === 'pending') {
-    //             $transaction->status = 'pending';
-    //         } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
-    //             $transaction->status = 'failed';
-    //         }
-
-    //         $transaction->save();
-    //         Log::info('STATUS UPDATE BERHASIL', ['id' => $transactionId, 'status' => $transaction->status]);
-
-    //         return response()->json(['message' => 'OK'], 200);
-
-    //     } catch (\Exception $e) {
-    //         Log::error('ERROR NOTIFICATION: ' . $e->getMessage());
-    //         return response()->json(['message' => 'Error', 'error' => $e->getMessage()], 500);
-    //     }
-    // }
-
     public function notification(Request $request)
     {
         Log::info('MIDTRANS NOTIFICATION MASUK', [
@@ -518,5 +465,60 @@ class TransactionController extends Controller
             'message' => 'Status updated',
             'transaction' => $transaction
         ]);
+    }
+
+    /**
+     * =========================
+     * RETURN REQUEST (BUYER)
+     * =========================
+     */
+    public function requestReturn(Request $request, $id)
+    {
+        $user = Auth::user();
+        $transaction = Transaction::findOrFail($id);
+
+        if ($transaction->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($transaction->status !== 'shipping' && $transaction->status !== 'delivered') {
+             return response()->json(['message' => 'Hanya pesanan yang dikirim atau diterima yang bisa diajukan pengembalian'], 400);
+        }
+
+        $transaction->status = 'return_requested';
+        $transaction->save();
+
+        return response()->json(['message' => 'Pengajuan pengembalian berhasil', 'transaction' => $transaction]);
+    }
+
+    /**
+     * =========================
+     * APPROVE RETURN (SELLER)
+     * =========================
+     */
+    public function approveReturn(Request $request, $id)
+    {
+        $seller = Auth::user();
+        $transaction = Transaction::findOrFail($id);
+
+        // Verify ownership via product
+        // In this simple multi-seller logic, checking if seller owns products in transaction
+        // NOTE: This assumes transaction items belong to same seller (which current checkout ensures)
+
+        $productIds = \App\Models\Product::where('user_id', $seller->id)->pluck('id');
+        $isSeller = $transaction->items()->whereIn('product_id', $productIds)->exists();
+
+        if (!$isSeller) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($transaction->status !== 'return_requested') {
+            return response()->json(['message' => 'Status transaksi tidak valid untuk pengembalian'], 400);
+        }
+
+        $transaction->status = 'returned';
+        $transaction->save();
+
+        return response()->json(['message' => 'Pengembalian disetujui', 'transaction' => $transaction]);
     }
 }

@@ -741,7 +741,10 @@ const getStatusLabel = (status) => {
         completed: "Selesai",
         delivered: "Selesai",
         failed: "Gagal",
+        failed: "Gagal",
         expired: "Batal/Kadaluarsa",
+        return_requested: "Pengembalian Diajukan",
+        returned: "Dikembalikan",
     };
     return statusMap[status] || status;
 };
@@ -769,6 +772,8 @@ const getStatusBadgeClass = (status) => {
             "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
         failed: "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
         expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
+        return_requested: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
+        returned: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
     };
     return (
         classMap[status] ||
@@ -877,6 +882,8 @@ const mapTransactionStatus = (status) => {
         delivered: "riwayat",
         failed: "riwayat",
         expired: "riwayat",
+        return_requested: "dikirim",
+        returned: "riwayat",
     };
     return statusMap[status] || "riwayat";
 };
@@ -892,12 +899,25 @@ const getPurchaseActions = (status, transaction) => {
     }
     // Hapus tombol "Hubungi Penjual" abu-abu, karena sudah ada tombol WhatsApp hijau
     // Tambahkan tombol "Tandai Diterima" untuk status dikirim (shipping)
-    if (status === "dikirim" || transaction?.status === "shipping") {
-        actions.push({
-            label: "Tandai Diterima",
-            type: "mark_delivered",
-            variant: "primary",
-        });
+    if (status === "dikirim" || transaction?.status === "shipping" || transaction?.status === "return_requested") {
+        if (transaction?.status === 'shipping') {
+            actions.push({
+                label: "Tandai Diterima",
+                type: "mark_delivered",
+                variant: "primary",
+            });
+            actions.push({
+                label: "Ajukan Pengembalian",
+                type: "request_return",
+                variant: "secondary",
+            });
+        } else if (transaction?.status === 'return_requested') {
+             actions.push({
+                label: "Pengembalian Diajukan",
+                type: "info",
+                variant: "secondary",
+            });
+        }
     }
     return actions;
 };
@@ -914,7 +934,48 @@ const handleAction = (type, orderGroup) => {
         contactSellerWhatsApp(orderGroup);
     } else if (type === "mark_delivered") {
         handleMarkDelivered(orderGroup);
+    } else if (type === "request_return") {
+        handleRequestReturn(orderGroup);
     }
+};
+
+const handleRequestReturn = (orderGroup) => {
+    if (!user.value) {
+        window.location.href = "/login";
+        return;
+    }
+
+    confirmModal.value = {
+        visible: true,
+        title: "Ajukan Pengembalian",
+        message: "Apakah Anda yakin ingin mengajukan pengembalian dana/barang untuk pesanan ini?",
+        onConfirm: async () => {
+            try {
+                const transactionId = orderGroup.transaction_id || orderGroup.transaction?.id;
+                if (!transactionId) {
+                    throw new Error("Transaction ID tidak ditemukan");
+                }
+
+                await axios.post(`/api/transactions/${transactionId}/request-return`);
+
+                await fetchTransactions();
+
+                toast.value = {
+                    visible: true,
+                    message: "Pengajuan pengembalian berhasil dikirim",
+                    type: "success"
+                };
+            } catch (error) {
+                console.error("Error requesting return:", error);
+                const message = error.response?.data?.message || "Gagal mengajukan pengembalian";
+                toast.value = {
+                    visible: true,
+                    message: message,
+                    type: "error"
+                };
+            }
+        }
+    };
 };
 
 const handleMarkDelivered = (orderGroup) => {

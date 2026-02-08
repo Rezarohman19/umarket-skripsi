@@ -743,3 +743,7 @@ Route::post('/api/transactions/{id}/mark-delivered', function (Request $request,
         'transaction' => $transaction
     ]);
 })->middleware('auth');
+
+// Return Request API
+Route::post('/api/transactions/{id}/request-return', [TransactionController::class, 'requestReturn'])->middleware('auth');
+Route::post('/api/seller/orders/{id}/approve-return', [TransactionController::class, 'approveReturn'])->middleware('auth');

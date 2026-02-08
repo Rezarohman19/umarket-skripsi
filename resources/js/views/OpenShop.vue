@@ -827,6 +827,13 @@
                                     >
                                         Tandai Dikirim
                                     </button>
+                                    <button
+                                        v-if="order.status === 'return_requested'"
+                                        @click="handleApproveReturn(order)"
+                                        class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner"
+                                    >
+                                        Proses Pengembalian
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1445,7 +1452,10 @@ const getStatusLabel = (status) => {
         delivered: "Sudah Diterima",
         completed: "Selesai",
         cancelled: "Dibatalkan",
+        cancelled: "Dibatalkan",
         expired: "Batal/Kadaluarsa",
+        return_requested: "Pengajuan Pengembalian",
+        returned: "Dikembalikan",
     };
     return labels[status] || status;
 };
@@ -1466,6 +1476,8 @@ const getStatusClass = (status) => {
         cancelled:
             "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
         expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
+        return_requested: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
+        returned: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
     };
     return (
         classes[status] ||
@@ -1498,7 +1510,7 @@ const filteredOrdersBySection = computed(() => {
         filtered = filtered.filter((order) => order.status === "processing");
     } else if (activeOrderSection.value === "shipping") {
         // Dikirim: status shipping (sedang dikirim)
-        filtered = filtered.filter((order) => order.status === "shipping");
+        filtered = filtered.filter((order) => order.status === "shipping" || order.status === "return_requested");
     } else if (activeOrderSection.value === "history") {
         // Riwayat: status completed, delivered, atau expired (selesai/diterima/batal)
         filtered = filtered.filter(
@@ -1988,7 +2000,7 @@ const fetchIncomingOrders = async () => {
                 (o) => o.status === "pending" || o.status === "paid"
             ).length,
             needShip: orders.filter((o) => o.status === "processing").length,
-            shipped: orders.filter((o) => o.status === "shipping").length,
+            shipped: orders.filter((o) => o.status === "shipping" || o.status === "return_requested").length,
             history: orders.filter(
                 (o) => o.status === "completed" || o.status === "delivered"
             ).length,
@@ -2034,6 +2046,35 @@ const updateOrderStatus = (orderId, newStatus) => {
                 console.error("Error updating order status:", error);
                 const message =
                     error.response?.data?.message || "Gagal mengupdate status";
+                toast.value = {
+                    visible: true,
+                    message: message,
+                    type: "error"
+                };
+            }
+        }
+    };
+};
+
+const handleApproveReturn = (order) => {
+    confirmModal.value = {
+        visible: true,
+        title: "Konfirmasi Pengembalian",
+        message: `Apakah Anda yakin ingin menyetujui pengembalian untuk pesanan #${order.id}?`,
+        onConfirm: async () => {
+            try {
+                await axios.post(`/api/seller/orders/${order.id}/approve-return`);
+                
+                await fetchIncomingOrders();
+                
+                toast.value = {
+                    visible: true,
+                    message: "Pengembalian berhasil disetujui",
+                    type: "success"
+                };
+            } catch (error) {
+                console.error("Error approving return:", error);
+                const message = error.response?.data?.message || "Gagal memproses pengembalian";
                 toast.value = {
                     visible: true,
                     message: message,

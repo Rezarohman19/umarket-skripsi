@@ -361,16 +361,10 @@
                                             <span
                                                 :class="[
                                                     'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
-                                                    sale.status === 'paid' ||
-                                                    sale.status === 'completed'
-                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                                                        : sale.status ===
-                                                          'pending'
-                                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                                                        : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+                                                    getStatusClass(sale.status)
                                                 ]"
                                             >
-                                                {{ sale.status }}
+                                                {{ getStatusLabel(sale.status) }}
                                             </span>
                                         </td>
                                         <td
@@ -502,15 +496,10 @@
                         <span
                             :class="[
                                 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
-                                detailModal.data.status === 'paid' ||
-                                detailModal.data.status === 'completed'
-                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                                    : detailModal.data.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+                                getStatusClass(detailModal.data.status)
                             ]"
                         >
-                            {{ detailModal.data.status }}
+                            {{ getStatusLabel(detailModal.data.status) }}
                         </span>
                     </div>
 
@@ -601,6 +590,41 @@ const fetchSales = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const getStatusLabel = (status) => {
+    const labels = {
+        pending: "Menunggu Pembayaran",
+        paid: "Sudah Dibayar",
+        processing: "Sedang Dikemas",
+        shipping: "Sedang Dikirim",
+        delivered: "Sudah Diterima",
+        completed: "Selesai",
+        cancelled: "Dibatalkan",
+        expired: "Kadaluarsa",
+        return_requested: "Pengajuan Return",
+        returned: "Dikembalikan",
+    };
+    return labels[status] || status;
+};
+
+const getStatusClass = (status) => {
+    if (status === 'paid' || status === 'completed' || status === 'delivered') {
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300';
+    }
+    if (status === 'pending' || status === 'processing') {
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+    }
+    if (status === 'shipping') {
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+    }
+    if (status === 'return_requested') {
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
+    }
+    if (status === 'returned' || status === 'cancelled' || status === 'expired') {
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+    }
+    return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
 };
 
 const viewDetail = (sale) => {
