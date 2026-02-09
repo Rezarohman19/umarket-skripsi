@@ -327,8 +327,8 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     });
 
     // Profile API (dipanggil dari frontend Vue)
-    Route::get('/api/profile', [ProfileController::class, 'show']);
-    Route::post('/api/profile', [ProfileController::class, 'update']);
+    // Route::get('/api/profile', [ProfileController::class, 'show']);
+    // Route::post('/api/profile', [ProfileController::class, 'update']);
 
     // SELLER BALANCE & WITHDRAWAL
     Route::get('/seller-balance', [ProfileController::class, 'getBalance']);

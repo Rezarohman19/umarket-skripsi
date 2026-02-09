@@ -1,17 +1,47 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CartController;
 
-// Public API
-Route::get('/categories', function () {
-    return \App\Models\Category::all();
-});
+/*
+|--------------------------------------------------------------------------
+| AUTH (PUBLIC)
+|--------------------------------------------------------------------------
+*/
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
-// Public products (read-only)
+/*
+|--------------------------------------------------------------------------
+| PUBLIC
+|--------------------------------------------------------------------------
+*/
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
-Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
+/*
+|--------------------------------------------------------------------------
+| AUTHENTICATED USER (SANCTUM)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')->group(function () {
 
+    //cart
+    Route::post('/cart', [CartController::class, 'addToCart']);
+    Route::get('/cart', [CartController::class, 'index']);
+
+    // logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // profile
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+
+    //cart
+    Route::post('/cart', [CartController::class, 'addToCart']);
+    Route::get('/cart', [CartController::class, 'index']);
+});

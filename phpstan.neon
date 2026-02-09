@@ -1,0 +1,29 @@
+includes:
+    - vendor/phpstan/phpstan-laravel/extension.neon
+
+parameters:
+    paths:
+        - app
+        - routes
+        - config
+    
+    level: 5
+    
+    excludePaths:
+        - vendor
+        - node_modules
+        - storage
+        - bootstrap/cache
+    
+    # Ignore these common false positives in Laravel
+    ignoreErrors:
+        # Laravel helpers are dynamically provided
+        - '#Undefined (function|variable)#'
+        - '#Call to undefined method#'
+        
+    # Specify stubs for Laravel
+    stubFiles:
+        - vendor/phpstan/phpstan-laravel/stubs
+    
+    # Disable baseline temporarily
+    baselineFile: null

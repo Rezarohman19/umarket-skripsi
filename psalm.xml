@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="5"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/psalm"
+    xsi:schemaLocation="https://getpsalm.org/schema/psalm vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="app" />
+        <directory name="routes" />
+        <directory name="config" />
+        <ignoreFiles>
+            <directory name="vendor" />
+            <directory name="node_modules" />
+            <directory name="storage" />
+            <directory name="bootstrap/cache" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <!-- Ignore Laravel's magic methods and helpers -->
+        <UndefinedFunction>
+            <errorLevel type="suppress">
+                <directory name="app" />
+                <directory name="routes" />
+            </errorLevel>
+        </UndefinedFunction>
+
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <directory name="app" />
+                <directory name="routes" />
+            </errorLevel>
+        </UndefinedClass>
+
+        <MissingReturnType>
+            <errorLevel type="info" />
+        </MissingReturnType>
+
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress" />
+        </PropertyNotSetInConstructor>
+    </issueHandlers>
+</psalm>
