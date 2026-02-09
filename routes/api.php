@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\CartController;
+//use App\Http\Controllers\Api\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,10 +30,6 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 */
 Route::middleware('auth:sanctum')->group(function () {
 
-    //cart
-    Route::post('/cart', [CartController::class, 'addToCart']);
-    Route::get('/cart', [CartController::class, 'index']);
-
     // logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -42,6 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
 
     //cart
-    Route::post('/cart', [CartController::class, 'addToCart']);
-    Route::get('/cart', [CartController::class, 'index']);
+    //Route::post('/cart', [CartController::class, 'addToCart']);
+    //Route::get('/cart', [CartController::class, 'index']);
 });
