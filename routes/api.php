@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\TransactionController;
 //use App\Http\Controllers\Api\CartController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +24,13 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| MIDTRANS WEBHOOK (PUBLIC - NO AUTH)
+|--------------------------------------------------------------------------
+*/
+Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
 
 /*
 |--------------------------------------------------------------------------
