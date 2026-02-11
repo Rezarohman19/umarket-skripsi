@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
-            <!-- Left Sidebar - Hanya muncul di desktop jika user sudah login -->
             <aside
                 v-if="user"
                 :class="[
@@ -9,7 +8,6 @@
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
-                <!-- Logo & Toggle Button -->
                 <div :class="[
                     'p-4 border-b border-[#EF3B33]/30',
                     sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -227,7 +225,6 @@
                 </div>
             </aside>
 
-            <!-- Main Content (min-w-0 agar flex child bisa shrink di mobile) -->
             <main
                 :class="[
                     'flex-1 min-w-0 transition-all duration-300 overflow-x-hidden max-w-full',
@@ -238,12 +235,10 @@
                         : 'ml-0',
                 ]"
             >
-                <!-- Header -->
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between gap-2 sm:gap-4">
-                        <!-- Greeting -->
                         <div class="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2" :class="user ? '' : 'mx-2 sm:mx-6'">
                             <img
                                 v-if="!user"
@@ -254,47 +249,28 @@
                             <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
                                 <template v-if="user?.name">
-                                    <span class="font-semibold">{{
-                                        user?.name
-                                    }}</span>
+                                    <span class="font-semibold">{{ user?.name }}</span>
                                 </template>
                                 <template v-else>
-                                    <span>
-                                        Pengunjung
-                                        <span class="font-semibold italic"
-                                            >U Market</span
-                                        ></span
-                                    >
+                                    <span>Pengunjung <span class="font-semibold italic">U Market</span></span>
                                 </template>
                             </p>
                         </div>
 
-                        <!-- Search Bar (Desktop) -->
                         <div class="hidden md:flex flex-1 max-w-md mx-2 md:mx-2">
                             <div class="relative w-full">
-                                <input
-                                    v-model="searchQuery"
-                                    type="text"
-                                    placeholder="Cari nama produk atau nama toko..."
-                                    class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                                />
+                                <input v-model="searchQuery" type="text" placeholder="Cari nama produk atau nama toko..." class="w-full px-4 py-2 pl-10 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" />
                                 <svg
                                     class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
                         </div>
 
-                        <!-- Search Icon (Mobile only) -->
                         <button
                             v-if="user"
                             @click="showMobileSearch = !showMobileSearch"
@@ -315,7 +291,6 @@
                             </svg>
                         </button>
 
-                        <!-- Cart Icon - Hanya muncul jika user sudah login -->
                         <button
                             v-if="user"
                             @click="handleCart"
@@ -347,7 +322,6 @@
                             </span>
                         </button>
 
-                        <!-- Profile Icon / Login Button -->
                         <button
                             v-if="user"
                             @click="handleProfile"
@@ -389,7 +363,6 @@
                     </div>
                 </header>
 
-                <!-- Mobile Search Bar (Expandable) -->
                 <transition
                     enter-active-class="transition duration-200 ease-out"
                     enter-from-class="transform -translate-y-4 opacity-0"
@@ -427,11 +400,9 @@
                     </div>
                 </transition>
 
-                <!-- Website Info Card (hanya tampil jika belum login dan bukan dari tombol back login) -->
                 <div v-if="!user && showWelcomeCard && slides.length > 0" class="p-2 sm:p-6 pb-0 w-full max-w-full min-w-0 overflow-x-hidden box-border" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
                     <div class="relative bg-[#FDA1A2]/30 dark:bg-[#8E0D3C]/30 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-[#FDA1A2]/50 dark:border-[#8E0D3C]/50 group w-full max-w-full min-w-0 box-border" style="width: 100%; max-width: 100%;">
                         
-                        <!-- Slides Track: w-full agar lebar tetap 100% parent, slide tidak melebar -->
                         <div 
                             class="flex transition-transform duration-500 ease-in-out h-full w-full min-w-0 shrink-0"
                             :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
@@ -441,30 +412,22 @@
                                 :key="index" 
                                 class="min-w-full w-full flex-shrink-0 overflow-hidden flex-[0_0_100%]"
                             >
-                                <!-- Slide 0: Welcome Card - mobile: lebih pendek, desktop tetap -->
                                 <div v-if="slide.type === 'welcome'" class="relative p-2.5 sm:p-4 md:p-6 h-full flex flex-col justify-center min-h-[120px] sm:min-h-[200px] md:min-h-[220px] overflow-hidden w-full min-w-0 max-w-full box-border">
-                                    <!-- Decorative Background Elements -->
                                     <div class="absolute inset-0 opacity-10 dark:opacity-5 pointer-events-none">
-                                        <!-- Large Shopping Bag Icon -->
                                         <svg class="absolute top-2 right-2 w-20 h-20 md:w-28 md:h-28 text-[#EF3B33] transform rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
-                                        <!-- Shopping Cart Icon -->
                                         <svg class="absolute bottom-4 left-4 w-16 h-16 md:w-24 md:h-24 text-[#8E0D3C] dark:text-[#FDA1A2] transform -rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
-                                        <!-- Star Icon -->
                                         <svg class="absolute top-1/2 left-4 w-12 h-12 md:w-16 md:h-16 text-[#EF3B33] transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                         </svg>
                                     </div>
                                     
-                                    <!-- Gradient Overlay -->
                                     <div class="absolute inset-0 bg-gradient-to-br from-[#FDA1A2]/20 via-transparent to-[#EF3B33]/10 dark:from-[#8E0D3C]/20 dark:via-transparent dark:to-[#FDA1A2]/10"></div>
                                     
-                                    <!-- Main Content (mobile: min-w-0 agar tidak overflow) -->
                                     <div class="relative z-10 flex flex-col items-center gap-1 sm:gap-2 md:gap-3 w-full max-w-full min-w-0 px-1 sm:px-0">
-                                        <!-- Info Content -->
                                         <div class="flex-1 text-center w-full min-w-0 max-w-full">
                                             <h2 class="text-base sm:text-2xl md:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-0.5 sm:mb-1.5 drop-shadow-sm break-words leading-tight">
                                                 Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
@@ -474,7 +437,6 @@
                                                 Temukan berbagai produk berkualitas dari penjual lokal atau kelola toko Anda sendiri!
                                             </p>
                                             
-                                            <!-- Features -->
                                             <div class="flex flex-wrap justify-center gap-1 sm:gap-2 mb-1 sm:mb-3 w-full max-w-full min-w-0">
                                                 <div class="flex items-center gap-1 sm:gap-2 bg-white/80 dark:bg-[#1D1842]/80 px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-md border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 hover:scale-105 transition-transform flex-shrink-0 min-w-0 max-w-full">
                                                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-[#EF3B33] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -497,7 +459,6 @@
                                             </div>
                                         </div>
                                         
-                                        <!-- CTA Button -->
                                         <div class="flex-shrink-0 w-full max-w-full flex justify-center px-1" v-if="!user">
                                             <button
                                                 @click="goToLoginFromWelcome"
@@ -512,9 +473,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Slides 1-3: Popular Products - mobile: layout menyamping (gambar kiri teks kanan) = kotak lebih pendek -->
                                 <div v-else class="relative h-full min-h-[100px] sm:min-h-[250px] flex items-center justify-center p-2 sm:p-6 overflow-hidden" @click="goToProductDetail(slide.data.id)">
-                                    <!-- Background dengan gambar produk atau gradient -->
                                     <div class="absolute inset-0 z-0">
                                         <img 
                                             v-if="slide.data.image_url"
@@ -523,13 +482,10 @@
                                             class="w-full h-full object-cover opacity-20 dark:opacity-10"
                                         />
                                         <div v-else class="w-full h-full bg-gradient-to-br from-[#FDA1A2]/30 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#FDA1A2]/20"></div>
-                                        <!-- Overlay gradient -->
                                         <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/70 dark:from-[#1D1842]/95 dark:via-[#1D1842]/90 dark:to-[#1D1842]/70"></div>
                                     </div>
 
-                                    <!-- Content: mobile = gambar kiri teks kanan (lebih pendek), desktop = sama -->
                                     <div class="relative z-10 w-full max-w-4xl flex flex-row items-center gap-2 sm:gap-4 md:gap-8 pb-7 sm:pb-0">
-                                        <!-- Product Image - kiri (mobile & desktop) -->
                                         <div class="flex-shrink-0 w-14 h-14 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-white dark:bg-[#1D1842] rounded-lg sm:rounded-xl shadow-xl overflow-hidden border-2 sm:border-4 border-white dark:border-[#8E0D3C]/50 transform rotate-1 hover:rotate-0 transition-transform duration-300 cursor-pointer group">
                                             <div v-if="!slide.data.image_url" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#FDA1A2]/20 to-[#EF3B33]/20">
                                                 <svg class="w-6 h-6 sm:w-16 sm:h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -544,12 +500,10 @@
                                             />
                                         </div>
 
-                                        <!-- Text info - kanan, mobile: rata kiri & nama+harga satu baris -->
                                         <div class="text-left flex-1 min-w-0 px-0 flex flex-col justify-center gap-y-1 sm:gap-y-1.5">
                                             <div class="inline-block w-fit px-1.5 py-0.5 sm:px-2 sm:py-0.5 bg-[#EF3B33] text-white text-[9px] sm:text-xs font-bold rounded-full shadow-md">
                                                 ⭐ Produk Terpopuler
                                             </div>
-                                            <!-- Urutan: nama → harga → deskripsi (jarak seragam pakai gap-y) -->
                                             <h2 class="text-xs sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-[#8E0D3C] dark:text-[#FDA1A2] line-clamp-1 drop-shadow-sm">
                                                 {{ slide.data.name }}
                                             </h2>
@@ -559,7 +513,6 @@
                                             <p class="text-gray-700 dark:text-gray-300 text-[10px] sm:text-sm line-clamp-2 max-w-lg leading-tight">
                                                 {{ slide.data.description || 'Dapatkan produk berkualitas ini dengan harga terbaik. Jangan lewatkan penawaran menarik ini!' }}
                                             </p>
-                                            <!-- Tombol lebih kecil dari badge Produk Terpopuler di mobile -->
                                             <button 
                                                 class="bg-[#EF3B33] hover:bg-[#d92f25] text-white font-semibold px-2 py-0.5 sm:px-5 sm:py-2.5 rounded-full shadow-md sm:shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-0.5 sm:gap-1 w-fit text-[9px] sm:text-sm group"
                                             >
@@ -574,7 +527,6 @@
                             </div>
                         </div>
 
-                        <!-- Navigation Buttons (Hidden on mobile, show on hover/desktop) -->
                         <button 
                             @click="prevSlide"
                             class="absolute left-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full bg-white/80 dark:bg-[#1D1842]/80 text-[#8E0D3C] dark:text-[#FDA1A2] shadow-md hover:bg-white dark:hover:bg-[#1D1842] transition-all opacity-0 group-hover:opacity-100 z-20 focus:outline-none"
@@ -594,7 +546,6 @@
                             </svg>
                         </button>
 
-                        <!-- Indicators -->
                         <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-20">
                             <button
                                 v-for="(slide, index) in slides"
@@ -612,7 +563,6 @@
                     </div>
                 </div>
 
-                <!-- Products Grid -->
                 <div class="p-3 sm:p-6 max-w-full overflow-x-hidden">
                     <div v-if="loading" class="text-center py-12">
                         <p class="text-gray-600 dark:text-gray-400">
@@ -640,7 +590,6 @@
                             class="relative bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer flex flex-col h-full"
                             @click="goToProductDetail(product.id)"
                         >
-                            <!-- Product Image -->
                             <div
                                 class="w-full aspect-[3/2] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden"
                             >
@@ -666,7 +615,6 @@
                                 />
                             </div>
 
-                            <!-- Product Info -->
                             <div class="p-2 pb-1 flex flex-col flex-1">
                                 <div>
                                     <p
@@ -759,9 +707,6 @@
             </main>
         </div>
 
-        <!-- Legacy Notification removed -->
-
-        <!-- Login Required Modal -->
         <transition name="modal">
             <div
                 v-if="showLoginModal"
@@ -771,7 +716,6 @@
                 <div
                     class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all modal-content"
                 >
-                    <!-- Card Header -->
                     <div class="bg-[#FDA1A2] rounded-t-2xl p-4 sm:p-6">
                         <div class="flex items-center justify-center mb-2">
                             <div
@@ -789,7 +733,6 @@
                         </h3>
                     </div>
 
-                    <!-- Card Body -->
                     <div class="p-4 sm:p-6 bg-white dark:bg-[#1D1842]">
                         <p
                             class="text-sm sm:text-base text-gray-800 dark:text-gray-200 text-center mb-4 sm:mb-6 leading-relaxed"
@@ -802,7 +745,6 @@
                             sebelum melakukan aksi lebih lanjut.
                         </p>
 
-                        <!-- Action Buttons -->
                         <div class="flex gap-2 sm:gap-3">
                             <button
                                 @click="closeLoginModal"
@@ -819,12 +761,10 @@
                         </div>
                     </div>
 
-                    <!-- Decorative bottom border -->
                     <div class="h-1 bg-[#FDA1A2] rounded-b-2xl"></div>
                 </div>
             </div>
         </transition>
-        <!-- Toast Notification -->
         <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
@@ -832,7 +772,6 @@
             @close="handleToastClose"
         />
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -846,13 +785,10 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
 import axios from "axios";
-import Logo from "../components/Logo.vue";
 import ToastNotification from "../components/ToastNotification.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
-const mobileMenuOpen = ref(false);
 const showMobileSearch = ref(false);
 const products = ref([]);
 const loading = ref(true);
@@ -865,7 +801,6 @@ const showWelcomeCard = ref(true);
 const toast = ref({ visible: false, message: "", type: "success" });
 const confirmModal = ref({ visible: false, title: "", message: "" });
 
-// Cek apakah user kembali dari halaman login (tidak jadi login)
 const checkWelcomeCardVisibility = () => {
     const hideWelcome = sessionStorage.getItem('hideWelcomeCard');
     if (hideWelcome === 'true') {
@@ -873,9 +808,7 @@ const checkWelcomeCardVisibility = () => {
     }
 };
 
-// Fungsi untuk navigasi ke login dari welcome card
 const goToLoginFromWelcome = () => {
-    // Set flag agar saat back, card tidak muncul
     sessionStorage.setItem('hideWelcomeCard', 'true');
     window.location.href = '/login?from=welcome';
 };
@@ -886,9 +819,7 @@ const toggleSidebar = () => {
 
 
 const filteredProducts = computed(() => {
-    if (!searchQuery.value) {
-        return products.value;
-    }
+    if (!searchQuery.value) return products.value;
     const query = searchQuery.value.toLowerCase();
     return products.value.filter((product) => {
         const productName = (product.name || "").toLowerCase();
@@ -922,30 +853,16 @@ const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID").format(price);
 };
 
-const getProductCategory = (name) => {
-    // Simple category extraction from product name
-    const categories = ["Mochi", "Risol", "Pie", "Kue", "Snack"];
-    for (const category of categories) {
-        if (name.toLowerCase().includes(category.toLowerCase())) {
-            return category;
-        }
-    }
-    return "Produk";
-};
-
-// Carousel Logic
 const currentSlide = ref(0);
 const carouselInterval = ref(null);
 const isPaused = ref(false);
 
 const slides = computed(() => {
-    // Slide 0: Welcome Card
     const welcomeSlide = {
         type: 'welcome',
         id: 'welcome-card'
     };
     
-    // Slides 1-3: Popular Products (Take top 3)
     const productSlides = products.value.slice(0, 3).map(product => ({
         type: 'product',
         id: `product-${product.id}`,
@@ -964,12 +881,12 @@ const prevSlide = () => {
 };
 
 const startAutoSlide = () => {
-    stopAutoSlide(); // Ensure no duplicate intervals
+    stopAutoSlide();
     carouselInterval.value = setInterval(() => {
         if (!isPaused.value && slides.value.length > 1) {
             nextSlide();
         }
-    }, 5000); // 5 seconds per slide
+    }, 5000);
 };
 
 const stopAutoSlide = () => {
@@ -990,12 +907,10 @@ const resumeCarousel = () => {
 const getPhotoUrl = (photoUrl) => {
     if (!photoUrl) return null;
     
-    // Jika path tidak diawali dengan /storage/ dan bukan full URL, tambahkan /storage/
     if (!photoUrl.startsWith("/storage/") && !photoUrl.startsWith("http")) {
         photoUrl = "/storage/" + photoUrl;
     }
 
-    // Tambahkan cache busting jika belum ada
     if (photoUrl.includes("?")) {
         return photoUrl.split("?")[0] + "?t=" + Date.now();
     }
@@ -1004,14 +919,11 @@ const getPhotoUrl = (photoUrl) => {
 
 const checkAuth = async () => {
     try {
-        // Tambahkan cache busting untuk memastikan data terbaru
         const response = await axios.get("/api/user", {
             params: { _t: Date.now() },
         });
         user.value = response.data;
     } catch (error) {
-        // 401 adalah expected jika user belum login (halaman landing bisa diakses tanpa login)
-        // Jadi kita tidak perlu log error untuk 401
         if (error.response?.status !== 401) {
             console.error("Error checking auth:", error);
         }
@@ -1034,21 +946,17 @@ const fetchProducts = async () => {
     }
 };
 
-// Simpan product ID yang baru ditambahkan untuk reset quantity setelah toast tertutup
 const lastAddedProductId = ref(null);
 
 const handleToastClose = async () => {
     toast.value.visible = false;
-    // Reset quantity selector ke 0 untuk produk yang baru ditambahkan
     if (lastAddedProductId.value !== null) {
         quantities.value[lastAddedProductId.value] = 0;
         lastAddedProductId.value = null;
     }
     
-    // Fetch cart count lagi setelah toast tertutup untuk memastikan update
     if (user.value) {
         await fetchCartCount();
-        // Pastikan reactivity dengan nextTick
         await nextTick();
     }
 };
@@ -1058,53 +966,27 @@ const handleAddToCart = async (product) => {
         showLoginModal.value = true;
         return;
     }
-
     const quantity = getQuantity(product.id);
-
-    // Validasi: quantity harus lebih dari 0
     if (quantity <= 0) {
         toast.value = { visible: true, message: "Jumlah produk harus lebih dari 0", type: "error" };
         return;
     }
-
-    // Validasi: quantity tidak boleh melebihi stok
     const stock = product.stock || 0;
     if (quantity > stock) {
         toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
         return;
     }
-
-    // Optimistic update: tampilkan toast langsung tanpa menunggu API
     toast.value = { visible: true, message: "Berhasil", type: "success" };
-    
-    // Simpan product ID untuk reset quantity setelah toast tertutup
     lastAddedProductId.value = product.id;
 
     try {
-        // Tambahkan produk ke cart via API
-        await axios.post("/api/cart/add", {
-            product_id: product.id,
-            quantity: quantity,
-        });
-
-        // Fetch cart count untuk update yang akurat (cek apakah produk baru atau update existing)
-        // Cart count hanya bertambah jika produk baru, tidak bertambah jika produk sudah ada
-        // Pastikan fetch dilakukan dan update cartCount
+        await axios.post("/api/cart/add", { product_id: product.id, quantity });
         await fetchCartCount();
-        
-        // Pastikan reactivity dengan nextTick
         await nextTick();
-
-        // Trigger cart update event for other components
         window.dispatchEvent(new CustomEvent("cartUpdated"));
-
     } catch (error) {
         console.error("Error adding to cart:", error);
-        const message =
-            error.response?.data?.message ||
-            "Gagal menambahkan produk ke keranjang";
-        
-        // Tutup toast sukses dan tampilkan error
+        const message = error.response?.data?.message || "Gagal menambahkan produk ke keranjang";
         toast.value = { visible: true, message: message, type: "error" };
     }
 };
@@ -1116,11 +998,8 @@ const fetchCartCount = async () => {
     }
 
     try {
-        const response = await axios.get("/api/cart/count", {
-            params: { _t: Date.now() } // Cache busting untuk memastikan data terbaru
-        });
+        const response = await axios.get("/api/cart/count", { params: { _t: Date.now() } });
         const newCount = response.data?.count ?? 0;
-        // Pastikan update dengan assign langsung
         cartCount.value = newCount;
     } catch (error) {
         console.error("Error fetching cart count:", error);
@@ -1175,7 +1054,6 @@ const handleLogout = () => {
         return;
     }
 
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
@@ -1209,32 +1087,21 @@ const goToLogin = () => {
     window.location.href = "/login";
 };
 
-// Handler untuk update user data (setelah edit profil)
 const handleUserUpdated = async (event) => {
-    // Refresh user data untuk update foto profil
     await checkAuth();
 };
 
 onMounted(async () => {
-    // Cek apakah welcome card harus disembunyikan (user kembali dari login)
     checkWelcomeCardVisibility();
-    
     await checkAuth();
     await fetchProducts();
     await fetchCartCount();
-
-    // Start carousel auto-slide
     startAutoSlide();
-
-    // Listen untuk cart update event
     window.addEventListener("cartUpdated", fetchCartCount);
-
-    // Listen untuk user update event (setelah edit profil)
     window.addEventListener("userUpdated", handleUserUpdated);
 });
 
 onBeforeUnmount(() => {
-    // Stop carousel auto-slide
     stopAutoSlide();
     
     window.removeEventListener("cartUpdated", fetchCartCount);
@@ -1243,8 +1110,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Sidebar sudah menggunakan fixed positioning */
-
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s, transform 0.3s;
@@ -1256,7 +1121,6 @@ onBeforeUnmount(() => {
     transform: translateY(10px);
 }
 
-/* Modal Animation */
 .modal-enter-active {
     transition: opacity 0.3s ease;
 }

@@ -1,14 +1,12 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="flex">
-            <!-- Sidebar -->
             <aside
                 :class="[
                     'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
-                <!-- Logo & Toggle Button -->
                 <div
                     :class="[
                         'p-4 border-b border-[#EF3B33]/30',
@@ -241,19 +239,16 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main
                 :class="[
                     'flex-1 transition-all duration-300',
                     sidebarCollapsed ? 'ml-16' : 'ml-64',
                 ]"
             >
-                <!-- Header -->
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between gap-2 sm:gap-4">
-                        <!-- Greeting -->
                         <div class="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2">
                             <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
@@ -273,7 +268,6 @@
                             </p>
                         </div>
 
-                        <!-- Search Bar (Desktop) -->
                         <div class="hidden md:flex flex-1 max-w-md mx-2 md:mx-2">
                             <div class="relative w-full">
                                 <input
@@ -298,7 +292,6 @@
                             </div>
                         </div>
 
-                        <!-- Search Icon (Mobile only) -->
                         <button
                             v-if="user"
                             @click="showMobileSearch = !showMobileSearch"
@@ -319,7 +312,6 @@
                             </svg>
                         </button>
 
-                        <!-- Cart Icon - Hanya muncul jika user sudah login -->
                         <button
                             v-if="user"
                             @click="handleCart"
@@ -351,7 +343,6 @@
                             </span>
                         </button>
 
-                        <!-- Profile Icon / Login Button -->
                         <button
                             v-if="user"
                             @click="handleProfile"
@@ -386,7 +377,6 @@
                     </div>
                 </header>
 
-                <!-- Mobile Search Bar (Expandable) -->
                 <transition
                     enter-active-class="transition duration-200 ease-out"
                     enter-from-class="transform -translate-y-4 opacity-0"
@@ -424,46 +414,29 @@
                     </div>
                 </transition>
 
-                <!-- Loading -->
                 <div v-if="loading" class="p-4 sm:p-6 text-center">
-                    <p class="text-gray-500 dark:text-gray-400">
-                        Memuat pesanan...
-                    </p>
+                    <p class="text-gray-500 dark:text-gray-400">Memuat pesanan...</p>
                 </div>
 
-                <!-- Orders Sections -->
                 <div v-else class="p-4 sm:p-6 space-y-6 sm:space-y-8">
                     <section
                         v-for="section in sections"
                         :key="section.key"
                         class="space-y-4"
                     >
-                        <h2
-                            class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
-                        >
-                            {{ section.title }}
-                        </h2>
+                        <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">{{ section.title }}</h2>
 
                         <div
                             v-for="orderGroup in getFilteredOrders(section.key)"
                             :key="orderGroup.id"
                             class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-4 md:p-5"
                         >
-                            <!-- Header: Store Name & Status -->
                             <div
                                 class="flex items-start justify-between gap-2 mb-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                             >
                                 <div class="flex-1">
-                                    <p
-                                        class="text-base font-semibold text-gray-700 dark:text-gray-300"
-                                    >
-                                        {{ orderGroup.store }}
-                                    </p>
-                                    <p
-                                        class="text-xs text-gray-500 dark:text-gray-500 mt-1"
-                                    >
-                                        Dari Toko
-                                    </p>
+                                    <p class="text-base font-semibold text-gray-700 dark:text-gray-300">{{ orderGroup.store }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Dari Toko</p>
                                 </div>
                                 <span
                                     :class="[
@@ -475,7 +448,6 @@
                                 </span>
                             </div>
 
-                            <!-- Items List -->
                             <div class="space-y-3 mb-4">
                                 <div
                                     v-for="item in orderGroup.items"
@@ -512,68 +484,35 @@
                                             class="flex flex-col md:flex-row md:items-center md:justify-between gap-2"
                                         >
                                             <div>
-                                                <p
-                                                    class="text-sm text-gray-600 dark:text-gray-400 font-medium"
-                                                >
-                                                    {{ item.product }}
-                                                </p>
-                                                <p
-                                                    class="text-xs text-gray-500 dark:text-gray-500 mt-1"
-                                                >
-                                                    {{ item.category || "" }}
-                                                </p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">{{ item.product }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ item.category || "" }}</p>
                                             </div>
                                             <div
                                                 class="flex flex-col md:items-end text-sm text-gray-700 dark:text-gray-300"
                                             >
                                                 <span>{{ item.qty }} pcs</span>
-                                                <span
-                                                    class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
-                                                    >Rp.
-                                                    {{
-                                                        formatPrice(item.price)
-                                                    }}</span
-                                                >
-                                                <span
-                                                    class="font-semibold text-[#EF3B33] dark:text-[#EF3B33]"
-                                                    >Subtotal: Rp.
-                                                    {{
-                                                        formatPrice(item.total)
-                                                    }}</span
-                                                >
+                                                <span class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Rp. {{ formatPrice(item.price) }}</span>
+                                                <span class="font-semibold text-[#EF3B33] dark:text-[#EF3B33]">Subtotal: Rp. {{ formatPrice(item.total) }}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Total Order -->
                             <div
                                 class="flex justify-end mb-4 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                             >
                                 <div class="text-right">
-                                    <p
-                                        class="text-xs text-gray-500 dark:text-gray-400 mb-1"
-                                    >
-                                        Total Pesanan
-                                    </p>
-                                    <p
-                                        class="text-lg font-bold text-[#EF3B33] dark:text-[#EF3B33]"
-                                    >
-                                        Rp. {{ formatPrice(orderGroup.total) }}
-                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Pesanan</p>
+                                    <p class="text-lg font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(orderGroup.total) }}</p>
                                 </div>
                             </div>
 
-                            <!-- Actions -->
                             <div class="flex flex-wrap gap-3">
-                                <!-- Status Actions -->
                                 <button
                                     v-for="action in orderGroup.actions"
                                     :key="action.label"
-                                    @click="
-                                        handleAction(action.type, orderGroup)
-                                    "
+                                    @click="handleAction(action.type, orderGroup)"
                                     :class="[
                                         'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-150',
                                         action.variant === 'primary'
@@ -584,7 +523,6 @@
                                     {{ action.label }}
                                 </button>
 
-                                <!-- Contact Seller WhatsApp Button -->
                                 <button
                                     @click="contactSellerWhatsApp(orderGroup)"
                                     class="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-full text-sm font-medium shadow-md transition-all duration-150 cursor-pointer hover:shadow-lg active:scale-95 active:shadow-inner"
@@ -620,7 +558,6 @@
             </main>
         </div>
 
-        <!-- Confirm Modal -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -629,7 +566,6 @@
             @cancel="closeConfirmModal"
         />
 
-        <!-- Toast Notification -->
         <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
@@ -645,7 +581,6 @@ import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ToastNotification from "../components/ToastNotification.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const mobileMenuOpen = ref(false);
 const user = ref(null);
@@ -667,14 +602,12 @@ const sections = [
     { key: "riwayat", title: "Riwayat" },
 ];
 
-const orders = ref([]); // Pembelian saja
+const orders = ref([]);
 const loading = ref(true);
 
-// Function untuk mengelompokkan orders berdasarkan transaction_id dan store
 const getGroupedOrders = (status) => {
     const filtered = orders.value.filter((order) => order.status === status);
 
-    // Group by transaction_id dan store
     const grouped = {};
     filtered.forEach((order) => {
         const key = `${order.transaction_id}-${order.store}`;
@@ -701,20 +634,14 @@ const getGroupedOrders = (status) => {
         });
         grouped[key].total += order.total;
     });
-
-    // Convert to array
     return Object.values(grouped);
 };
 
-// Computed untuk filtered orders dengan search
 const getFilteredOrders = (status) => {
     const grouped = getGroupedOrders(status);
-    
-    // Apply search filter jika ada query
     if (!searchQuery.value) {
         return grouped;
     }
-    
     const q = searchQuery.value.toLowerCase().trim();
     return grouped.filter((group) => {
         return (
@@ -791,28 +718,18 @@ const fetchTransactions = async () => {
 
     try {
         loading.value = true;
-
-        // Fetch pembelian (transaksi sebagai pembeli)
         const purchaseResponse = await axios.get("/api/transactions");
         const purchaseTransactions = purchaseResponse.data || [];
-
-        // Map transactions pembelian ke format yang diharapkan oleh UI
         orders.value = purchaseTransactions.flatMap((transaction) => {
-            // Jika transaction punya items, map setiap item
             if (transaction.items && transaction.items.length > 0) {
-                // Filter out items yang product-nya sudah dihapus (null atau undefined)
-                // Pastikan product ada dan punya id
                 return transaction.items.map((item) => {
                     const status = mapTransactionStatus(transaction.status);
                     const actions = getPurchaseActions(status, transaction);
-
-                    // Generate image URL dari image field
                     let imageUrl = null;
                     if (item.product?.image) {
                         imageUrl = `/storage/${item.product.image}`;
                     } else {
-                        // Placeholder image atau null
-                        imageUrl = "/images/placeholder-product.png"; // Pastikan ada atau biarkan null
+                        imageUrl = "/images/placeholder-product.png";
                     }
 
                     return {
@@ -828,7 +745,6 @@ const fetchTransactions = async () => {
                             "Produk Tidak Tersedia (Dihapus)",
                         category: item.product?.description || "",
                         qty: item.qty || 1,
-                        // Prioritaskan harga saat transaksi (item.price), jika tidak ada baru harga produk saat ini
                         price: item.price || item.product?.price || 0,
                         total:
                             (item.price || item.product?.price || 0) *
@@ -839,7 +755,6 @@ const fetchTransactions = async () => {
                     };
                 });
             } else {
-                // Fallback jika tidak ada items
                 const status = mapTransactionStatus(transaction.status);
                 const actions = getPurchaseActions(status, transaction);
 
@@ -897,8 +812,6 @@ const getPurchaseActions = (status, transaction) => {
             variant: "primary",
         });
     }
-    // Hapus tombol "Hubungi Penjual" abu-abu, karena sudah ada tombol WhatsApp hijau
-    // Tambahkan tombol "Tandai Diterima" untuk status dikirim (shipping)
     if (status === "dikirim" || transaction?.status === "shipping" || transaction?.status === "return_requested") {
         if (transaction?.status === 'shipping') {
             actions.push({
@@ -984,7 +897,6 @@ const handleMarkDelivered = (orderGroup) => {
         return;
     }
 
-    // Tampilkan confirm modal dengan onConfirm callback
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Penerimaan",
@@ -997,8 +909,6 @@ const handleMarkDelivered = (orderGroup) => {
                 }
 
                 await axios.post(`/api/transactions/${transactionId}/mark-delivered`);
-
-                // Refresh transactions untuk update status
                 await fetchTransactions();
 
                 toast.value = {
@@ -1029,27 +939,22 @@ const handleContinuePayment = (orderGroup) => {
         return;
     }
 
-    // Cek apakah Midtrans Snap SDK sudah dimuat
     if (window.snap) {
-        // Langsung buka halaman pembayaran Midtrans
         window.snap.pay(snapToken, {
             onSuccess: function (result) {
                 console.log("Payment success:", result);
-                // Refresh halaman untuk update status
                 setTimeout(() => {
                     fetchTransactions();
                 }, 2000);
             },
             onPending: function (result) {
                 console.log("Payment pending:", result);
-                // Refresh halaman untuk update status
                 setTimeout(() => {
                     fetchTransactions();
                 }, 2000);
             },
             onError: function (result) {
                 console.error("Payment error:", result);
-                // Jika error expired, hapus transaksi
                 if (
                     result.status_message &&
                     result.status_message.includes("expired")
@@ -1064,12 +969,10 @@ const handleContinuePayment = (orderGroup) => {
             },
         });
     } else {
-        // Load Midtrans Snap SDK terlebih dahulu
         const script = document.createElement("script");
         script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
         script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
         script.onload = () => {
-            // Setelah SDK dimuat, buka halaman pembayaran
             if (window.snap) {
                 window.snap.pay(snapToken, {
                     onSuccess: function (result) {
@@ -1086,7 +989,6 @@ const handleContinuePayment = (orderGroup) => {
                     },
                     onError: function (result) {
                         console.error("Payment error:", result);
-                        // Jika error expired, hapus transaksi
                         if (
                             result.status_message &&
                             result.status_message.includes("expired")
@@ -1110,20 +1012,15 @@ const deleteExpiredTransaction = async (transactionId) => {
     try {
         await axios.delete(`/api/transactions/${transactionId}`);
         console.log("Expired transaction deleted");
-        // Refresh transaksi list
         await fetchTransactions();
     } catch (error) {
         console.error("Error deleting expired transaction:", error);
     }
 };
 const contactSellerWhatsApp = (orderGroup) => {
-    // Ambil nomor telepon penjual
-    // Path 1: dari transaction.items[0].product.user.phone (struktur normal dari API)
-    // Path 2: dari transaction.user.phone (fallback)
     let phoneNumber = null;
     let sellerName = orderGroup.store || "Penjual";
 
-    // Coba ambil dari transaction.items[0].product.user.phone
     if (
         orderGroup.transaction?.items &&
         orderGroup.transaction.items.length > 0
@@ -1133,7 +1030,6 @@ const contactSellerWhatsApp = (orderGroup) => {
         sellerName = firstItem.product?.user?.name || sellerName;
     }
 
-    // Fallback ke transaction.user.phone jika belum ketemu
     if (!phoneNumber && orderGroup.transaction?.user?.phone) {
         phoneNumber = orderGroup.transaction.user.phone;
         sellerName = orderGroup.transaction.user.name || sellerName;
@@ -1148,30 +1044,24 @@ const contactSellerWhatsApp = (orderGroup) => {
         return;
     }
 
-    // Bersihkan nomor telepon dari karakter non-digit kecuali +
     phoneNumber = phoneNumber.toString().replace(/[^\d+]/g, "");
 
-    // Jika dimulai dengan 0, ganti dengan 62
     if (phoneNumber.startsWith("0")) {
         phoneNumber = "62" + phoneNumber.substring(1);
     }
 
-    // Jika belum ada +, tambahkan
     if (!phoneNumber.startsWith("+")) {
         phoneNumber = "+" + phoneNumber;
     }
 
-    // Buat pesan default dengan detail pesanan
     const orderId = orderGroup.transaction_id || orderGroup.id;
     const itemsList = orderGroup.items
         .map((item) => `- ${item.product} (${item.qty} pcs)`)
         .join("\n");
     const message = `Halo ${sellerName},\n\nSaya ingin menanyakan tentang pesanan saya.\n\nID Pesanan: #${orderId}\nProduk:\n${itemsList}\nTotal: Rp. ${formatPrice(orderGroup.total)}\n\nTerima kasih.`;
 
-    // Encode pesan untuk URL
     const encodedMessage = encodeURIComponent(message);
 
-    // Buka WhatsApp
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, "_blank");
 };
@@ -1206,7 +1096,6 @@ const handleLogout = () => {
         return;
     }
 
-    // Tampilkan confirm modal (tanpa onConfirm, akan dihandle oleh handleConfirm default)
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
@@ -1221,31 +1110,22 @@ const closeConfirmModal = () => {
 };
 
 const handleConfirm = async () => {
-    // Cek apakah ada onConfirm function (untuk action selain logout)
     if (confirmModal.value.onConfirm && typeof confirmModal.value.onConfirm === 'function') {
-        // Simpan onConfirm function sebelum close modal
         const onConfirmFn = confirmModal.value.onConfirm;
-        
-        // Close modal dan reset onConfirm
         confirmModal.value.visible = false;
         confirmModal.value.onConfirm = null;
-        
-        // Jalankan onConfirm (setelah modal ditutup)
         try {
             await onConfirmFn();
         } catch (error) {
             console.error("Error in confirm action:", error);
-            // Error sudah dihandle di onConfirm function masing-masing
         }
     } else {
-        // Default: handle logout (backward compatibility)
         closeConfirmModal();
         try {
             await axios.post("/logout");
             window.location.href = "/";
         } catch (error) {
             console.error("Error logging out:", error);
-            // Tetap redirect meskipun ada error
             window.location.href = "/";
         }
     }
@@ -1253,7 +1133,6 @@ const handleConfirm = async () => {
 
 const getPhotoUrl = (photoUrl) => {
     if (!photoUrl) return null;
-    // Tambahkan cache busting jika belum ada
     if (photoUrl.includes("?")) {
         return photoUrl.split("?")[0] + "?t=" + Date.now();
     }
@@ -1262,7 +1141,6 @@ const getPhotoUrl = (photoUrl) => {
 
 const checkAuth = async () => {
     try {
-        // Tambahkan cache busting untuk memastikan data terbaru
         const response = await axios.get("/api/user", {
             params: { _t: Date.now() },
         });
@@ -1272,9 +1150,7 @@ const checkAuth = async () => {
     }
 };
 
-// Handler untuk update user data (setelah edit profil)
 const handleUserUpdated = async (event) => {
-    // Refresh user data untuk update foto profil
     await checkAuth();
 };
 
@@ -1285,7 +1161,7 @@ const fetchCartCount = async () => {
     }
     try {
         const response = await axios.get("/api/cart/count", {
-            params: { _t: Date.now() }, // Cache busting untuk memastikan data terbaru
+            params: { _t: Date.now() },
         });
         const newCount = response.data?.count ?? 0;
         cartCount.value = newCount;
@@ -1300,10 +1176,8 @@ onMounted(async () => {
     await fetchCartCount();
     await fetchTransactions();
 
-    // Listen untuk cart update event
     window.addEventListener("cartUpdated", fetchCartCount);
 
-    // Load Midtrans Snap SDK untuk tombol "Lanjutkan Pembayaran"
     if (!window.snap) {
         const script = document.createElement("script");
         script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
@@ -1311,7 +1185,6 @@ onMounted(async () => {
         document.head.appendChild(script);
     }
 
-    // Listen untuk user update event (setelah edit profil)
     window.addEventListener("userUpdated", handleUserUpdated);
 });
 

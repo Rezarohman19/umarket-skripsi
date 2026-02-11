@@ -1,14 +1,12 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
-            <!-- Left Sidebar -->
             <aside
                 :class="[
                     'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
-                <!-- Logo & Toggle Button -->
                 <div :class="[
                     'p-4 border-b border-[#EF3B33]/30',
                     sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -52,7 +50,6 @@
                     </button>
                 </div>
 
-                <!-- Navigation -->
                 <nav :class="[
                     'flex-1 space-y-3',
                     sidebarCollapsed ? 'px-2' : 'px-4'
@@ -162,7 +159,6 @@
                     </a>
                 </nav>
 
-                <!-- Logout Button -->
                 <div :class="[
                     'mt-auto border-t border-[#EF3B33]/30',
                     sidebarCollapsed ? 'p-2' : 'p-4'
@@ -200,25 +196,18 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main :class="[
                 'flex-1 transition-all duration-300 overflow-x-hidden',
                 sidebarCollapsed ? 'ml-16' : 'ml-64'
             ]">
-                <!-- Top Header (match user landing page style) -->
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10 w-full max-w-full overflow-hidden"
                 >
                     <div class="flex flex-row items-center justify-between gap-2 sm:gap-0">
-
-                        <!-- Greeting -->
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
-                                Halo, <span class="font-semibold">Admin</span>
-                            </p>
+                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">Halo, <span class="font-semibold">Admin</span></p>
                         </div>
 
-                        <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
                             class="w-7 h-7 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
@@ -252,14 +241,10 @@
                     </div>
                 </header>
 
-                <!-- Dashboard Content -->
                 <div class="p-3 sm:p-6 overflow-x-hidden">
                     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6">
-                        <!-- Main Content Area -->
                         <div class="flex-1 space-y-4 sm:space-y-6 min-w-0">
-                            <!-- Stats Cards -->
                             <div class="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-6">
-                                <!-- Jumlah Pengguna -->
                                 <div
                                     class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-2 sm:p-6"
                                 >
@@ -275,7 +260,6 @@
                                     </p>
                                 </div>
 
-                                <!-- Riwayat Transaksi -->
                                 <div
                                     class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-2 sm:p-6"
                                 >
@@ -295,7 +279,6 @@
                                 </div>
                             </div>
 
-                            <!-- Diagram Penjualan -->
                             <div
                                 class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6"
                             >
@@ -324,7 +307,6 @@
                                             </svg>
                                             <span class="hidden sm:inline">{{ selectedPeriodLabel }}</span>
                                         </button>
-                                        <!-- Dropdown content -->
                                         <div class="absolute right-0 top-full mt-1 bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg shadow-xl z-20 hidden group-hover:block min-w-[120px] overflow-hidden">
                                             <div class="py-1">
                                                 <button @click="changePeriod(7)" class="w-full text-left px-4 py-2 text-xs sm:text-sm hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/10 text-[#1D1842] dark:text-[#FDA1A2]" :class="{'bg-[#FDA1A2]/20 font-bold': selectedPeriod === 7}">7 Hari</button>
@@ -345,7 +327,6 @@
                                 </div>
                             </div>
 
-                            <!-- Produk Populer - Hanya muncul di Mobile, di Desktop akan di sidebar -->
                             <aside
                                 class="lg:hidden bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-6 h-fit"
                             >
@@ -413,7 +394,6 @@
                                 </aside>
                         </div>
 
-                        <!-- Right Sidebar - Produk Populer (Desktop Only) -->
                         <aside
                             class="hidden lg:block w-80 bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 h-fit"
                         >
@@ -484,7 +464,6 @@
             </main>
         </div>
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -499,10 +478,8 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
 import axios from "axios";
 import Chart from "chart.js/auto";
-import Logo from "../components/Logo.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const admin = ref(null);
 
@@ -517,7 +494,6 @@ const popularProducts = ref([]);
 const showAllProducts = ref(false);
 const confirmModal = ref({ visible: false, title: "", message: "" });
 
-// Chart State
 const salesChartCanvas = ref(null);
 let salesChart = null;
 const salesData = ref([]);
@@ -563,11 +539,9 @@ const checkAuth = async () => {
 
 const fetchStats = async () => {
     try {
-        // Fetch jumlah pengguna
         const usersResponse = await axios.get("/api/admin/users");
         stats.value.totalUsers = usersResponse.data?.length || 0;
 
-        // Fetch total transaksi
         const transactionsResponse = await axios.get("/api/admin/transactions");
         const transactions = transactionsResponse.data || [];
         stats.value.totalTransactions = transactions.reduce(
@@ -598,15 +572,12 @@ const fetchSalesData = async () => {
 
 const initChart = () => {
     if (!salesChartCanvas.value) return;
-    
-    // Destroy existing chart if it exists
+
     if (salesChart) {
         salesChart.destroy();
     }
-    
     const ctx = salesChartCanvas.value.getContext('2d');
-    
-    // Group and format data
+
     const labels = salesData.value.map(item => {
         const date = new Date(item.date);
         return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
@@ -698,7 +669,6 @@ const handleProfile = () => {
 };
 
 const handleLogout = () => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
@@ -718,7 +688,6 @@ const handleConfirmLogout = async () => {
         window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
         window.location.href = "/";
     }
 };

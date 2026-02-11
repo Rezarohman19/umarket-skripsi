@@ -1,14 +1,12 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
-            <!-- Left Sidebar -->
             <aside
                 :class="[
                     'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
-                <!-- Logo & Toggle Button -->
                 <div :class="[
                     'p-4 border-b border-[#EF3B33]/30',
                     sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -52,7 +50,6 @@
                     </button>
                 </div>
 
-                <!-- Navigation -->
                 <nav :class="[
                     'flex-1 space-y-3',
                     sidebarCollapsed ? 'px-2' : 'px-4'
@@ -162,7 +159,6 @@
                     </a>
                 </nav>
 
-                <!-- Logout Button -->
                 <div :class="[
                     'mt-auto border-t border-[#EF3B33]/30',
                     sidebarCollapsed ? 'p-2' : 'p-4'
@@ -200,24 +196,18 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main :class="[
                 'flex-1 transition-all duration-300 overflow-x-hidden',
                 sidebarCollapsed ? 'ml-16' : 'ml-64'
             ]">
-                <!-- Top Header (same style as dashboard) -->
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10 w-full max-w-full overflow-hidden"
                 >
                     <div class="flex flex-row items-center justify-between gap-2 sm:gap-0">
-                        <!-- Greeting -->
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
-                                Halo, <span class="font-semibold">Admin</span>
-                            </p>
+                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">Halo, <span class="font-semibold">Admin</span></p>
                         </div>
 
-                        <!-- Search Bar -->
                         <div class="flex-1 max-w-md w-full sm:w-auto mx-0 sm:mx-4 min-w-0">
                             <div class="relative">
                                 <input
@@ -242,7 +232,6 @@
                             </div>
                         </div>
 
-                        <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
                             class="w-7 h-7 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
@@ -276,14 +265,9 @@
                     </div>
                 </header>
 
-                <!-- Users Table -->
                 <div class="p-3 sm:p-6 overflow-x-hidden">
                     <div class="flex flex-row items-center justify-between gap-2 sm:gap-0 mb-4">
-                        <h2
-                            class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
-                        >
-                            Daftar Pengguna
-                        </h2>
+                        <h2 class="text-sm sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">Daftar Pengguna</h2>
                         <button
                             @click="openCreateModal"
                             class="px-2 sm:px-4 py-1.5 sm:py-2 bg-[#EF3B33] text-white rounded-lg text-xs sm:text-sm font-medium shadow cursor-pointer hover:bg-[#d92f25] transition active:scale-95 whitespace-nowrap"
@@ -430,7 +414,6 @@
                     </div>
                 </div>
 
-                <!-- Modal Tambah / Edit Pengguna -->
                 <div
                     v-if="showModal"
                     class="fixed inset-0 z-20 flex items-center justify-center bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm p-3 sm:p-4"
@@ -525,7 +508,6 @@
             </main>
         </div>
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -534,7 +516,6 @@
             @cancel="closeConfirmModal"
         />
 
-        <!-- Confirm Modal untuk Hapus Pengguna -->
         <ConfirmModal
             :visible="deleteConfirm.visible"
             :title="deleteConfirm.title"
@@ -543,7 +524,6 @@
             @cancel="closeDeleteConfirm"
         />
 
-        <!-- Toast notifikasi -->
         <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
@@ -557,11 +537,9 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
-import Logo from "../components/Logo.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ToastNotification from "../components/ToastNotification.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const searchQuery = ref("");
 const admin = ref(null);
@@ -665,13 +643,11 @@ const closeModal = () => {
 const saveUser = async () => {
     try {
         if (editingUser.value) {
-            // Update user
             await axios.post(
                 `/api/admin/users/${editingUser.value.id}`,
                 form.value
             );
         } else {
-            // Create user
             await axios.post("/api/admin/users", form.value);
         }
 
@@ -736,7 +712,6 @@ const handleConfirmDelete = async () => {
 };
 
 const handleLogout = () => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
@@ -750,13 +725,11 @@ const closeConfirmModal = () => {
 
 const handleConfirmLogout = async () => {
     closeConfirmModal();
-    
     try {
         await axios.post("/logout");
         window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
         window.location.href = "/";
     }
 };

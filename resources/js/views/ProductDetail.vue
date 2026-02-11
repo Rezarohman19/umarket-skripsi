@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
         <div class="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
-            <!-- Back Button -->
             <button
                 @click="goBack"
                 class="mb-6 flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2]"
@@ -22,14 +21,12 @@
                 <span>Kembali</span>
             </button>
 
-            <!-- Loading -->
             <div v-if="loading" class="text-center py-12">
                 <p class="text-[#1D1842] dark:text-[#FDA1A2]">
                     Memuat detail produk...
                 </p>
             </div>
 
-            <!-- Product Not Found -->
             <div v-else-if="!product" class="text-center py-12">
                 <svg
                     class="w-24 h-24 mx-auto text-gray-400 mb-4"
@@ -55,13 +52,11 @@
                 </button>
             </div>
 
-            <!-- Product Detail -->
             <div
                 v-else
                 class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg overflow-hidden"
             >
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
-                    <!-- Product Image -->
                     <div class="w-full">
                         <div
                             class="w-full h-64 sm:h-80 md:h-96 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-xl flex items-center justify-center overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
@@ -89,10 +84,8 @@
                         </div>
                     </div>
 
-                    <!-- Product Info -->
                     <div class="flex flex-col justify-between">
                         <div>
-                            <!-- Store Name -->
                             <p
                                 @click="goToStore(product.user_id || product.user?.id)"
                                 class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33] mb-2 hover:text-[#d92f25] cursor-pointer transition-colors inline-block"
@@ -100,59 +93,22 @@
                                 {{ product.store_name || product.user?.name || "Toko" }}
                             </p>
 
-                            <!-- Product Name -->
-                            <h1
-                                class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4"
-                            >
-                                {{ product.name }}
-                            </h1>
+                            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ product.name }}</h1>
 
-                            <!-- Category -->
-                            <p
-                                class="text-sm text-gray-500 dark:text-gray-400 mb-4"
-                            >
-                                {{
-                                    product.category?.name ||
-                                    product.description ||
-                                    "Tidak ada kategori"
-                                }}
-                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ product.category?.name || product.description || "Tidak ada kategori" }}</p>
 
-                            <!-- Price -->
                             <div class="mb-6">
-                                <p
-                                    class="text-3xl sm:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]"
-                                >
-                                    Rp. {{ formatPrice(product.price) }}
-                                </p>
-                                <p
-                                    class="text-sm text-gray-500 dark:text-gray-400 mt-1"
-                                >
-                                    Stok: {{ product.stock }} pcs
-                                </p>
+                                <p class="text-3xl sm:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(product.price) }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Stok: {{ product.stock }} pcs</p>
                             </div>
 
-                            <!-- Description -->
                             <div class="mb-6">
-                                <h3
-                                    class="text-lg font-semibold text-gray-900 dark:text-white mb-2"
-                                >
-                                    Deskripsi Produk
-                                </h3>
-                                <p
-                                    class="text-gray-700 dark:text-gray-300 leading-relaxed"
-                                >
-                                    {{
-                                        product.description ||
-                                        "Tidak ada deskripsi produk"
-                                    }}
-                                </p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Deskripsi Produk</h3>
+                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ product.description || "Tidak ada deskripsi produk" }}</p>
                             </div>
                         </div>
 
-                        <!-- Quantity Selector & Actions -->
                         <div class="space-y-4">
-                            <!-- Quantity Selector -->
                             <div class="flex items-center gap-2 sm:gap-3">
                                 <label
                                     class="text-xs sm:text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]"
@@ -207,7 +163,6 @@
                                 </div>
                             </div>
 
-                            <!-- Action Buttons -->
                             <div class="flex flex-row gap-2 sm:gap-3">
                                 <button
                                     @click="handleAddToCart"
@@ -230,7 +185,6 @@
         </div>
     </div>
 
-        <!-- Toast Notification -->
         <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
@@ -238,7 +192,6 @@
             @close="handleToastClose"
         />
 
-        <!-- Login Modal -->
         <transition name="modal">
             <div
                 v-if="showLoginModal"
@@ -248,7 +201,6 @@
                 <div
                     class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all modal-content"
                 >
-                    <!-- Card Header -->
                     <div class="bg-[#FDA1A2] rounded-t-2xl p-4 sm:p-6">
                         <div class="flex items-center justify-center mb-2">
                             <div
@@ -266,7 +218,6 @@
                         </h3>
                     </div>
 
-                    <!-- Card Body -->
                     <div class="p-4 sm:p-6 bg-white dark:bg-[#1D1842]">
                         <p class="text-sm sm:text-base text-gray-800 dark:text-gray-200 text-center mb-4 sm:mb-6 leading-relaxed">
                             Anda perlu login untuk menambahkan produk ke
@@ -288,7 +239,6 @@
                         </div>
                     </div>
 
-                    <!-- Decorative bottom border -->
                     <div class="h-1 bg-[#FDA1A2] rounded-b-2xl"></div>
                 </div>
             </div>
@@ -300,7 +250,6 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification.vue";
-// Get product ID from URL
 const getProductId = () => {
     const path = window.location.pathname;
     const parts = path.split("/");
@@ -345,7 +294,6 @@ const fetchProduct = async () => {
         loading.value = true;
         const productId = getProductId();
 
-        // Ambil produk dari API
         const response = await axios.get(`/api/products/${productId}`);
         product.value = response.data;
     } catch (error) {
@@ -370,7 +318,6 @@ const decreaseQuantity = () => {
 
 const handleToastClose = () => {
     toast.value.visible = false;
-    // Reset quantity selector ke 0 setelah toast tertutup
     quantity.value = 0;
 };
 
@@ -382,33 +329,27 @@ const handleAddToCart = async () => {
 
     if (!product.value) return;
 
-    // Validasi: quantity harus lebih dari 0
     if (quantity.value <= 0) {
         toast.value = { visible: true, message: "Jumlah produk harus lebih dari 0", type: "error" };
         return;
     }
 
-    // Validasi: quantity tidak boleh melebihi stok
     const stock = product.value.stock || 0;
     if (quantity.value > stock) {
         toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
         return;
     }
 
-    // Optimistic update: tampilkan toast langsung tanpa menunggu API
     toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
 
     try {
-        // Tambahkan produk ke cart via API
         await axios.post("/api/cart/add", {
             product_id: product.value.id,
             quantity: quantity.value,
         });
 
-        // Trigger cart update event untuk update cart count di halaman lain
         window.dispatchEvent(new CustomEvent("cartUpdated"));
 
-        // Reset quantity setelah toast tertutup (auto close setelah 3 detik)
         setTimeout(() => {
             quantity.value = 0;
         }, 3000);
@@ -417,7 +358,6 @@ const handleAddToCart = async () => {
         const message = "Gagal menambahkan produk ke keranjang: " +
             (error.response?.data?.message || error.message);
         
-        // Tutup toast sukses dan tampilkan error
         toast.value = { visible: true, message: message, type: "error" };
     }
 };
@@ -430,13 +370,11 @@ const handleCheckout = async () => {
 
     if (!product.value) return;
 
-    // Validasi: quantity harus lebih dari 0
     if (quantity.value <= 0) {
         toast.value = { visible: true, message: "Jumlah produk harus lebih dari 0", type: "error" };
         return;
     }
 
-    // Validasi: quantity tidak boleh melebihi stok
     const stock = product.value.stock || 0;
     if (quantity.value > stock) {
         toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
@@ -444,16 +382,13 @@ const handleCheckout = async () => {
     }
 
     try {
-        // Tambahkan ke cart dulu
         await axios.post("/api/cart/add", {
             product_id: product.value.id,
             quantity: quantity.value,
         });
 
-        // Trigger cart update event
         window.dispatchEvent(new CustomEvent("cartUpdated"));
 
-        // Redirect ke cart untuk checkout
         window.location.href = "/cart";
     } catch (error) {
         console.error("Error adding to cart:", error);

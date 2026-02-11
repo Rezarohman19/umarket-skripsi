@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] py-12 px-4">
         <div class="max-w-3xl mx-auto">
-            <!-- Success Icon & Header -->
             <div class="text-center mb-8">
                 <div class="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-12 h-12 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,10 +19,8 @@
                 <p class="text-[#1D1842] dark:text-[#FDA1A2]">Memuat detail pesanan...</p>
             </div>
 
-            <!-- Orders List -->
             <div v-else-if="confirmedOrders.length > 0">
                 <div v-for="(order, index) in confirmedOrders" :key="order.id" class="mb-8 bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg overflow-hidden">
-                    <!-- Order Header / Store Name -->
                     <div class="bg-[#FDA1A2]/10 dark:bg-[#8E0D3C]/10 px-6 py-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30 flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <div class="bg-white dark:bg-[#1D1842] p-2 rounded-full shadow-sm">
@@ -39,11 +36,11 @@
                             </div>
                         </div>
                         <div class="text-right">
-                             <span :class="[
+                            <span :class="[
                                 'px-3 py-1 rounded-full text-xs font-medium',
                                 order.status === 'paid' || order.status === 'settlement' || order.status === 'shipping' || order.status === 'completed'
                                     ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                                    : 'bg-[#FDA1A2]/30 dark:bg-[#EF3B33]/20 text-[#8E0D3C] dark:text-[#FDA1A2]'
+                                    : 'bg-[#FDA1A2]/30 dark:bg-[#EF3B33]/20 text-[#8E0D3C] dark:text-[#FDA1A2]',
                             ]">
                                 {{ getPaymentStatusLabel(order.status) }}
                             </span>
@@ -51,7 +48,6 @@
                     </div>
 
                     <div class="p-6">
-                        <!-- Order Details Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="space-y-3">
                                 <div class="flex justify-between text-sm">
@@ -65,8 +61,8 @@
                             </div>
                             <div class="space-y-3">
                                 <div class="flex justify-between text-sm" v-if="order.shippingAddress">
-                                     <span class="text-gray-600 dark:text-gray-400">Penerima</span>
-                                     <span class="font-medium text-[#1D1842] dark:text-[#FDA1A2] text-right truncate ml-4">{{ order.shippingAddress.name }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400">Penerima</span>
+                                    <span class="font-medium text-[#1D1842] dark:text-[#FDA1A2] text-right truncate ml-4">{{ order.shippingAddress.name }}</span>
                                 </div>
                                 <div class="flex justify-between text-sm border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30 pt-2 mt-2">
                                     <span class="font-bold text-[#1D1842] dark:text-[#FDA1A2]">Total</span>
@@ -75,16 +71,14 @@
                             </div>
                         </div>
 
-                        <!-- Order Items -->
                         <div>
-                             <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Produk</h3>
-                             <div class="space-y-4">
+                            <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Produk</h3>
+                            <div class="space-y-4">
                                 <div
                                     v-for="(item, idx) in order.items"
                                     :key="idx"
                                     class="flex items-start gap-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30 last:border-0 last:pb-0"
                                 >
-                                    <!-- Product Image -->
                                     <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-700">
                                         <img
                                             v-if="item.image_url"
@@ -107,11 +101,10 @@
                                         </div>
                                     </div>
                                 </div>
-                             </div>
+                            </div>
                         </div>
 
-                        <!-- Action Button (Payment) per Order -->
-                         <div v-if="order.status === 'pending' && order.snapToken" class="mt-6 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30">
+                        <div v-if="order.status === 'pending' && order.snapToken" class="mt-6 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30">
                             <button
                                 @click="handlePaymentClick(order)"
                                 :disabled="isProcessingPayment === order.id"
@@ -120,18 +113,16 @@
                                 <span v-if="isProcessingPayment === order.id" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                                 <span v-else>Lanjutkan Pembayaran</span>
                             </button>
-                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Empty State -->
             <div v-else class="text-center py-12 bg-white dark:bg-[#1D1842] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                 <p class="text-gray-600 dark:text-gray-400">Data pesanan tidak ditemukan.</p>
                 <button @click="goToOrders" class="mt-4 text-[#EF3B33] font-medium hover:underline">Lihat Riwayat Pesanan</button>
             </div>
 
-            <!-- Global Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 mt-8">
                 <button
                     @click="goToOrders"
@@ -147,9 +138,8 @@
                 </button>
             </div>
 
-            <!-- Info Box -->
             <div class="mt-6 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg p-4 flex gap-3">
-                 <svg class="w-5 h-5 text-[#EF3B33] dark:text-[#FDA1A2] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-[#EF3B33] dark:text-[#FDA1A2] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
@@ -167,8 +157,7 @@ import axios from 'axios';
 
 const loading = ref(true);
 const confirmedOrders = ref([]);
-const isProcessingPayment = ref(null); // store ID of order currently processing
-
+const isProcessingPayment = ref(null);
 const formatPrice = (price) => new Intl.NumberFormat('id-ID').format(price);
 
 const getPaymentMethodLabel = (method) => {
@@ -176,7 +165,7 @@ const getPaymentMethodLabel = (method) => {
         'bank_transfer': 'Transfer Bank',
         'e_wallet': 'E-Wallet',
         'cod': 'Bayar di Tempat',
-        'midtrans': 'Midtrans Payment'
+        'midtrans': 'Midtrans Payment',
     };
     return methodMap[method] || method;
 };
@@ -190,18 +179,13 @@ const getPaymentStatusLabel = (status) => {
         'unpaid': 'Belum Dibayar',
         'failed': 'Gagal',
         'shipping': 'Dikirim',
-        'completed': 'Selesai'
+        'completed': 'Selesai',
     };
     return statusMap[status] || status;
 };
 
-const goToOrders = () => {
-    window.location.href = '/orders';
-};
-
-const goToHome = () => {
-    window.location.href = '/';
-};
+const goToOrders = () => (window.location.href = '/orders');
+const goToHome = () => (window.location.href = '/');
 
 const handlePaymentClick = (order) => {
     if (order.snapToken && window.snap) {
@@ -238,11 +222,8 @@ const fetchOrderData = async () => {
     try {
         loading.value = true;
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // Support multiple IDs (comma separated) or single ID
         const idsParam = urlParams.get('transaction_ids');
         const singleIdParam = urlParams.get('transaction_id') || urlParams.get('id');
-        
         let targetIds = [];
         if (idsParam) {
             targetIds = idsParam.split(',').filter(id => id);
@@ -250,87 +231,72 @@ const fetchOrderData = async () => {
         if (singleIdParam && !targetIds.includes(singleIdParam)) {
             targetIds.push(singleIdParam);
         }
-        
-        // Remove duplicates
         targetIds = [...new Set(targetIds)];
 
         if (targetIds.length > 0) {
-            // Fetch transactions
             const response = await axios.get(`/api/transactions`);
             const allTransactions = response.data || [];
-            
-            // Filter transactions that match targetIds
-            // Ensure type comparison is safe (string vs number)
             const matchingTransactions = allTransactions.filter(t => targetIds.some(id => id == t.id));
-            
             if (matchingTransactions.length > 0) {
                 confirmedOrders.value = matchingTransactions.map(t => {
-                    // Extract items
-                     const items = (t.items || []).map(item => ({
+                    const items = (t.items || []).map(item => ({
                         product_name: item.product?.name || 'Produk',
                         product_description: item.product?.description || '',
                         qty: item.qty || 1,
                         price: item.price || item.product?.price || 0,
                         image_url: item.product?.image_url || null,
                     }));
-
-                    // Extract shipping address
                     let address = null;
                     if (t.shipping_address) {
                         try {
-                             address = typeof t.shipping_address === 'string' 
-                            ? JSON.parse(t.shipping_address)
-                            : t.shipping_address;
+                            address = typeof t.shipping_address === 'string' ? JSON.parse(t.shipping_address) : t.shipping_address;
                         } catch (e) {
-                             address = {
+                            address = {
                                 address: t.shipping_address,
                                 name: t.shipping_name || '',
-                                phone: t.shipping_phone || ''
+                                phone: t.shipping_phone || '',
                             };
                         }
                     } else if (t.shipping_name) {
                         address = {
                             name: t.shipping_name,
                             phone: t.shipping_phone || '',
-                            address: t.shipping_address || ''
+                            address: t.shipping_address || '',
                         };
                     }
-
-                    // Extract store name from first item's product user, or fallback
                     let storeName = t.store_name || 'Toko';
                     if (!t.store_name && t.items && t.items.length > 0) {
-                        // The items.product.user relation is loaded in TransactionController index()
-                        // 'items.product.user:id,name,phone'
                         storeName = t.items[0].product?.user?.name || 'Toko';
                     }
 
                     return {
                         id: t.id,
                         orderId: t.order_id || `ORDER-${t.id}`,
-                        date: t.created_at ? new Date(t.created_at).toLocaleDateString('id-ID', {
-                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                        }) : '',
+                        date: t.created_at
+                            ? new Date(t.created_at).toLocaleDateString('id-ID', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                              })
+                            : '',
                         totalPrice: t.total_price || 0,
                         paymentMethod: t.payment_method || 'midtrans',
                         status: t.status || 'pending',
                         snapToken: t.snap_token || '',
                         storeName: storeName,
                         items: items,
-                        shippingAddress: address
+                        shippingAddress: address,
                     };
                 });
             }
         } else {
-            // Fallback to localStorage if no URL params
             const savedData = localStorage.getItem('order_confirmation');
             if (savedData) {
-                // Determine if savedData is single object or array
-                // The old code saved a single object. We'll wrap it in array.
                 const data = JSON.parse(savedData);
                 if (data) {
-                    // Start transforming old format to new format if needed
-                    // But assume old format is basically one 'order' object
-                     confirmedOrders.value = [{
+                    confirmedOrders.value = [{
                         id: data.transactionId,
                         orderId: data.orderId,
                         date: data.orderDate,
@@ -338,16 +304,11 @@ const fetchOrderData = async () => {
                         paymentMethod: data.paymentMethod,
                         status: data.paymentStatus,
                         snapToken: data.snapToken,
-                        storeName: 'Toko', // Old format might not have store name, fallback
+                        storeName: 'Toko',
                         items: data.orderItems || [],
-                        shippingAddress: data.shippingAddress
+                        shippingAddress: data.shippingAddress,
                      }];
-                     
-                     // Helper: try to find store name from items if missing
-                     if (confirmedOrders.value[0].items.length > 0 && confirmedOrders.value[0].items[0].store_name) {
-                         confirmedOrders.value[0].storeName = confirmedOrders.value[0].items[0].store_name;
-                     }
-                     
+                    if (confirmedOrders.value[0].items.length > 0 && confirmedOrders.value[0].items[0].store_name) confirmedOrders.value[0].storeName = confirmedOrders.value[0].items[0].store_name;
                     localStorage.removeItem('order_confirmation');
                 }
             }
@@ -360,14 +321,12 @@ const fetchOrderData = async () => {
 };
 
 onMounted(() => {
-    // Load Midtrans Snap SDK
     if (!window.snap) {
         const script = document.createElement('script');
         script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
         script.setAttribute('data-client-key', 'Mid-client-t4gCXBa6b1_ar6Ji');
         document.head.appendChild(script);
     }
-    
     fetchOrderData();
 });
 </script>

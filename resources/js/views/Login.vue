@@ -3,7 +3,6 @@
         class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] flex items-center justify-center p-3 sm:p-4"
     >
         <div class="w-full max-w-md">
-            <!-- Logo Container (klik untuk kembali ke landing page) -->
             <div class="flex justify-center mb-8">
                 <button @click="goToLanding" class="cursor-pointer hover:opacity-80 transition-opacity">
                     <img
@@ -14,11 +13,9 @@
                 </button>
             </div>
 
-            <!-- Login Card -->
             <div
                 class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-6 sm:p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30"
             >
-                <!-- Title -->
                 <div class="text-center mb-8">
                     <h1
                         class="text-2xl sm:text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2"
@@ -30,7 +27,6 @@
                     </p>
                 </div>
 
-                <!-- Error Message dari Laravel -->
                 <div
                     v-if="laravelErrors.email"
                     class="mb-6 p-4 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 border border-[#EF3B33]/40 dark:border-[#EF3B33]/40 rounded-lg"
@@ -40,7 +36,6 @@
                     </p>
                 </div>
 
-                <!-- Success Message -->
                 <div
                     v-if="success"
                     class="mb-6 p-4 bg-[#FDA1A2]/20 dark:bg-[#FDA1A2]/20 border border-[#FDA1A2]/40 dark:border-[#FDA1A2]/40 rounded-lg"
@@ -50,9 +45,7 @@
                     </p>
                 </div>
 
-                <!-- Login Form - Form submission tradisional Laravel -->
                 <form method="POST" action="/login" class="space-y-6">
-                    <!-- Email Input -->
                     <div>
                         <label
                             for="email"
@@ -96,7 +89,6 @@
                         </p>
                     </div>
 
-                    <!-- Password Input -->
                     <div>
                         <label
                             for="password"
@@ -119,7 +111,6 @@
                                 @click="showPassword = !showPassword"
                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                             >
-                                <!-- Eye Off Icon (password visible) -->
                                 <svg
                                     v-if="showPassword"
                                     class="w-5 h-5"
@@ -135,7 +126,6 @@
                                         d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
                                     />
                                 </svg>
-                                <!-- Eye Icon (password hidden) -->
                                 <svg
                                     v-else
                                     class="w-5 h-5"
@@ -167,7 +157,6 @@
                         </p>
                     </div>
 
-                    <!-- Forgot Password & Remember Me -->
                     <div class="flex items-center justify-between">
                         <a
                             href="forgot-password"
@@ -190,10 +179,8 @@
                         </label>
                     </div>
 
-                    <!-- CSRF Token (Laravel membutuhkan ini) -->
                     <input type="hidden" name="_token" :value="csrfToken" />
 
-                    <!-- Submit Button -->
                     <button
                         type="submit"
                         class="w-full bg-[#8E0D3C] dark:bg-[#8E0D3C] text-white font-semibold py-3.5 px-4 rounded-xl shadow-md shadow-[#8E0D3C]/20 dark:shadow-[#8E0D3C]/20 flex items-center justify-center"
@@ -215,7 +202,6 @@
                     </button>
                 </form>
 
-                <!-- Register Link -->
                 <div class="mt-6 text-center">
                     <p class="text-sm text-gray-700 dark:text-gray-400">
                         Belum Punya Akun?
@@ -243,45 +229,34 @@ const laravelErrors = reactive({
     password: "",
 });
 
-// Get CSRF token from meta tag dan error dari Laravel
 onMounted(() => {
     const token = document.head.querySelector('meta[name="csrf-token"]');
     if (token) {
         csrfToken.value = token.content;
     }
 
-    // Cek apakah ada error dari Laravel
     const errorElement = document.getElementById("laravel-errors");
     if (errorElement) {
         const errorText = errorElement.textContent.trim();
         if (errorText) {
             laravelErrors.email = errorText;
-            // Hapus element setelah diambil
             errorElement.remove();
         }
     }
 
-    // Cek apakah ada success message dari Laravel (setelah redirect dari register)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("registered") === "success") {
         success.value = "Registrasi berhasil! Silakan masuk dengan akun Anda.";
     }
 });
 
-const handleForgotPassword = () => {
-    window.location.href = '/forgot-password';
-};
-
-// Kembali ke landing page dan reset flag welcome card
 const goToLanding = () => {
-    // Hapus flag agar welcome card muncul kembali
     sessionStorage.removeItem('hideWelcomeCard');
     window.location.href = '/';
 };
 </script>
 
 <style scoped>
-/* Custom animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -297,7 +272,6 @@ const goToLanding = () => {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* Override browser autofill styling */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -307,7 +281,6 @@ input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Dark mode autofill */
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,

@@ -1,11 +1,7 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] py-6 px-4 sm:px-6">
         <div class="max-w-4xl mx-auto space-y-6">
-            <!-- Back -->
-            <div
-                class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer"
-                @click="goBack"
-            >
+            <div class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer" @click="goBack">
                 <svg
                     class="w-5 h-5"
                     fill="none"
@@ -22,12 +18,10 @@
                 <span>Kembali</span>
             </div>
 
-            <!-- Profile Card -->
             <div
                 class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
             >
                 <div class="flex flex-col items-center space-y-3 relative">
-                    <!-- Foto Profil -->
                     <div
                         class="w-20 h-20 rounded-full overflow-hidden bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/30 flex items-center justify-center text-[#8E0D3C] dark:text-[#FDA1A2] text-sm border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
                     >
@@ -40,7 +34,6 @@
                         <span v-else>Foto</span>
                     </div>
 
-                    <!-- Teks Edit (Hanya muncul saat mode editing) -->
                     <button
                         v-if="isEditing"
                         data-edit-button
@@ -50,7 +43,6 @@
                         Edit
                     </button>
 
-                    <!-- Card Menu Edit Foto (Muncul saat klik Edit) -->
                     <div
                         v-if="showPhotoMenu && isEditing"
                         data-photo-menu
@@ -80,7 +72,6 @@
                 <div
                     class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-sm"
                 >
-                    <!-- Nama -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Nama</span
@@ -97,7 +88,6 @@
                         }}</span>
                     </div>
 
-                    <!-- Email -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Email</span
@@ -114,7 +104,6 @@
                         }}</span>
                     </div>
 
-                    <!-- Telepon -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Telepon</span
@@ -131,7 +120,6 @@
                         }}</span>
                     </div>
 
-                    <!-- Password -->
                     <div class="flex items-start sm:items-center gap-2">
                         <span class="text-[#1D1842] dark:text-[#FDA1A2] w-32"
                             >Password</span
@@ -289,14 +277,12 @@ const saveProfile = async () => {
         imagePreview.value = photoUrl || null;
         isEditing.value = false;
 
-        // Trigger event untuk refresh data user di halaman lain
         window.dispatchEvent(
             new CustomEvent("userUpdated", {
                 detail: { user: updatedUser, photoUrl: photoUrl },
             })
         );
 
-        // Reload untuk update foto di semua halaman admin
         setTimeout(() => {
             window.location.reload();
         }, 1500);
@@ -322,7 +308,6 @@ const removePhoto = () => {
     showPhotoMenu.value = false;
 };
 
-// Tutup menu foto saat klik di luar
 const handleClickOutside = (event) => {
     const target = event.target;
     const photoMenu = document.querySelector("[data-photo-menu]");

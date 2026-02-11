@@ -1,14 +1,12 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
-            <!-- Left Sidebar -->
             <aside
                 :class="[
                     'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
-                <!-- Logo & Toggle Button -->
                 <div :class="[
                     'p-4 border-b border-[#EF3B33]/30',
                     sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -52,7 +50,6 @@
                     </button>
                 </div>
 
-                <!-- Navigation -->
                 <nav :class="[
                     'flex-1 space-y-3',
                     sidebarCollapsed ? 'px-2' : 'px-4'
@@ -162,7 +159,6 @@
                     </a>
                 </nav>
 
-                <!-- Logout Button -->
                 <div :class="[
                     'mt-auto border-t border-[#EF3B33]/30',
                     sidebarCollapsed ? 'p-2' : 'p-4'
@@ -200,24 +196,18 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main :class="[
                 'flex-1 transition-all duration-300 overflow-x-hidden',
                 sidebarCollapsed ? 'ml-16' : 'ml-64'
             ]">
-                <!-- Top Header (same style as dashboard) -->
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10 w-full max-w-full overflow-hidden"
                 >
                     <div class="flex flex-row items-center justify-between gap-2 sm:gap-0">
-                        <!-- Greeting -->
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">
-                                Halo, <span class="font-semibold">Admin</span>
-                            </p>
+                            <p class="text-xs sm:text-base text-[#1D1842] dark:text-[#FDA1A2]">Halo, <span class="font-semibold">Admin</span></p>
                         </div>
 
-                        <!-- Search Bar -->
                         <div class="flex-1 max-w-md w-full sm:w-auto mx-0 sm:mx-4 min-w-0">
                             <div class="relative">
                                 <input
@@ -242,7 +232,6 @@
                             </div>
                         </div>
 
-                        <!-- Profile Icon -->
                         <button
                             @click="handleProfile"
                             class="w-7 h-7 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center border-2 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 flex-shrink-0 cursor-pointer hover:border-[#FDA1A2]/60 dark:hover:border-[#8E0D3C]/60 transition active:scale-95"
@@ -276,13 +265,8 @@
                     </div>
                 </header>
 
-                <!-- Sales Table -->
                 <div class="p-3 sm:p-6 overflow-x-hidden">
-                    <h2
-                        class="text-base sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4"
-                    >
-                        Riwayat Penjualan
-                    </h2>
+                    <h2 class="text-base sm:text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-4">Riwayat Penjualan</h2>
 
                     <div
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm overflow-hidden"
@@ -293,31 +277,11 @@
                                     class="bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2]"
                                 >
                                     <tr>
-                                        <th
-                                            class="px-4 py-3 text-left font-semibold"
-                                        >
-                                            Nama Pembeli
-                                        </th>
-                                        <th
-                                            class="px-4 py-3 text-center font-semibold"
-                                        >
-                                            Produk Terjual
-                                        </th>
-                                        <th
-                                            class="px-4 py-3 text-right font-semibold"
-                                        >
-                                            Pemasukan
-                                        </th>
-                                        <th
-                                            class="px-4 py-3 text-center font-semibold"
-                                        >
-                                            Status
-                                        </th>
-                                        <th
-                                            class="px-4 py-3 text-center font-semibold"
-                                        >
-                                            Aksi
-                                        </th>
+                                        <th class="px-4 py-3 text-left font-semibold">Nama Pembeli</th>
+                                        <th class="px-4 py-3 text-center font-semibold">Produk Terjual</th>
+                                        <th class="px-4 py-3 text-right font-semibold">Pemasukan</th>
+                                        <th class="px-4 py-3 text-center font-semibold">Status</th>
+                                        <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -336,68 +300,16 @@
                                                 }}
                                             </span>
                                         </td>
-                                        <td
-                                            class="px-4 py-3 align-middle text-center"
-                                        >
-                                            <span
-                                                class="text-gray-800 dark:text-gray-200 font-medium"
-                                            >
-                                                {{ sale.products_sold }}
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="px-4 py-3 align-middle text-right"
-                                        >
-                                            <span
-                                                class="text-gray-800 dark:text-gray-200 font-semibold"
-                                            >
-                                                Rp.
-                                                {{ formatPrice(sale.total) }}
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="px-4 py-3 align-middle text-center"
-                                        >
-                                            <span
-                                                :class="[
-                                                    'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
-                                                    getStatusClass(sale.status)
-                                                ]"
-                                            >
-                                                {{ getStatusLabel(sale.status) }}
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="px-4 py-3 align-middle text-center"
-                                        >
-                                            <button
-                                                class="px-3 py-1 text-xs rounded-full bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2] cursor-pointer hover:bg-[#FDA1A2]/30 dark:hover:bg-[#8E0D3C]/30 transition active:scale-95"
-                                                @click="viewDetail(sale)"
-                                            >
-                                                Detail
-                                            </button>
-                                        </td>
+                                        <td class="px-4 py-3 align-middle text-center"><span class="text-gray-800 dark:text-gray-200 font-medium">{{ sale.products_sold }}</span></td>
+                                        <td class="px-4 py-3 align-middle text-right"><span class="text-gray-800 dark:text-gray-200 font-semibold">Rp. {{ formatPrice(sale.total) }}</span></td>
+                                        <td class="px-4 py-3 align-middle text-center"><span :class="['inline-flex items-center px-3 py-1 rounded-full text-xs font-medium', getStatusClass(sale.status)]">{{ getStatusLabel(sale.status) }}</span></td>
+                                        <td class="px-4 py-3 align-middle text-center"><button class="px-3 py-1 text-xs rounded-full bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-[#8E0D3C] dark:text-[#FDA1A2] cursor-pointer hover:bg-[#FDA1A2]/30 dark:hover:bg-[#8E0D3C]/30 transition active:scale-95" @click="viewDetail(sale)">Detail</button></td>
                                     </tr>
-                                    <tr
-                                        v-if="
-                                            !loading &&
-                                            filteredSales.length === 0
-                                        "
-                                    >
-                                        <td
-                                            colspan="5"
-                                            class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400"
-                                        >
-                                            Tidak ada riwayat penjualan.
-                                        </td>
+                                    <tr v-if="!loading && filteredSales.length === 0">
+                                        <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Tidak ada riwayat penjualan.</td>
                                     </tr>
                                     <tr v-if="loading">
-                                        <td
-                                            colspan="5"
-                                            class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400"
-                                        >
-                                            Memuat riwayat penjualan...
-                                        </td>
+                                        <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Memuat riwayat penjualan...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -407,7 +319,6 @@
             </main>
         </div>
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -416,26 +327,14 @@
             @cancel="closeConfirmModal"
         />
 
-        <!-- Detail Transaction Modal -->
-        <div
-            v-if="detailModal.visible"
-            class="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in"
-        >
-            <!-- Backdrop -->
-            <div 
-                class="absolute inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm"
-                @click="closeDetailModal"
-            ></div>
+        <div v-if="detailModal.visible" class="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in">
+            <div class="absolute inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm" @click="closeDetailModal"></div>
 
-            <!-- Card -->
             <div
                 class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl p-4 sm:p-6 max-w-md w-full relative z-10 border border-gray-100 dark:border-[#8E0D3C]/30 max-h-[90vh] overflow-y-auto"
             >
-                <!-- Header -->
                 <div class="flex items-center justify-between mb-4 pb-4 border-b border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
-                    <h3 class="text-lg sm:text-xl font-bold text-[#1D1842] dark:text-[#FDA1A2]">
-                        Detail Transaksi
-                    </h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-[#1D1842] dark:text-[#FDA1A2]">Detail Transaksi</h3>
                     <button
                         @click="closeDetailModal"
                         class="p-2 rounded-lg hover:bg-[#FDA1A2]/10 dark:hover:bg-[#8E0D3C]/10 transition cursor-pointer active:scale-95"
@@ -456,63 +355,38 @@
                     </button>
                 </div>
 
-                <!-- Content -->
                 <div v-if="detailModal.data" class="space-y-4">
-                    <!-- ID Transaksi -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
                         <span class="text-sm text-gray-600 dark:text-gray-400">ID Transaksi</span>
-                        <span class="text-sm sm:text-base font-semibold text-[#1D1842] dark:text-[#FDA1A2]">
-                            #{{ detailModal.data.id }}
-                        </span>
+                        <span class="text-sm sm:text-base font-semibold text-[#1D1842] dark:text-[#FDA1A2]">#{{ detailModal.data.id }}</span>
                     </div>
 
-                    <!-- Nama Pembeli -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Nama Pembeli</span>
-                        <span class="text-sm sm:text-base font-medium text-[#1D1842] dark:text-[#FDA1A2]">
-                            {{ detailModal.data.user?.name || "Pengguna" }}
-                        </span>
+                        <span class="text-sm sm:text-base font-medium text-[#1D1842] dark:text-[#FDA1A2]">{{ detailModal.data.user?.name || "Pengguna" }}</span>
                     </div>
 
-                    <!-- Jumlah Produk -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Jumlah Produk</span>
-                        <span class="text-sm sm:text-base font-medium text-[#1D1842] dark:text-[#FDA1A2]">
-                            {{ detailModal.data.products_sold }} item
-                        </span>
+                        <span class="text-sm sm:text-base font-medium text-[#1D1842] dark:text-[#FDA1A2]">{{ detailModal.data.products_sold }} item</span>
                     </div>
 
-                    <!-- Total Harga -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 pt-2 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Harga</span>
-                        <span class="text-base sm:text-lg font-bold text-[#EF3B33] dark:text-[#EF3B33]">
-                            Rp. {{ formatPrice(detailModal.data.total) }}
-                        </span>
+                        <span class="text-base sm:text-lg font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(detailModal.data.total) }}</span>
                     </div>
 
-                    <!-- Status -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Status</span>
-                        <span
-                            :class="[
-                                'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
-                                getStatusClass(detailModal.data.status)
-                            ]"
-                        >
-                            {{ getStatusLabel(detailModal.data.status) }}
-                        </span>
+                        <span :class="['inline-flex items-center px-3 py-1 rounded-full text-xs font-medium', getStatusClass(detailModal.data.status)]">{{ getStatusLabel(detailModal.data.status) }}</span>
                     </div>
 
-                    <!-- Tanggal Transaksi -->
                     <div v-if="detailModal.data.created_at" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 pt-2 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Tanggal Transaksi</span>
-                        <span class="text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]">
-                            {{ formatDate(detailModal.data.created_at) }}
-                        </span>
+                        <span class="text-sm font-medium text-[#1D1842] dark:text-[#FDA1A2]">{{ formatDate(detailModal.data.created_at) }}</span>
                     </div>
                 </div>
 
-                <!-- Close Button -->
                 <div class="mt-6 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                     <button
                         @click="closeDetailModal"
@@ -529,10 +403,8 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
-import Logo from "../components/Logo.vue";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const searchQuery = ref("");
 const admin = ref(null);
@@ -656,7 +528,6 @@ const handleProfile = () => {
 };
 
 const handleLogout = () => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
@@ -670,13 +541,11 @@ const closeConfirmModal = () => {
 
 const handleConfirmLogout = async () => {
     closeConfirmModal();
-    
     try {
         await axios.post("/logout");
         window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
         window.location.href = "/";
     }
 };

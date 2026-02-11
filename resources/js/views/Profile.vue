@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] py-4 sm:py-6 px-3 sm:px-4 md:px-6">
         <div class="max-w-4xl mx-auto space-y-6">
-            <!-- Back -->
             <div
                 class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer"
                 @click="goBack"
@@ -22,25 +21,17 @@
                 <span>Kembali</span>
             </div>
 
-            <!-- Profile Card -->
             <div
                 class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
             >
                 <div class="flex flex-col items-center space-y-3 relative">
-                    <!-- Foto Profil -->
                     <div
                         class="w-20 h-20 rounded-full overflow-hidden bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/30 flex items-center justify-center text-[#8E0D3C] dark:text-[#FDA1A2] text-sm border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
                     >
-                        <img
-                            v-if="imagePreview || profile.photo_url"
-                            :src="imagePreview || profile.photo_url"
-                            alt="Foto Profil"
-                            class="w-full h-full object-cover"
-                        />
+                        <img v-if="imagePreview || profile.photo_url" :src="imagePreview || profile.photo_url" alt="Foto Profil" class="w-full h-full object-cover" />
                         <span v-else>Foto</span>
                     </div>
                     
-                    <!-- Teks Edit (Hanya muncul saat mode editing) -->
                     <button
                         v-if="isEditing"
                         data-edit-button
@@ -50,22 +41,14 @@
                         Edit
                     </button>
                     
-                    <!-- Card Menu Edit Foto (Muncul saat klik Edit) -->
                     <div
                         v-if="showPhotoMenu && isEditing"
                         data-photo-menu
                         class="absolute top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 min-w-[160px] overflow-hidden"
                     >
                         <label class="block cursor-pointer">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                class="hidden"
-                                @change="onPhotoChange"
-                            />
-                            <div class="px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                Ganti Foto
-                            </div>
+                            <input type="file" accept="image/*" class="hidden" @change="onPhotoChange" />
+                            <div class="px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">Ganti Foto</div>
                         </label>
                         <button
                             v-if="profile.photo_url || imagePreview"
@@ -186,7 +169,6 @@
                 </div>
             </div>
 
-            <!-- Bank Accounts Management -->
             <div
                 class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
             >
@@ -237,7 +219,6 @@
                 </div>
             </div>
 
-            <!-- Withdrawal History -->
             <div
                 class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6"
             >
@@ -286,7 +267,6 @@
             </div>
         </div>
 
-        <!-- Add Bank Modal -->
         <transition name="modal">
             <div
                 v-if="showAddBankModal"
@@ -343,7 +323,6 @@
             </div>
         </transition>
 
-        <!-- Notification Toast -->
         <transition name="fade">
             <div
                 v-if="notification.show"
@@ -388,7 +367,6 @@
             </div>
         </transition>
 
-        <!-- Success Modal -->
         <transition name="modal">
             <div
                 v-if="showSuccessModal"
@@ -399,7 +377,6 @@
                     class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
                 >
                     <div class="flex flex-col items-center text-center">
-                        <!-- Success Icon -->
                         <div
                             class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4"
                         >
@@ -418,7 +395,6 @@
                             </svg>
                         </div>
 
-                        <!-- Message -->
                         <h3
                             class="text-xl font-semibold text-gray-900 dark:text-white mb-2"
                         >
@@ -428,7 +404,6 @@
                             Perubahan profil Anda telah berhasil disimpan.
                         </p>
 
-                        <!-- OK Button -->
                         <button
                             @click="showSuccessModal = false"
                             class="w-full px-6 py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg"
@@ -462,7 +437,6 @@ const notification = ref({ show: false, message: "", type: "success" });
 const showSuccessModal = ref(false);
 const showPhotoMenu = ref(false);
 
-// Bank Accounts and Withdrawals
 const banks = ref([]);
 const withdrawals = ref([]);
 const loadingBanks = ref(false);
@@ -479,13 +453,11 @@ const goBack = () => window.history.back();
 
 const fetchProfile = async () => {
     try {
-        // Tambahkan cache busting untuk memastikan data terbaru
         const response = await axios.get("/api/user", {
             params: { _t: Date.now() }
         });
         const user = response.data;
 
-        // Gunakan photo_url dari API jika ada, atau generate dari photo path
         let photoUrl = user.photo_url || null;
         if (!photoUrl && user.photo) {
             photoUrl = user.photo.startsWith("/")
@@ -493,7 +465,6 @@ const fetchProfile = async () => {
                 : "/storage/" + user.photo;
         }
 
-        // Tambahkan cache busting ke URL foto
         if (photoUrl && !photoUrl.includes('?')) {
             photoUrl = photoUrl + "?t=" + Date.now();
         } else if (photoUrl && photoUrl.includes('?')) {
@@ -520,8 +491,7 @@ const fetchProfile = async () => {
 const startEdit = () => {
     form.value = { ...profile.value, password: "" };
     photoFile.value = null;
-    showPhotoMenu.value = false; // Reset menu saat mulai edit
-    // Set imagePreview dari foto profil yang ada
+    showPhotoMenu.value = false;
     if (profile.value.photo_url) {
         imagePreview.value = profile.value.photo_url;
     } else {
@@ -532,10 +502,9 @@ const startEdit = () => {
 
 const cancelEdit = () => {
     isEditing.value = false;
-    showPhotoMenu.value = false; // Tutup menu saat cancel
+    showPhotoMenu.value = false;
     form.value = { ...profile.value, password: "" };
     photoFile.value = null;
-    // Reset imagePreview ke foto profil yang ada
     if (profile.value.photo_url) {
         imagePreview.value = profile.value.photo_url;
     } else {
@@ -567,20 +536,16 @@ const saveProfile = async () => {
             },
         });
 
-        // Update profile dengan data terbaru
         const updatedUser = response.data.user;
         let photoUrl = updatedUser.photo_url;
 
-        // Generate photo_url jika belum ada dari API
         if (!photoUrl && updatedUser.photo) {
             photoUrl = updatedUser.photo.startsWith("/")
                 ? updatedUser.photo
                 : "/storage/" + updatedUser.photo;
         }
 
-        // Cache busting: tambah timestamp agar browser reload gambar
         if (photoUrl) {
-            // Hapus query string lama jika ada, lalu tambah timestamp baru
             photoUrl = photoUrl.split('?')[0] + "?t=" + Date.now();
         }
 
@@ -603,15 +568,12 @@ const saveProfile = async () => {
         photoFile.value = null;
         isEditing.value = false;
 
-        // Trigger event untuk refresh data user di halaman lain
         window.dispatchEvent(new CustomEvent('userUpdated', { 
             detail: { user: updatedUser, photoUrl: photoUrl } 
         }));
 
-        // Tampilkan modal sukses
         showSuccessModal.value = true;
 
-        // Reload halaman setelah 1.5 detik untuk update nama di header dan foto di semua halaman
         setTimeout(() => {
             window.location.reload();
         }, 1500);
@@ -627,14 +589,14 @@ const onPhotoChange = (event) => {
     if (file) {
         photoFile.value = file;
         imagePreview.value = URL.createObjectURL(file);
-        showPhotoMenu.value = false; // Tutup menu setelah memilih foto
+        showPhotoMenu.value = false;
     }
 };
 
 const removePhoto = () => {
     photoFile.value = null;
     imagePreview.value = null;
-    showPhotoMenu.value = false; // Tutup menu setelah menghapus foto
+    showPhotoMenu.value = false;
 };
 
 const showNotification = (message, type = "success") => {
@@ -731,7 +693,6 @@ const getWithdrawalStatusClass = (status) => {
     return classes[status] || "bg-gray-100 text-gray-700";
 };
 
-// Fungsi untuk menutup menu saat klik di luar
 const handleClickOutside = (event) => {
     const target = event.target;
     const photoMenu = document.querySelector('[data-photo-menu]');

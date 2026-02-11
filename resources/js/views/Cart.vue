@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] pb-24">
         <div class="max-w-5xl mx-auto py-4 sm:py-6 px-3 sm:px-4 md:px-6 space-y-4">
-            <!-- Back -->
             <div
                 class="flex items-center gap-2 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer"
                 @click="goBack"
@@ -22,9 +21,8 @@
                 <span>Kembali</span>
             </div>
 
-            <!-- Title & Cart Icon -->
             <div class="flex items-center justify-between relative">
-                <div class="w-8"></div> <!-- Spacer for centering title -->
+                <div class="w-8"></div>
                 <h1 class="text-lg sm:text-xl font-semibold text-center text-[#1D1842] dark:text-[#FDA1A2]">
                     Keranjang Saya
                 </h1>
@@ -54,14 +52,12 @@
                 </div>
             </div>
 
-            <!-- Loading -->
             <div v-if="loading" class="text-center py-8">
                 <p class="text-[#1D1842] dark:text-[#FDA1A2]">
                     Memuat keranjang...
                 </p>
             </div>
 
-            <!-- Empty Cart -->
             <div v-else-if="cartItems.length === 0" class="text-center py-12">
                 <svg
                     class="w-24 h-24 mx-auto text-[#FDA1A2] dark:text-[#FDA1A2] mb-4"
@@ -84,9 +80,7 @@
                 </p>
             </div>
 
-            <!-- Cart List -->
             <div v-else class="space-y-4">
-                <!-- Pilih Semua -->
                 <div
                     class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 flex items-center gap-3"
                 >
@@ -104,13 +98,11 @@
                     </label>
                 </div>
 
-                <!-- Cart Items -->
                 <div
                     v-for="item in cartItems"
                     :key="item.id"
                     class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-3 sm:p-4 flex items-start sm:items-center gap-3 sm:gap-4"
                 >
-                    <!-- Checkbox -->
                     <input
                         type="checkbox"
                         :checked="selectedItems.includes(item.id)"
@@ -118,7 +110,6 @@
                         class="w-4 h-4 sm:w-5 sm:h-5 text-[#EF3B33] bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded focus:outline-none cursor-pointer flex-shrink-0"
                     />
 
-                    <!-- Image -->
                     <div
                         class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center rounded-md overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20 flex-shrink-0"
                     >
@@ -144,7 +135,6 @@
                         </svg>
                     </div>
 
-                    <!-- Info -->
                     <div class="flex-1 min-w-0">
                         <p
                             class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33]"
@@ -156,12 +146,7 @@
                         >
                             {{ item.product_name }}
                         </p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                            {{
-                                item.product_description ||
-                                "Tidak ada deskripsi"
-                            }}
-                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ item.product_description || "Tidak ada deskripsi" }}</p>
                         <p
                             class="text-sm font-semibold text-[#EF3B33] dark:text-[#EF3B33] mt-1"
                         >
@@ -188,7 +173,6 @@
                             >
                                 +
                             </button>
-                            <!-- Delete Button (Moved here) -->
                             <button
                                 @click="removeItem(item)"
                                 class="p-1 sm:p-1.5 text-[#EF3B33] dark:text-[#EF3B33] bg-[#EF3B33]/10 dark:bg-[#EF3B33]/10 rounded-lg ml-1 sm:ml-2 cursor-pointer transition-all duration-150 hover:bg-[#EF3B33]/20 hover:shadow-md active:scale-95 active:shadow-inner"
@@ -219,14 +203,12 @@
             </div>
         </div>
 
-        <!-- Checkout Footer (Sticky) -->
         <div
             v-if="!loading && cartItems.length > 0 && selectedItems.length > 0"
             class="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1D1842] border-t border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg z-50"
         >
             <div class="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                 <div class="flex items-center justify-between">
-                    <!-- Total -->
                     <div class="flex-1">
                         <p class="text-sm text-[#1D1842] dark:text-[#FDA1A2]">
                             Total Harga
@@ -238,7 +220,6 @@
                         </p>
                     </div>
 
-                    <!-- Checkout Button -->
                     <button
                         @click="handleCheckout"
                         class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-[#EF3B33] text-white rounded-lg font-semibold shadow-lg ml-2 sm:ml-4 cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-xl active:scale-95 active:shadow-inner text-sm sm:text-base"
@@ -250,7 +231,6 @@
         </div>
     </div>
 
-    <!-- Toast & Confirm -->
     <ToastNotification
         :visible="toast.visible"
         :message="toast.message"
@@ -278,7 +258,6 @@ const loading = ref(true);
 const selectedItems = ref([]);
 const cartCount = ref(0);
 
-// Toast & Confirm State
 const toast = ref({ visible: false, message: "", type: "success" });
 const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
 
@@ -301,49 +280,32 @@ const removeItem = (item) => {
         title: "Hapus Produk",
         message: `Hapus "${item.product_name}" dari keranjang?`,
         onConfirm: () => {
-            // Tutup modal dulu
             closeConfirmModal();
-            
-            // Simpan data item untuk rollback jika error
             const itemToRemove = { ...item };
             const itemIndex = cartItems.value.findIndex(i => i.id === item.id);
-            
-            // Optimistic update: langsung hapus dari UI tanpa menunggu server
             const index = selectedItems.value.indexOf(item.id);
             if (index > -1) selectedItems.value.splice(index, 1);
             cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
-            
-            // Update cart count langsung setelah item dihapus
             cartCount.value = cartItems.value.length;
-            
-            // Tampilkan toast sukses langsung
             showToast("Produk dihapus dari keranjang", "success");
-            
-            // Update ke server di background tanpa blocking UI
             axios.post(`/api/cart/remove/${item.id}`)
                 .then(() => {
-                    // Trigger cart update event untuk update di halaman lain
                     window.dispatchEvent(new CustomEvent("cartUpdated"));
                 })
                 .catch((error) => {
                     console.error("Error removing item:", error);
-                    // Rollback jika error: kembalikan item ke list
                     if (itemIndex > -1) {
                         cartItems.value.splice(itemIndex, 0, itemToRemove);
                     } else {
                         cartItems.value.push(itemToRemove);
                     }
                     cartCount.value = cartItems.value.length;
-                    // Tampilkan error
                     showToast("Gagal menghapus produk", "error");
-                    // Refresh untuk sync dengan server
                     fetchCartItems();
                 });
         }
     };
 };
-
-// ... existing code ...
 
 const increase = async (item) => {
     const currentQty = parseInt(item.qty) || 0;
@@ -355,21 +317,17 @@ const increase = async (item) => {
         return;
     }
 
-    // Optimistic update: update UI langsung tanpa menunggu server
     const oldQty = item.qty;
     item.qty = newQty;
 
-    // Update di background tanpa blocking UI (fire and forget)
     axios.post("/api/cart/update", { item_id: item.id, qty: newQty })
         .then(() => {
             window.dispatchEvent(new CustomEvent("cartUpdated"));
         })
         .catch((error) => {
             console.error("Error updating quantity:", error);
-            // Rollback jika error
             item.qty = oldQty;
             showToast(error.response?.data?.message || "Gagal menambah", "error");
-            // Refresh untuk sync dengan server
             fetchCartItems();
         });
 };
@@ -380,21 +338,17 @@ const decrease = async (item) => {
 
     const newQty = currentQty - 1;
 
-    // Optimistic update: update UI langsung tanpa menunggu server
     const oldQty = item.qty;
     item.qty = newQty;
 
-    // Update di background tanpa blocking UI (fire and forget)
     axios.post("/api/cart/update", { item_id: item.id, qty: newQty })
         .then(() => {
             window.dispatchEvent(new CustomEvent("cartUpdated"));
         })
         .catch((error) => {
             console.error("Error updating quantity:", error);
-            // Rollback jika error
             item.qty = oldQty;
             showToast("Gagal mengurangi jumlah produk", "error");
-            // Refresh untuk sync dengan server
             fetchCartItems();
         });
 };
@@ -408,21 +362,14 @@ const handleCheckout = () => {
     window.location.href = `/checkout?items=${itemIds}`;
 };
 
-// ... rest of script ...
-
 const goBack = () => {
-    // Cek apakah user datang dari halaman konfirmasi atau checkout
-    // Bisa dari referrer atau sessionStorage flag
     const referrer = document.referrer;
     const isFromConfirmation = referrer.includes("/order-confirmation");
     const isFromCheckout = referrer.includes("/checkout");
     const fromCheckoutFlow =
         sessionStorage.getItem("from_checkout_flow") === "true";
 
-    // Jika datang dari konfirmasi atau checkout, langsung ke beranda
-    // Kalau tidak, gunakan history back biasa
     if (isFromConfirmation || isFromCheckout || fromCheckoutFlow) {
-        // Hapus flag setelah digunakan
         sessionStorage.removeItem("from_checkout_flow");
         window.location.href = "/";
     } else {
@@ -432,14 +379,12 @@ const goBack = () => {
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
-// Total harga dari item yang dicentang
 const totalPrice = computed(() => {
     return cartItems.value
         .filter((item) => selectedItems.value.includes(item.id))
         .reduce((total, item) => total + item.price * item.qty, 0);
 });
 
-// Cek apakah semua item tercentang
 const isAllSelected = computed(() => {
     return (
         cartItems.value.length > 0 &&
@@ -447,7 +392,6 @@ const isAllSelected = computed(() => {
     );
 });
 
-// Toggle checkbox item
 const toggleItem = (itemId) => {
     const index = selectedItems.value.indexOf(itemId);
     if (index > -1) {
@@ -457,13 +401,10 @@ const toggleItem = (itemId) => {
     }
 };
 
-// Toggle pilih semua
 const toggleSelectAll = () => {
     if (isAllSelected.value) {
-        // Jika semua sudah tercentang, hapus semua
         selectedItems.value = [];
     } else {
-        // Jika belum semua tercentang, centang semua
         selectedItems.value = cartItems.value.map((item) => item.id);
     }
 };
@@ -471,12 +412,8 @@ const toggleSelectAll = () => {
 const fetchCartItems = async () => {
     try {
         loading.value = true;
-
-        // Ambil cart dari API
         const response = await axios.get("/api/cart");
         const apiItems = response.data.items || [];
-
-        // Map items ke format yang diharapkan
         cartItems.value = apiItems.map((item) => ({
             id: item.id,
             product_id: item.product_id,
@@ -494,27 +431,17 @@ const fetchCartItems = async () => {
         cartItems.value = [];
     } finally {
         loading.value = false;
-        // Hitung cart count (per produk/item)
         cartCount.value = cartItems.value.length;
     }
 };
 
-// Removing old duplicate functions to fix lint errors
-// The new functions were added at the top of the script.
-
-
 onMounted(async () => {
     await fetchCartItems();
-
-    // Jika user datang dari halaman konfirmasi atau checkout,
-    // set flag di sessionStorage untuk menandai bahwa user datang dari checkout flow
-    // Ini akan digunakan oleh fungsi goBack() untuk redirect ke beranda
     const referrer = document.referrer;
     const isFromConfirmation = referrer.includes("/order-confirmation");
     const isFromCheckout = referrer.includes("/checkout");
 
     if (isFromConfirmation || isFromCheckout) {
-        // Set flag di sessionStorage untuk menandai bahwa user datang dari konfirmasi/checkout
         sessionStorage.setItem("from_checkout_flow", "true");
     }
 });
