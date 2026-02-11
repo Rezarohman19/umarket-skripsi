@@ -441,10 +441,10 @@
                                 <span
                                     :class="[
                                         'px-2 py-1 rounded-full text-xs font-medium',
-                                        getStatusBadgeClass(orderGroup.status),
+                                        getStatusBadgeClass(getOrderGroupDisplayStatus(orderGroup)),
                                     ]"
                                 >
-                                    {{ getStatusLabel(orderGroup.status) }}
+                                    {{ getStatusLabel(getOrderGroupDisplayStatus(orderGroup)) }}
                                 </span>
                             </div>
 
@@ -513,11 +513,17 @@
                                     v-for="action in orderGroup.actions"
                                     :key="action.label"
                                     @click="handleAction(action.type, orderGroup)"
+                                    :disabled="action.disabled"
                                     :class="[
                                         'px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-150',
+                                        action.disabled
+                                            ? 'opacity-80 cursor-not-allowed pointer-events-none'
+                                            : '',
                                         action.variant === 'primary'
                                             ? 'bg-[#EF3B33] text-white shadow-md hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner'
-                                            : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 active:scale-95',
+                                            : action.variant === 'warning'
+                                                ? 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md hover:shadow-lg active:scale-95 active:shadow-inner'
+                                                : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 active:scale-95',
                                     ]"
                                 >
                                     {{ action.label }}
@@ -668,12 +674,32 @@ const getStatusLabel = (status) => {
         completed: "Selesai",
         delivered: "Selesai",
         failed: "Gagal",
-        failed: "Gagal",
-        expired: "Batal/Kadaluarsa",
+        expired: "Dibatalkan",
+        cancelled: "Dibatalkan",
         return_requested: "Pengembalian Diajukan",
         returned: "Dikembalikan",
     };
     return statusMap[status] || status;
+};
+
+const getOrderGroupDisplayStatus = (orderGroup) => {
+    const groupStatus = orderGroup?.status;
+    const transactionStatus = orderGroup?.transaction?.status;
+
+    if (groupStatus !== "riwayat") return groupStatus;
+
+    if (transactionStatus === "returned") return "returned";
+
+    if (
+        transactionStatus === "expired" ||
+        transactionStatus === "failed" ||
+        transactionStatus === "cancelled" ||
+        transactionStatus === "canceled"
+    ) {
+        return "cancelled";
+    }
+
+    return "riwayat";
 };
 
 const getStatusBadgeClass = (status) => {
@@ -699,6 +725,8 @@ const getStatusBadgeClass = (status) => {
             "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
         failed: "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
         expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
+        cancelled:
+            "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
         return_requested: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
         returned: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
     };
@@ -822,13 +850,14 @@ const getPurchaseActions = (status, transaction) => {
             actions.push({
                 label: "Ajukan Pengembalian",
                 type: "request_return",
-                variant: "secondary",
+                variant: "warning",
             });
         } else if (transaction?.status === 'return_requested') {
              actions.push({
                 label: "Pengembalian Diajukan",
                 type: "info",
-                variant: "secondary",
+                variant: "warning",
+                disabled: true,
             });
         }
     }

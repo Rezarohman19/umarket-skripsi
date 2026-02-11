@@ -406,6 +406,16 @@ class TransactionController extends Controller
 
         $productIds = \App\Models\Product::where('user_id', $seller->id)->pluck('id');
 
+        // Pastikan transaksi yang pending/unpaid > 24 jam otomatis jadi expired
+        // supaya seller juga melihat "dibatalkan" di riwayat tanpa menunggu pembeli membuka halaman orders.
+        $expiredTime = now()->subHours(24);
+        Transaction::whereHas('items', function ($q) use ($productIds) {
+            $q->whereIn('product_id', $productIds);
+        })
+            ->whereIn('status', ['pending', 'unpaid'])
+            ->where('created_at', '<', $expiredTime)
+            ->update(['status' => 'expired']);
+
         $transactions = Transaction::whereHas('items', function ($q) use ($productIds) {
             $q->whereIn('product_id', $productIds);
         })

@@ -1,14 +1,12 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842] overflow-x-hidden">
         <div class="flex">
-            <!-- Sidebar -->
             <aside
                 :class="[
                     'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                     sidebarCollapsed ? 'w-16' : 'w-64',
                 ]"
             >
-                <!-- Logo & Toggle Button -->
                 <div :class="[
                     'p-4 border-b border-[#EF3B33]/30',
                     sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -224,19 +222,16 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main
                 :class="[
                     'flex-1 transition-all duration-300 overflow-x-hidden',
                     sidebarCollapsed ? 'ml-16' : 'ml-64',
                 ]"
             >
-                <!-- Header -->
                 <header
                     class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-10"
                 >
                     <div class="flex items-center justify-between gap-2 sm:gap-4">
-                        <!-- Greeting -->
                         <div class="flex-1 min-w-0 flex items-center gap-1.5 sm:gap-2">
                             <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 truncate">
                                 Halo,
@@ -256,7 +251,6 @@
                             </p>
                         </div>
 
-                        <!-- Search Bar (Desktop) -->
                         <div class="hidden md:flex flex-1 max-w-md mx-2 md:mx-2">
                             <div class="relative w-full">
                                 <input
@@ -281,7 +275,6 @@
                             </div>
                         </div>
 
-                        <!-- Search Icon (Mobile only) -->
                         <button
                             v-if="user"
                             @click="showMobileSearch = !showMobileSearch"
@@ -302,7 +295,6 @@
                             </svg>
                         </button>
 
-                        <!-- Cart Icon - Hanya muncul jika user sudah login -->
                         <button
                             v-if="user"
                             @click="handleCart"
@@ -334,7 +326,6 @@
                             </span>
                         </button>
 
-                        <!-- Profile Icon / Login Button -->
                         <button
                             v-if="user"
                             @click="handleProfile"
@@ -369,7 +360,6 @@
                     </div>
                 </header>
 
-                <!-- Mobile Search Bar (Expandable) -->
                 <transition
                     enter-active-class="transition duration-200 ease-out"
                     enter-from-class="transform -translate-y-4 opacity-0"
@@ -407,9 +397,7 @@
                     </div>
                 </transition>
 
-                <!-- Store Overview -->
                 <div class="p-4 sm:p-6 space-y-8 w-full max-w-full overflow-x-hidden">
-                    <!-- Store Overview -->
                     <section
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
                     >
@@ -450,7 +438,6 @@
                                 </div>
                             </div>
 
-                            <!-- Saldo Penjual -->
                             <div
                                 class="bg-gradient-to-r from-[#FDA1A2]/20 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#EF3B33]/20 rounded-xl p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
                             >
@@ -575,7 +562,6 @@
                         </div>
                     </section>
 
-                    <!-- Pesanan Section (Muncul saat statistik diklik) -->
                     <section
                         v-if="activeOrderSection"
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 space-y-4"
@@ -609,14 +595,12 @@
                             </div>
                         </div>
 
-                        <!-- Loading -->
                         <div v-if="ordersLoading" class="text-center py-8">
                             <p class="text-gray-500 dark:text-gray-400">
                                 Memuat pesanan...
                             </p>
                         </div>
 
-                        <!-- Empty State -->
                         <div
                             v-else-if="filteredOrdersBySection.length === 0"
                             class="text-center py-8"
@@ -639,7 +623,6 @@
                             </p>
                         </div>
 
-                        <!-- Orders List -->
                         <div v-else class="space-y-4">
                             <div
                                 v-for="order in filteredOrdersBySection"
@@ -694,7 +677,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Order Items -->
                                 <div class="space-y-2 mb-3">
                                     <div
                                         v-for="item in order.items"
@@ -754,7 +736,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Shipping Address -->
                                 <div
                                     v-if="order.shipping_address"
                                     class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
@@ -773,7 +754,6 @@
                                     </p>
                                 </div>
 
-                                <!-- Tracking Number -->
                                 <div
                                     v-if="order.tracking_number"
                                     class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
@@ -790,7 +770,6 @@
                                     </p>
                                 </div>
 
-                                <!-- Action Buttons -->
                                 <div class="flex flex-wrap gap-2">
                                     <button
                                         v-if="order.status === 'paid'"
@@ -839,7 +818,6 @@
                         </div>
                     </section>
 
-                    <!-- Product Table -->
                     <section
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 space-y-4 w-full max-w-full overflow-hidden"
                     >
@@ -996,11 +974,9 @@
                             </div>
                         </transition>
 
-                        <!-- Product Table - Scrollable on mobile -->
                         <div class="overflow-x-auto -mx-4 sm:mx-0 max-w-full">
                             <div class="inline-block min-w-full align-middle">
                                 <div class="overflow-hidden">
-                                    <!-- Table Header -->
                                     <div
                                         class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-sm font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] rounded-lg px-4 py-3 gap-2"
                                     >
@@ -1012,7 +988,6 @@
                                         <div class="truncate">Aksi</div>
                                     </div>
 
-                                    <!-- Table Rows -->
                                     <div
                                         class="space-y-2 mt-2"
                                         v-if="filteredProducts.length"
@@ -1084,7 +1059,6 @@
             </main>
         </div>
 
-        <!-- Shipping Modal -->
         <transition name="modal">
             <div
                 v-if="showShippingForm"
@@ -1155,7 +1129,6 @@
             </div>
         </transition>
 
-        <!-- Withdraw Saldo Modal -->
         <transition name="modal">
             <div
                 v-if="showWithdrawModal"
@@ -1171,7 +1144,6 @@
                         Tarik Saldo
                     </h3>
                     <div class="space-y-4">
-                        <!-- Info Saldo -->
                         <div
                             class="bg-[#FDA1A2]/10 dark:bg-[#8E0D3C]/20 rounded-lg p-4 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
                         >
@@ -1187,7 +1159,6 @@
                             </p>
                         </div>
 
-                        <!-- Jumlah Penarikan -->
                         <div>
                             <label
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -1209,7 +1180,6 @@
                             </p>
                         </div>
 
-                        <!-- Bank Account Info -->
                         <div>
                             <label
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -1257,7 +1227,6 @@
                             </p>
                         </div>
 
-                        <!-- Error Message -->
                         <div
                             v-if="withdrawError"
                             class="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg"
@@ -1265,7 +1234,6 @@
                             {{ withdrawError }}
                         </div>
 
-                        <!-- Buttons -->
                         <div class="flex gap-3 pt-4">
                             <button
                                 @click="showWithdrawModal = false"
@@ -1293,7 +1261,6 @@
             </div>
         </transition>
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -1302,7 +1269,6 @@
             @cancel="closeConfirmModal"
         />
 
-        <!-- Toast Notification -->
         <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
@@ -1318,7 +1284,6 @@ import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ToastNotification from "../components/ToastNotification.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const user = ref(null);
 const cartCount = ref(0);
@@ -1353,7 +1318,6 @@ const form = ref({
     imagePreview: null,
 });
 
-// Orders
 const incomingOrders = ref([]);
 const ordersLoading = ref(false);
 const activeOrderSection = ref(null);
@@ -1362,7 +1326,6 @@ const selectedOrderId = ref(null);
 const trackingNumber = ref("");
 const shippingCourier = ref("");
 
-// Withdraw
 const showWithdrawModal = ref(false);
 const withdrawAmount = ref("");
 const withdrawAmountNumber = ref(0);
@@ -1374,7 +1337,6 @@ const orderFilterStatus = ref("");
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
-// Computed untuk filtered products dengan search
 const filteredProducts = computed(() => {
     if (!searchQuery.value || !searchQuery.value.trim()) {
         return products.value;
@@ -1394,35 +1356,27 @@ const filteredProducts = computed(() => {
     });
 });
 
-// Helper untuk parse harga dari format string ke number
 const parsePrice = (priceString) => {
     if (!priceString) return 0;
-    // Hapus semua karakter non-digit kecuali titik (untuk separator ribuan)
     const cleaned = priceString.toString().replace(/[^\d.]/g, "");
-    // Hapus semua titik (karena di Indonesia titik = separator ribuan, bukan desimal)
     const numberString = cleaned.replace(/\./g, "");
     const parsed = parseInt(numberString, 10);
     return isNaN(parsed) ? 0 : parsed;
 };
 
-// Helper untuk format harga ke string dengan format Rupiah
 const formatPriceString = (price) => {
     if (!price || price === 0) return "";
     return `Rp ${formatPrice(price)}`;
 };
 
-// Ref untuk input harga (string)
 const priceInput = ref("");
 
-// Handle input harga - parse dan update form.price
 const handlePriceInput = (event) => {
     const value = event.target.value;
     priceInput.value = value;
-    // Parse dan update form.price
     form.value.price = parsePrice(value);
 };
 
-// Format harga saat blur (keluar dari input)
 const formatPriceInput = () => {
     if (form.value.price > 0) {
         priceInput.value = formatPriceString(form.value.price);
@@ -1445,15 +1399,17 @@ const formatDate = (date) => {
 
 const getStatusLabel = (status) => {
     const labels = {
+        unpaid: "Menunggu Pembayaran",
         pending: "Menunggu Pembayaran",
         paid: "Sudah Dibayar",
         processing: "Sedang Dikemas",
         shipping: "Sedang Dikirim",
         delivered: "Sudah Diterima",
         completed: "Selesai",
+        failed: "Dibatalkan",
         cancelled: "Dibatalkan",
-        cancelled: "Dibatalkan",
-        expired: "Batal/Kadaluarsa",
+        canceled: "Dibatalkan",
+        expired: "Dibatalkan",
         return_requested: "Pengajuan Pengembalian",
         returned: "Dikembalikan",
     };
@@ -1462,6 +1418,8 @@ const getStatusLabel = (status) => {
 
 const getStatusClass = (status) => {
     const classes = {
+        unpaid:
+            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
         pending:
             "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
         paid: "bg-[#FDA1A2]/30 text-[#8E0D3C] dark:bg-[#FDA1A2]/20 dark:text-[#FDA1A2]",
@@ -1473,11 +1431,16 @@ const getStatusClass = (status) => {
             "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
         completed:
             "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
+        returned:
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
         cancelled:
             "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
-        expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
+        canceled:
+            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
+        failed:
+            "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
+        expired: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
         return_requested: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
-        returned: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
     };
     return (
         classes[status] ||
@@ -1501,23 +1464,26 @@ const filteredOrdersBySection = computed(() => {
     let filtered = incomingOrders.value;
 
     if (activeOrderSection.value === "paid") {
-        // Pesanan Masuk: status pending (menunggu pembayaran) atau paid (sudah dibayar)
         filtered = filtered.filter(
-            (order) => order.status === "pending" || order.status === "paid"
+            (order) =>
+                order.status === "pending" ||
+                order.status === "unpaid" ||
+                order.status === "paid"
         );
     } else if (activeOrderSection.value === "processing") {
-        // Perlu Dikirim: status processing (sedang dikemas)
         filtered = filtered.filter((order) => order.status === "processing");
     } else if (activeOrderSection.value === "shipping") {
-        // Dikirim: status shipping (sedang dikirim)
         filtered = filtered.filter((order) => order.status === "shipping" || order.status === "return_requested");
     } else if (activeOrderSection.value === "history") {
-        // Riwayat: status completed, delivered, atau expired (selesai/diterima/batal)
         filtered = filtered.filter(
             (order) =>
                 order.status === "completed" || 
                 order.status === "delivered" ||
-                order.status === "expired"
+                order.status === "expired" ||
+                order.status === "failed" ||
+                order.status === "cancelled" ||
+                order.status === "canceled" ||
+                order.status === "returned"
         );
     }
 
@@ -1550,7 +1516,6 @@ const handleLogout = () => {
         return;
     }
 
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
@@ -1560,25 +1525,19 @@ const handleLogout = () => {
 
 const closeConfirmModal = () => {
     confirmModal.value.visible = false;
-    // Jangan reset onConfirm di sini, biarkan handleConfirmAction yang handle
 };
 
 const handleConfirm = async () => {
-    // Cek apakah ada onConfirm function (untuk action selain logout)
     if (confirmModal.value.onConfirm && typeof confirmModal.value.onConfirm === 'function') {
-        // Simpan onConfirm function sebelum close modal
         const onConfirmFn = confirmModal.value.onConfirm;
         
-        // Close modal dan reset onConfirm
         confirmModal.value.visible = false;
         confirmModal.value.onConfirm = null;
         
-        // Jalankan onConfirm (setelah modal ditutup)
         try {
             await onConfirmFn();
         } catch (error) {
             console.error("Error in confirm action:", error);
-            // Tampilkan error toast jika ada
             toast.value = {
                 visible: true,
                 message: error.response?.data?.message || "Terjadi kesalahan",
@@ -1586,7 +1545,6 @@ const handleConfirm = async () => {
             };
         }
     } else {
-        // Jika tidak ada onConfirm, berarti ini untuk logout
         handleConfirmLogout();
     }
 };
@@ -1599,7 +1557,6 @@ const handleConfirmLogout = async () => {
         window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
         window.location.href = "/";
     }
 };
@@ -1625,7 +1582,6 @@ const toggleForm = () => {
     if (!showForm.value) {
         resetForm();
     } else {
-        // Saat form dibuka, pastikan priceInput juga di-reset
         priceInput.value = "";
     }
 };
@@ -1660,13 +1616,11 @@ const editProduct = (p) => {
         imageFile: null,
         imagePreview: p.image_url || null,
     };
-    // Set priceInput dengan format yang sudah diformat
     priceInput.value = p.price > 0 ? formatPriceString(p.price) : "";
     showForm.value = true;
 };
 
 const deleteProduct = (id) => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Hapus",
@@ -1693,9 +1647,6 @@ const deleteProduct = (id) => {
 };
 
 const submitForm = async () => {
-    // Validasi dasar di sisi frontend agar user dapat pesan yang lebih jelas
-    // Field wajib: Nama, Kategori, Harga, Stok, Foto Produk
-    // Deskripsi opsional
     const missingFields = [];
 
     if (!form.value.name || !form.value.name.trim()) {
@@ -1710,7 +1661,6 @@ const submitForm = async () => {
     if (form.value.stock === null || form.value.stock === "" || Number(form.value.stock) < 0) {
         missingFields.push("Stok");
     }
-    // Foto produk wajib saat tambah produk baru (tidak ada id)
     if (!form.value.id && !form.value.imageFile && !form.value.imagePreview) {
         missingFields.push("Foto produk");
     }
@@ -1749,7 +1699,6 @@ const submitForm = async () => {
         }
         console.log("Product saved:", response.data);
 
-        // Tambahkan produk baru ke array langsung (untuk immediate update)
         if (!form.value.id && response.data) {
             const newProduct = {
                 ...response.data,
@@ -1757,7 +1706,6 @@ const submitForm = async () => {
             };
             products.value.unshift(newProduct);
         } else if (form.value.id && response.data) {
-            // Update produk yang sudah ada
             const index = products.value.findIndex(
                 (p) => p.id === form.value.id
             );
@@ -1769,7 +1717,6 @@ const submitForm = async () => {
             }
         }
 
-        // Refresh produk setelah save untuk memastikan data terbaru
         await fetchProducts();
         resetForm();
         showForm.value = false;
@@ -1778,14 +1725,12 @@ const submitForm = async () => {
 
         let message = "Gagal menyimpan produk. ";
 
-        // Jika ini error validasi dari backend (422), ambil pesan yang lebih ramah
         if (error.response?.status === 422 && error.response.data?.errors) {
             const errors = error.response.data.errors;
             const firstField = Object.keys(errors)[0];
             const firstError = errors[firstField]?.[0];
             message += firstError || "Pastikan semua data produk sudah diisi dengan benar.";
         } else if (error.response?.data?.message) {
-            // Hindari menampilkan 'Server Error' yang membingungkan user
             if (error.response.data.message === "Server Error") {
                 message += "Terjadi kesalahan pada server. Coba lagi beberapa saat lagi.";
             } else {
@@ -1803,7 +1748,6 @@ const submitForm = async () => {
     }
 };
 
-// Helper untuk resize gambar di sisi client
 const resizeImage = (file, maxWidth, maxHeight) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1816,7 +1760,6 @@ const resizeImage = (file, maxWidth, maxHeight) => {
                 let width = img.width;
                 let height = img.height;
 
-                // Hitung rasio untuk resize
                 if (width > height) {
                     if (width > maxWidth) {
                         height *= maxWidth / width;
@@ -1834,11 +1777,9 @@ const resizeImage = (file, maxWidth, maxHeight) => {
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert canvas ke Blob (JPEG quality 0.8)
                 canvas.toBlob(
                     (blob) => {
                         if (blob) {
-                            // Convert Blob kembali ke File agar FormData mengenali sebagai file
                             const resizedFile = new File([blob], file.name, {
                                 type: "image/jpeg",
                                 lastModified: Date.now(),
@@ -1862,21 +1803,17 @@ const onImageChange = async (event) => {
     const file = event.target.files?.[0];
     if (file) {
         try {
-            // Tampilkan loading preview sementara (opsional, bisa pakai file asli)
             form.value.imagePreview = URL.createObjectURL(file);
             
-            // Resize gambar secara otomatis (max 1200px)
             const resizedFile = await resizeImage(file, 1200, 1200);
             
             form.value.imageFile = resizedFile;
-            // Update preview dengan gambar hasil resize yang lebih ringan
             form.value.imagePreview = URL.createObjectURL(resizedFile);
             
             console.log(`Original size: ${(file.size / 1024).toFixed(2)} KB`);
             console.log(`Resized size: ${(resizedFile.size / 1024).toFixed(2)} KB`);
         } catch (error) {
             console.error("Error resizing image:", error);
-            // Fallback ke file asli jika resize gagal
             form.value.imageFile = file;
             form.value.imagePreview = URL.createObjectURL(file);
         }
@@ -1895,7 +1832,6 @@ const fetchProducts = async () => {
         return;
     }
     try {
-        // Gunakan endpoint /api/my-products yang sudah ada di web.php
         const response = await axios.get("/api/my-products");
         const fetchedProducts = Array.isArray(response.data)
             ? response.data
@@ -1903,7 +1839,6 @@ const fetchProducts = async () => {
 
         console.log("Fetched products count:", fetchedProducts.length);
 
-        // Update products dengan data baru
         products.value = fetchedProducts;
 
         if (fetchedProducts.length === 0) {
@@ -1923,7 +1858,6 @@ const fetchProducts = async () => {
 
 const getPhotoUrl = (photoUrl) => {
     if (!photoUrl) return null;
-    // Tambahkan cache busting jika belum ada
     if (photoUrl.includes("?")) {
         return photoUrl.split("?")[0] + "?t=" + Date.now();
     }
@@ -1932,7 +1866,6 @@ const getPhotoUrl = (photoUrl) => {
 
 const checkAuth = async () => {
     try {
-        // Tambahkan cache busting untuk memastikan data terbaru
         const response = await axios.get("/api/user", {
             params: { _t: Date.now() },
         });
@@ -1955,9 +1888,7 @@ const fetchCategories = async () => {
     }
 };
 
-// Handler untuk update user data (setelah edit profil)
 const handleUserUpdated = async (event) => {
-    // Refresh user data untuk update foto profil
     await checkAuth();
 };
 
@@ -1968,7 +1899,7 @@ const fetchCartCount = async () => {
     }
     try {
         const response = await axios.get("/api/cart/count", {
-            params: { _t: Date.now() } // Cache busting untuk memastikan data terbaru
+            params: { _t: Date.now() }
         });
         const newCount = response.data?.count ?? 0;
         cartCount.value = newCount;
@@ -1986,29 +1917,29 @@ const fetchIncomingOrders = async () => {
 
     try {
         ordersLoading.value = true;
-        // Endpoint untuk mengambil pesanan yang masuk ke toko penjual
-        // Akan dibuat di backend: GET /api/seller/orders
         const response = await axios.get("/api/seller/orders");
         const orders = response.data || [];
 
         incomingOrders.value = orders;
 
-        // Update stats berdasarkan data real
-        // Pesanan Masuk: status pending (menunggu pembayaran) atau paid (sudah dibayar)
         store.value.stats = {
             incoming: orders.filter(
-                (o) => o.status === "pending" || o.status === "paid"
+                (o) => o.status === "pending" || o.status === "unpaid" || o.status === "paid"
             ).length,
             needShip: orders.filter((o) => o.status === "processing").length,
             shipped: orders.filter((o) => o.status === "shipping" || o.status === "return_requested").length,
             history: orders.filter(
                 (o) => o.status === "completed" || o.status === "delivered"
+                    || o.status === "returned"
+                    || o.status === "expired"
+                    || o.status === "failed"
+                    || o.status === "cancelled"
+                    || o.status === "canceled"
             ).length,
         };
     } catch (error) {
         console.error("Error fetching incoming orders:", error);
         incomingOrders.value = [];
-        // Jika endpoint belum ada, set stats ke 0
         store.value.stats = {
             incoming: 0,
             needShip: 0,
@@ -2021,22 +1952,18 @@ const fetchIncomingOrders = async () => {
 };
 
 const updateOrderStatus = (orderId, newStatus) => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi",
         message: `Ubah status pesanan menjadi "${getStatusLabel(newStatus)}"?`,
         onConfirm: async () => {
             try {
-                // Endpoint untuk update status pesanan
                 await axios.post(`/api/seller/orders/${orderId}/update-status`, {
                     status: newStatus,
                 });
 
-                // Refresh orders
                 await fetchIncomingOrders();
                 
-                // Tampilkan toast sukses
                 toast.value = {
                     visible: true,
                     message: "Status pesanan berhasil diupdate",
@@ -2086,16 +2013,13 @@ const handleApproveReturn = (order) => {
 };
 
 const contactBuyer = (order) => {
-    // Ambil nomor telepon pembeli dari shipping_address atau user
     let phoneNumber = null;
     let buyerName = order.buyer_name || "Pembeli";
 
-    // Coba ambil dari shipping_address.phone
     if (order.shipping_address?.phone) {
         phoneNumber = order.shipping_address.phone;
         buyerName = order.shipping_address.name || buyerName;
     }
-    // Fallback ke user.phone jika ada
     else if (order.user?.phone) {
         phoneNumber = order.user.phone;
         buyerName = order.user.name || buyerName;
@@ -2110,27 +2034,22 @@ const contactBuyer = (order) => {
         return;
     }
 
-    // Format phone number untuk WhatsApp
     phoneNumber = phoneNumber.toString().replace(/[^\d+]/g, "");
 
-    // Jika dimulai dengan 0, ganti dengan 62
     if (phoneNumber.startsWith("0")) {
         phoneNumber = "62" + phoneNumber.substring(1);
     }
 
-    // Jika belum ada +, tambahkan
     if (!phoneNumber.startsWith("+")) {
         phoneNumber = "+" + phoneNumber;
     }
 
-    // Buat pesan default dengan detail pesanan
     const orderId = order.id;
     const itemsList = order.items.map(item => 
         `- ${item.product?.name || 'Produk'} (${item.qty || item.quantity || 0} pcs)`
     ).join('\n');
     const message = `Halo ${buyerName},\n\nSaya ingin mengkonfirmasi pesanan Anda.\n\nID Pesanan: #${orderId}\nProduk:\n${itemsList}\nTotal: Rp. ${formatPrice(order.total_price || 0)}\n\nTerima kasih.`;
 
-    // Buka WhatsApp
     const whatsappUrl = `https://wa.me/${phoneNumber.replace("+", "")}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
 };
@@ -2146,7 +2065,6 @@ const confirmShipping = async () => {
     }
 
     try {
-        // Endpoint untuk update status ke shipping dengan tracking number
         await axios.post(
             `/api/seller/orders/${selectedOrderId.value}/update-status`,
             {
@@ -2161,7 +2079,6 @@ const confirmShipping = async () => {
         shippingCourier.value = "jne";
         selectedOrderId.value = null;
 
-        // Refresh orders
         await fetchIncomingOrders();
         
         toast.value = {
@@ -2199,7 +2116,6 @@ const formatWithdrawAmount = () => {
 const confirmWithdraw = async () => {
     withdrawError.value = "";
 
-    // Validasi
     if (!withdrawAmountNumber.value || withdrawAmountNumber.value <= 0) {
         withdrawError.value = "Masukkan jumlah penarikan yang valid";
         return;
@@ -2222,7 +2138,6 @@ const confirmWithdraw = async () => {
         return;
     }
 
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Penarikan Saldo",
@@ -2236,13 +2151,11 @@ const confirmWithdraw = async () => {
                     bank_account_id: withdrawBankId.value,
                 });
 
-                // Reset form
                 withdrawAmount.value = "";
                 withdrawAmountNumber.value = 0;
                 withdrawBankId.value = "";
                 showWithdrawModal.value = false;
 
-                // Refresh saldo
                 await fetchSellerBalance();
                 
                 toast.value = {
@@ -2274,7 +2187,6 @@ const fetchSellerBalance = async () => {
         store.value.balance = response.data.balance || 0;
         store.value.totalSold = response.data.total_sold || 0;
     } catch (error) {
-        // Error handling: set default values jika API error
         console.error("Error fetching seller balance:", error);
         store.value.balance = 0;
         store.value.totalSold = 0;
@@ -2288,7 +2200,6 @@ const fetchUserBanks = async () => {
         const response = await axios.get("/user-banks");
         userBanks.value = response.data || [];
     } catch (error) {
-        // Error handling: set default empty array jika API error
         console.error("Error fetching user banks:", error);
         userBanks.value = [];
     }
@@ -2305,10 +2216,8 @@ onMounted(async () => {
         await fetchUserBanks();
     }
 
-    // Listen untuk cart update event
     window.addEventListener("cartUpdated", fetchCartCount);
 
-    // Listen untuk user update event (setelah edit profil)
     window.addEventListener("userUpdated", handleUserUpdated);
 });
 
@@ -2339,16 +2248,15 @@ onBeforeUnmount(() => {
     transform: translateY(-6px);
 }
 
-/* Prevent horizontal scroll on mobile */
 @media (max-width: 640px) {
     .overflow-x-auto {
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
     
     .overflow-x-auto::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera */
+        display: none;
     }
 }
 </style>
