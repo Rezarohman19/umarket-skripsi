@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -317,175 +316,19 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::post('/cart/add', function (Request $request) {
-    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
+    Route::post('/email/verify', function (Request $request) {
 
-    $validated = $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-    ]);
+    $user = $request->user();
 
-    $cart = \App\Models\Cart::firstOrCreate(['user_id' => Auth::id()]);
-
-    $product = \App\Models\Product::find($validated['product_id']);
-    if (!$product) {
-        return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
     }
-
-    $item = \App\Models\CartItem::firstOrCreate(
-        ['cart_id' => $cart->id, 'product_id' => $validated['product_id']],
-        ['qty' => 0]
-    );
-
-    $currentQty = $item->qty;
-    $newQty = $currentQty + $validated['quantity'];
-
-    if ($newQty > $product->stock) {
-        return response()->json([
-            'message' => 'Stok tidak mencukupi. Sisa stok: ' . $product->stock . '. Anda sudah punya ' . $currentQty . ' di keranjang.'
-        ], 422);
-    }
-
-    $item->qty = $newQty;
-    $item->save();
-
-    return response()->json(['message' => 'Added to cart']);
-});
-
-Route::post('/cart/remove/{item_id}', function ($item_id) {
-    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
-
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
-
-    $item = \App\Models\CartItem::where('cart_id', $cart->id)
-        ->where('id', $item_id)
-        ->first();
-
-    if (!$item) return response()->json(['message' => 'Item not found'], 404);
-
-    $item->delete();
-
-    return response()->json(['message' => 'Item removed from cart']);
-});
-
-Route::get('/cart', function () {
-    if (!Auth::check()) return response()->json(['items' => []], 401);
-
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['items' => []]);
-
-    $items = \App\Models\CartItem::with(['product.user'])
-        ->where('cart_id', $cart->id)
-        ->get()
-        ->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'product_id' => $item->product_id,
-                'qty' => $item->qty,
-                'quantity' => $item->qty,
-                'price' => $item->product->price ?? 0,
-                'store_name' => $item->product->user->name ?? 'Toko',
-                'product' => [
-                    'id' => $item->product->id ?? null,
-                    'name' => $item->product->name ?? 'Produk',
-                    'description' => $item->product->description ?? '',
-                    'price' => $item->product->price ?? 0,
-                    'stock' => $item->product->stock ?? 0,
-                    'image_url' => $item->product->image ? Storage::url($item->product->image) : null,
-                    'user' => $item->product->user ?? null,
-                ],
-            ];
-        });
-
-    return response()->json(['items' => $items]);
-});
-
-Route::get('/cart/count', function () {
-    if (!Auth::check()) return response()->json(['count' => 0]);
-
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['count' => 0]);
-
-    // Hitung jumlah item (per produk)
-    $count = \App\Models\CartItem::where('cart_id', $cart->id)->count();
-
-    return response()->json(['count' => $count]);
-});
-
-Route::post('/cart/update', function (Request $request) {
-    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
-
-    $validated = $request->validate([
-        'item_id' => 'required|integer',
-        'qty' => 'required|integer|min:1',
-    ]);
-
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
-
-    $item = \App\Models\CartItem::with('product')
-        ->where('cart_id', $cart->id)
-        ->where('id', $validated['item_id'])
-        ->first();
-
-    if (!$item) return response()->json(['message' => 'Item not found'], 404);
-
-    $stock = $item->product->stock ?? 0;
-    if ($validated['qty'] > $stock) {
-        return response()->json(['message' => 'Stock tidak mencukupi', 'stock' => $stock], 422);
-    }
-
-    $item->qty = $validated['qty'];
-    $item->save();
 
     return response()->json([
-        'message' => 'Item updated',
-        'item' => [
-            'id' => $item->id,
-            'product_id' => $item->product_id,
-            'qty' => $item->qty,
-        ]
+        'message' => 'Email berhasil diverifikasi.'
     ]);
+
+})->middleware('auth:sanctum');
+
 });
 
-    // Checkout API (menggunakan session auth)
-Route::post('/checkout', [TransactionController::class, 'checkout'])->middleware('auth');
-
-// Seller Orders API
-Route::get('/seller/orders', [TransactionController::class, 'sellerOrders'])->middleware('auth');
-Route::post('/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus'])->middleware('auth');
-
-// Buyer Orders API - Update status to delivered
-Route::post('/transactions/{id}/mark-delivered', function (Request $request, $id) {
-    if (!Auth::check()) {
-        return response()->json(['message' => 'Unauthenticated'], 401);
-    }
-
-    $transaction = \App\Models\Transaction::findOrFail($id);
-
-    // Validasi: hanya pembeli yang bisa update status menjadi delivered
-    if ($transaction->user_id !== Auth::id()) {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
-
-    // Validasi: hanya bisa update jika status adalah shipping
-    if ($transaction->status !== 'shipping') {
-        return response()->json(['message' => 'Hanya pesanan yang sedang dikirim yang bisa ditandai diterima'], 400);
-    }
-
-    $transaction->status = 'delivered';
-    $transaction->save();
-
-    return response()->json([
-        'message' => 'Pesanan berhasil ditandai diterima',
-        'transaction' => $transaction
-    ]);
-})->middleware('auth');
-
-// Return Request API
-Route::post('/transactions/{id}/request-return', [TransactionController::class, 'requestReturn'])->middleware('auth');
-Route::post('/seller/orders/{id}/approve-return', [TransactionController::class, 'approveReturn'])->middleware('auth');
-
-
-});
