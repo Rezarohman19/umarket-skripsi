@@ -1,13 +1,11 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 flex">
-        <!-- SIDEBAR -->
         <aside
             :class="[
                 'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                 sidebarCollapsed ? 'w-16' : 'w-64',
             ]"
         >
-            <!-- Logo & Toggle Button -->
             <div :class="[
                 'p-4 border-b border-[#EF3B33]/30',
                 sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -55,9 +53,7 @@
                 'space-y-3',
                 sidebarCollapsed ? 'px-2' : 'px-4'
             ]">
-                <a
-                    href="/"
-                    :class="[
+                <a href="/" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -81,9 +77,7 @@
                     <span v-if="!sidebarCollapsed">Beranda</span>
                 </a>
 
-                <a
-                    href="/orders"
-                    :class="[
+                <a href="/orders" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -107,9 +101,7 @@
                     <span v-if="!sidebarCollapsed">Pesanan Saya</span>
                 </a>
 
-                <a
-                    href="/open-shop"
-                    :class="[
+                <a href="/open-shop" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -140,9 +132,7 @@
                     sidebarCollapsed ? 'px-2' : 'px-4'
                 ]"
             >
-                <a
-                    href="#"
-                    :class="[
+                <a href="#" :class="[
                         'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -166,9 +156,7 @@
                     <span v-if="!sidebarCollapsed">Syarat & Ketentuan</span>
                 </a>
 
-                <a
-                    href="/contact-us"
-                    :class="[
+                <a href="/contact-us" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -223,92 +211,50 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
         <main
             class="flex-1 transition-all duration-300 px-6 py-10"
             :class="sidebarCollapsed ? 'ml-16' : 'ml-64'"
         >
             <div class="max-w-3xl mx-auto bg-white rounded-xl p-8 shadow-lg">
                 <div class="text-center mb-8">
-                    <h1
-                        class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#8E0D3C] to-[#EF3B33]"
-                    >
-                        Syarat dan Ketentuan
-                    </h1>
-                    <p class="text-gray-600 mt-2">
-                        Mohon baca dengan seksama sebelum menggunakan UMarket
-                    </p>
+                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#8E0D3C] to-[#EF3B33]">Syarat dan Ketentuan</h1>
+                    <p class="text-gray-600 mt-2">Mohon baca dengan seksama sebelum menggunakan UMarket</p>
                 </div>
                 <div class="space-y-6 text-sm text-gray-700">
                     <section>
-                        <h2 class="text-lg font-semibold text-[#1D1842]">
-                            1. Pendahuluan
-                        </h2>
-                        <p>
-                            Dengan mengakses dan menggunakan UMarket, Anda
-                            setuju untuk terikat oleh seluruh syarat dan
-                            ketentuan yang berlaku.
-                        </p>
+                        <h2 class="text-lg font-semibold text-[#1D1842]">1. Pendahuluan</h2>
+                        <p>Dengan mengakses dan menggunakan UMarket, Anda setuju untuk terikat oleh seluruh syarat dan ketentuan yang berlaku.</p>
                     </section>
                     <section>
-                        <h2 class="text-lg font-semibold text-[#1D1842]">
-                            2. Akun & Penggunaan
-                        </h2>
+                        <h2 class="text-lg font-semibold text-[#1D1842]">2. Akun & Penggunaan</h2>
                         <ul class="list-disc pl-5">
                             <li>Pengguna wajib memberikan data yang benar.</li>
-                            <li>
-                                Keamanan akun sepenuhnya tanggung jawab
-                                pengguna.
-                            </li>
-                            <li>
-                                Dilarang menggunakan platform untuk aktivitas
-                                ilegal.
-                            </li>
+                            <li>Keamanan akun sepenuhnya tanggung jawab pengguna.</li>
+                            <li>Dilarang menggunakan platform untuk aktivitas ilegal.</li>
                         </ul>
                     </section>
                     <section>
-                        <h2 class="text-lg font-semibold text-[#1D1842]">
-                            3. Produk & Transaksi
-                        </h2>
+                        <h2 class="text-lg font-semibold text-[#1D1842]">3. Produk & Transaksi</h2>
                         <ul class="list-disc pl-5">
-                            <li>
-                                Penjual bertanggung jawab atas keaslian produk.
-                            </li>
+                            <li>Penjual bertanggung jawab atas keaslian produk.</li>
                             <li>Pembeli wajib menyelesaikan pembayaran.</li>
                             <li>Harga dan ketersediaan dapat berubah.</li>
                         </ul>
                     </section>
                     <section>
-                        <h2 class="text-lg font-semibold text-[#1D1842]">
-                            4. Pembayaran
-                        </h2>
+                        <h2 class="text-lg font-semibold text-[#1D1842]">4. Pembayaran</h2>
                         <ul class="list-disc pl-5">
-                            <li>
-                                Pembayaran diproses melalui mitra resmi
-                                (Midtrans).
-                            </li>
-                            <li>
-                                UMarket tidak menyimpan data kartu pengguna.
-                            </li>
+                            <li>Pembayaran diproses melalui mitra resmi (Midtrans).</li>
+                            <li>UMarket tidak menyimpan data kartu pengguna.</li>
                         </ul>
                     </section>
                     <section>
-                        <h2 class="text-lg font-semibold text-[#1D1842]">
-                            5. Privasi
-                        </h2>
-                        <p>
-                            Data pribadi pengguna dilindungi dan digunakan
-                            sesuai kebijakan privasi.
-                        </p>
+                        <h2 class="text-lg font-semibold text-[#1D1842]">5. Privasi</h2>
+                        <p>Data pribadi pengguna dilindungi dan digunakan sesuai kebijakan privasi.</p>
                     </section>
                     <section>
-                        <h2 class="text-lg font-semibold text-[#1D1842]">
-                            6. Hukum
-                        </h2>
-                        <p>
-                            Syarat dan ketentuan ini tunduk pada hukum Republik
-                            Indonesia.
-                        </p>
+                        <h2 class="text-lg font-semibold text-[#1D1842]">6. Hukum</h2>
+                        <p>Syarat dan ketentuan ini tunduk pada hukum Republik Indonesia.</p>
                     </section>
                 </div>
 
@@ -319,7 +265,6 @@
             </div>
         </main>
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -335,22 +280,17 @@ import { ref } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-/* sidebar */
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const confirmModal = ref({ visible: false, title: "", message: "" });
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
 
-
-/* logout */
 const logout = () => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
-        message: "Apakah Anda yakin ingin keluar?"
+        message: "Apakah Anda yakin ingin keluar?",
     };
 };
 
@@ -360,13 +300,12 @@ const closeConfirmModal = () => {
 
 const handleConfirmLogout = async () => {
     closeConfirmModal();
-    
+
     try {
         await axios.post("/logout");
         window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
         window.location.href = "/";
     }
 };

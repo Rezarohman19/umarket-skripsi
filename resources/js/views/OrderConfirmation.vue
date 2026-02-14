@@ -91,7 +91,6 @@
                                         </svg>
                                     </div>
 
-                                    <!-- Product Info -->
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-semibold text-[#1D1842] dark:text-[#FDA1A2] mb-1 line-clamp-1">{{ item.product_name }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 line-clamp-1">{{ item.product_description }}</p>

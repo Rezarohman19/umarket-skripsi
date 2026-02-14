@@ -2,7 +2,6 @@ import './bootstrap';
 import { createApp } from 'vue';
 import App from './App.vue';
 
-// Mount Vue app jika ada element dengan id="app"
 const appElement = document.getElementById('app');
 if (appElement) {
     createApp(App).mount('#app');

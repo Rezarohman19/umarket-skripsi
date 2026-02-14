@@ -1,13 +1,6 @@
 import axios from 'axios';
 
 export function useAuth() {
-    /**
-     * Login user
-     * @param {string} email 
-     * @param {string} password 
-     * @param {boolean} remember 
-     * @returns {Promise}
-     */
     const login = async (email, password, remember = false) => {
         try {
             const response = await axios.post('/login', {
@@ -30,10 +23,6 @@ export function useAuth() {
         }
     };
 
-    /**
-     * Logout user
-     * @returns {Promise}
-     */
     const logout = async () => {
         try {
             await axios.post('/logout');
@@ -47,10 +36,6 @@ export function useAuth() {
         }
     };
 
-    /**
-     * Get current authenticated user
-     * @returns {Promise}
-     */
     const getUser = async () => {
         try {
             const response = await axios.get('/api/user');

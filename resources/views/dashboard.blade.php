@@ -7,24 +7,17 @@
 
     <title>Dashboard - {{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-    <!-- Styles / Scripts -->
     @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- Header dengan Logout -->
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                Dashboard
-            </h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
             <div class="flex gap-4 items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-400">
-                    Selamat datang, <strong>{{ Auth::user()->name }}</strong>!
-                </span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Selamat datang, <strong>{{ Auth::user()->name }}</strong>!</span>
                 <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf
                     <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
@@ -34,17 +27,11 @@
             </div>
         </div>
 
-        <!-- Info User dengan Photo -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
             <div class="flex gap-6 items-start">
-                <!-- Profile Photo -->
                 <div class="flex-shrink-0">
                     @if(Auth::user()->photo)
-                        <img 
-                            src="{{ \Illuminate\Support\Facades\Storage::url(Auth::user()->photo) }}?t={{ time() }}" 
-                            alt="Foto Profil" 
-                            style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid #d1d5db;"
-                        />
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url(Auth::user()->photo) }}?t={{ time() }}" alt="Foto Profil" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid #d1d5db;" />
                     @else
                         <div style="width: 96px; height: 96px; border-radius: 50%; background-color: #d1d5db; display: flex; align-items: center; justify-content: center; border: 2px solid #d1d5db;">
                             <svg style="width: 48px; height: 48px; color: #6b7280;" fill="currentColor" viewBox="0 0 24 24">
@@ -54,31 +41,17 @@
                     @endif
                 </div>
 
-                <!-- User Info -->
                 <div class="flex-1">
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Informasi Akun</h2>
                     <div class="space-y-2">
-                        <p class="text-gray-700 dark:text-gray-300">
-                            <strong>Nama:</strong> {{ Auth::user()->name }}
-                        </p>
-                        <p class="text-gray-700 dark:text-gray-300">
-                            <strong>Email:</strong> {{ Auth::user()->email }}
-                        </p>
-                        <p class="text-gray-700 dark:text-gray-300">
-                            <strong>Role:</strong> 
-                            <span class="px-2 py-1 rounded {{ Auth::user()->role === 'admin' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">
-                                {{ Auth::user()->role === 'admin' ? 'Admin' : 'Pengguna' }}
-                            </span>
-                        </p>
+                        <p class="text-gray-700 dark:text-gray-300"><strong>Nama:</strong> {{ Auth::user()->name }}</p>
+                        <p class="text-gray-700 dark:text-gray-300"><strong>Email:</strong> {{ Auth::user()->email }}</p>
+                        <p class="text-gray-700 dark:text-gray-300"><strong>Role:</strong> <span class="px-2 py-1 rounded {{ Auth::user()->role === 'admin' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">{{ Auth::user()->role === 'admin' ? 'Admin' : 'Pengguna' }}</span></p>
                         @if(Auth::user()->phone)
-                            <p class="text-gray-700 dark:text-gray-300">
-                                <strong>Telepon:</strong> {{ Auth::user()->phone }}
-                            </p>
+                            <p class="text-gray-700 dark:text-gray-300"><strong>Telepon:</strong> {{ Auth::user()->phone }}</p>
                         @endif
                         @if(Auth::user()->address)
-                            <p class="text-gray-700 dark:text-gray-300">
-                                <strong>Alamat:</strong> {{ Auth::user()->address }}
-                            </p>
+                            <p class="text-gray-700 dark:text-gray-300"><strong>Alamat:</strong> {{ Auth::user()->address }}</p>
                         @endif
                         <div class="mt-4">
                             <a href="{{ route('profile') }}" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
@@ -90,12 +63,8 @@
             </div>
         </div>
 
-        <!-- Pesan -->
         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <p class="text-blue-800 dark:text-blue-200">
-                ✅ <strong>Login berhasil!</strong> Halaman dashboard ini sementara. 
-                Nanti bisa diganti dengan halaman dashboard Vue.js sesuai kebutuhan.
-            </p>
+            <p class="text-blue-800 dark:text-blue-200">✅ <strong>Login berhasil!</strong> Halaman dashboard ini sementara. Nanti bisa diganti dengan halaman dashboard Vue.js sesuai kebutuhan.</p>
         </div>
     </div>
 </body>

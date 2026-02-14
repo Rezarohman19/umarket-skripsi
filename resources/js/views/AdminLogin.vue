@@ -1,46 +1,23 @@
 <template>
-    <div
-        class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] flex items-center justify-center p-4"
-    >
+    <div class="min-h-screen bg-[#FDA1A2]/20 dark:bg-[#1D1842] flex items-center justify-center p-4">
         <div class="w-full max-w-md">
-            <!-- Logo Container -->
             <div class="flex justify-center mb-8">
-                <div
-                    class="w-20 h-20 bg-[#1D1842] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1D1842]/30 dark:shadow-[#1D1842]/50"
-                >
+                <div class="w-20 h-20 bg-[#1D1842] rounded-2xl flex items-center justify-center shadow-lg shadow-[#1D1842]/30 dark:shadow-[#1D1842]/50">
                     <span class="text-4xl font-bold text-white">U</span>
                 </div>
             </div>
 
-            <!-- Login Card -->
-            <div
-                class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30"
-            >
-                <!-- Title -->
+            <div class="bg-white/98 backdrop-blur-sm dark:bg-[#1D1842] rounded-3xl shadow-md shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30">
                 <div class="text-center mb-8">
-                    <h1
-                        class="text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2"
-                    >
-                        Hi, Admin!
-                    </h1>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Masuk sebagai Admin
-                    </p>
+                    <h1 class="text-3xl font-bold text-[#8E0D3C] dark:text-[#FDA1A2] mb-2">Hi, Admin!</h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Masuk sebagai Admin</p>
                 </div>
 
-                <!-- Error Message dari Laravel -->
-                <div
-                    v-if="laravelErrors.email"
-                    class="mb-6 p-4 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 border border-[#EF3B33]/40 dark:border-[#EF3B33]/40 rounded-lg"
-                >
-                    <p class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
-                        {{ laravelErrors.email }}
-                    </p>
+                <div v-if="laravelErrors.email" class="mb-6 p-4 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 border border-[#EF3B33]/40 dark:border-[#EF3B33]/40 rounded-lg">
+                    <p class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.email }}</p>
                 </div>
 
-                <!-- Login Form - Form submission tradisional Laravel -->
                 <form method="POST" action="/login" class="space-y-6">
-                    <!-- Email Input -->
                     <div>
                         <label
                             for="email"
@@ -58,9 +35,7 @@
                                 class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-xl focus:outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                 placeholder="admin@umarket.com"
                             />
-                            <div
-                                class="absolute inset-y-0 right-0 flex items-center pr-3"
-                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                 <svg
                                     class="w-5 h-5 text-gray-400"
                                     fill="none"
@@ -76,15 +51,9 @@
                                 </svg>
                             </div>
                         </div>
-                        <p
-                            v-if="laravelErrors.email"
-                            class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]"
-                        >
-                            {{ laravelErrors.email }}
-                        </p>
+                        <p v-if="laravelErrors.email" class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.email }}</p>
                     </div>
 
-                    <!-- Password Input -->
                     <div>
                         <label
                             for="password"
@@ -143,15 +112,9 @@
                                 </svg>
                             </button>
                         </div>
-                        <p
-                            v-if="laravelErrors.password"
-                            class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]"
-                        >
-                            {{ laravelErrors.password }}
-                        </p>
+                        <p v-if="laravelErrors.password" class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.password }}</p>
                     </div>
 
-                    <!-- Remember Me -->
                     <div class="flex items-center justify-end">
                         <label class="flex items-center cursor-pointer group">
                             <input
@@ -168,10 +131,8 @@
                         </label>
                     </div>
 
-                    <!-- CSRF Token (Laravel membutuhkan ini) -->
                     <input type="hidden" name="_token" :value="csrfToken" />
 
-                    <!-- Submit Button -->
                     <button
                         type="submit"
                         class="w-full bg-[#8E0D3C] dark:bg-[#8E0D3C] text-white font-semibold py-3.5 px-4 rounded-xl shadow-md shadow-[#8E0D3C]/20 dark:shadow-[#8E0D3C]/20 flex items-center justify-center"
@@ -208,20 +169,17 @@ const laravelErrors = reactive({
     password: "",
 });
 
-// Get CSRF token from meta tag dan error dari Laravel
 onMounted(() => {
     const token = document.head.querySelector('meta[name="csrf-token"]');
     if (token) {
         csrfToken.value = token.content;
     }
 
-    // Cek apakah ada error dari Laravel
     const errorElement = document.getElementById("laravel-errors");
     if (errorElement) {
         const errorText = errorElement.textContent.trim();
         if (errorText) {
             laravelErrors.email = errorText;
-            // Hapus element setelah diambil
             errorElement.remove();
         }
     }
@@ -229,7 +187,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Custom animations */
 @keyframes fadeIn {
     from {
         opacity: 0;

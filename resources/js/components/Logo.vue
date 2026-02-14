@@ -16,5 +16,4 @@ const props = defineProps({
 </script>
 
 <style scoped>
-/* no styles by default; sizing controlled via containerClass prop */
 </style>

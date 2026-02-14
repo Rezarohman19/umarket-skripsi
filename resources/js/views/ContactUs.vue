@@ -1,13 +1,11 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 flex">
-        <!-- SIDEBAR -->
         <aside
             :class="[
                 'bg-[#8E0D3C] border-r border-[#EF3B33]/30 shadow-sm transition-all duration-300 fixed left-0 top-0 bottom-0 flex flex-col z-10',
                 sidebarCollapsed ? 'w-16' : 'w-64',
             ]"
         >
-            <!-- Logo & Toggle Button -->
             <div :class="[
                 'p-4 border-b border-[#EF3B33]/30',
                 sidebarCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center justify-between'
@@ -55,9 +53,7 @@
                 'space-y-3',
                 sidebarCollapsed ? 'px-2' : 'px-4'
             ]">
-                <a
-                    href="/"
-                    :class="[
+                <a href="/" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -81,9 +77,7 @@
                     <span v-if="!sidebarCollapsed">Beranda</span>
                 </a>
 
-                <a
-                    href="/orders"
-                    :class="[
+                <a href="/orders" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -107,9 +101,7 @@
                     <span v-if="!sidebarCollapsed">Pesanan Saya</span>
                 </a>
 
-                <a
-                    href="/open-shop"
-                    :class="[
+                <a href="/open-shop" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -140,9 +132,7 @@
                     sidebarCollapsed ? 'px-2' : 'px-4'
                 ]"
             >
-                <a
-                    href="/terms-and-conditions"
-                    :class="[
+                <a href="/terms-and-conditions" :class="[
                         'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -166,9 +156,7 @@
                     <span v-if="!sidebarCollapsed">Syarat & Ketentuan</span>
                 </a>
 
-                <a
-                    href="#"
-                    :class="[
+                <a href="#" :class="[
                         'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
                         sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                     ]"
@@ -223,24 +211,13 @@
             </div>
         </aside>
 
-        <!-- CONTENT -->
-        <main
-            class="flex-1 px-6 py-10 transition-all duration-300"
-            :class="sidebarCollapsed ? 'ml-16' : 'ml-64'"
-        >
+        <main class="flex-1 px-6 py-10 transition-all duration-300" :class="sidebarCollapsed ? 'ml-16' : 'ml-64'">
             <div class="max-w-5xl mx-auto bg-white rounded-xl p-8 shadow-lg">
-                <h1
-                    class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#8E0D3C] to-[#EF3B33]"
-                >
-                    Hubungi Kami
-                </h1>
+                <h1 class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#8E0D3C] to-[#EF3B33]">Hubungi Kami</h1>
 
-                <p class="text-center text-gray-600 mt-2">
-                    Kami siap membantu Anda kapan saja.
-                </p>
+                <p class="text-center text-gray-600 mt-2">Kami siap membantu Anda kapan saja.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-                    <!-- INFO -->
                     <div class="border rounded-lg p-6">
                         <h2 class="text-xl font-semibold mb-4 text-[#1D1842]">
                             Informasi Kontak
@@ -248,41 +225,26 @@
                         <div class="space-y-4 text-sm">
                             <div>
                                 <strong>Email</strong><br />
-                                <a
-                                    href="mailto:marketunila@gmail.com"
-                                    class="text-[#8E0D3C]"
-                                >
-                                    marketunila@gmail.com
-                                </a>
+                                <a href="mailto:marketunila@gmail.com" class="text-[#8E0D3C]">marketunila@gmail.com</a>
                             </div>
 
                             <div>
                                 <strong>Telepon</strong><br />
-                                <a
-                                    href="tel:+6288286749573"
-                                    class="text-[#8E0D3C]"
-                                >
-                                    +62 882 8674 9573
-                                </a>
+                                <a href="tel:+6288286749573" class="text-[#8E0D3C]">+62 882 8674 9573</a>
                             </div>
 
                             <div>
                                 <strong>Alamat</strong><br />
-                                Gg. By Pass Raya 1, Sepang Jaya, Kota Bandar
-                                Lampung
+                                Gg. By Pass Raya 1, Sepang Jaya, Kota Bandar Lampung
                             </div>
 
                             <div>
-                                <strong>Jam Operasional</strong>
-                                <br />
-                                Senin–Jumat: 09.00–16.00 WIB <br />
-                                Sabtu: 10.00–14.00 WIB <br />
-                                Minggu: Tutup
+                                <strong>Jam Operasional</strong><br />
+                                Senin–Jumat: 09.00–16.00 WIB <br /> Sabtu: 10.00–14.00 WIB <br /> Minggu: Tutup
                             </div>
                         </div>
                     </div>
 
-                    <!-- FORM -->
                     <div class="border rounded-lg p-6">
                         <h2 class="text-xl font-semibold mb-4">Kirim Pesan</h2>
 
@@ -324,7 +286,6 @@
             </div>
         </main>
 
-        <!-- Confirm Modal untuk Logout -->
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -340,7 +301,6 @@ import { ref } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
-// Default collapsed di mobile, expanded di desktop
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const confirmModal = ref({ visible: false, title: "", message: "" });
 
@@ -363,11 +323,10 @@ const submitForm = async () => {
 };
 
 const logout = () => {
-    // Tampilkan confirm modal
     confirmModal.value = {
         visible: true,
         title: "Konfirmasi Keluar",
-        message: "Apakah Anda yakin ingin keluar?"
+        message: "Apakah Anda yakin ingin keluar?",
     };
 };
 
@@ -377,13 +336,12 @@ const closeConfirmModal = () => {
 
 const handleConfirmLogout = async () => {
     closeConfirmModal();
-    
+
     try {
         await axios.post("/logout");
         window.location.href = "/";
     } catch (error) {
         console.error("Error logging out:", error);
-        // Tetap redirect meskipun ada error
         window.location.href = "/";
     }
 };

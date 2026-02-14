@@ -14,7 +14,6 @@
                 >
             </p>
 
-            <!-- Contoh penggunaan komponen -->
             <ExampleComponent />
         </div>
     </div>
@@ -35,7 +34,6 @@ export default {
 </script>
 
 <style scoped>
-/* App styles here */
 </style>
 
 <style>

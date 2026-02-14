@@ -54,9 +54,7 @@
                     'space-y-3',
                     sidebarCollapsed ? 'px-2' : 'px-4'
                 ]">
-                    <a
-                        href="/"
-                        :class="[
+                    <a href="/" :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                         ]"
@@ -80,9 +78,7 @@
                         <span v-if="!sidebarCollapsed">Beranda</span>
                     </a>
 
-                    <a
-                        href="/orders"
-                        :class="[
+                    <a href="/orders" :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                         ]"
@@ -106,9 +102,7 @@
                         <span v-if="!sidebarCollapsed">Pesanan Saya</span>
                     </a>
 
-                    <a
-                        href="#"
-                        :class="[
+                    <a href="#" :class="[
                             'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                         ]"
@@ -139,9 +133,7 @@
                         sidebarCollapsed ? 'px-2' : 'px-4'
                     ]"
                 >
-                    <a
-                        href="/terms-and-conditions"
-                        :class="[
+                    <a href="/terms-and-conditions" :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                         ]"
@@ -165,9 +157,7 @@
                         <span v-if="!sidebarCollapsed">Syarat & Ketentuan</span>
                     </a>
 
-                    <a
-                        href="/contact-us"
-                        :class="[
+                    <a href="/contact-us" :class="[
                             'flex items-center rounded-lg text-white/80 hover:bg-[#EF3B33]/20 transition',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                         ]"
@@ -401,13 +391,9 @@
                     <section
                         class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6"
                     >
-                        <div
-                            class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
-                        >
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                             <div class="flex items-center gap-4">
-                                <div
-                                    class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300"
-                                >
+                                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300">
                                     <img
                                         v-if="user?.photo_url"
                                         :src="getPhotoUrl(user.photo_url)"
@@ -430,40 +416,16 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p
-                                        class="text-lg font-semibold text-gray-800 dark:text-gray-100"
-                                    >
-                                        {{ store.name }}
-                                    </p>
+                                    <p class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ store.name }}</p>
                                 </div>
                             </div>
 
-                            <div
-                                class="bg-gradient-to-r from-[#FDA1A2]/20 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#EF3B33]/20 rounded-xl p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
-                            >
-                                <div
-                                    class="flex items-center justify-between gap-4"
-                                >
+                            <div class="bg-gradient-to-r from-[#FDA1A2]/20 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#EF3B33]/20 rounded-xl p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
+                                <div class="flex items-center justify-between gap-4">
                                     <div>
-                                        <p
-                                            class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1"
-                                        >
-                                            Saldo Penjualan
-                                        </p>
-                                        <p
-                                            class="text-3xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]"
-                                        >
-                                            Rp.
-                                            {{
-                                                formatPrice(store.balance || 0)
-                                            }}
-                                        </p>
-                                        <p
-                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                                        >
-                                            Dari
-                                            {{ store.totalSold || 0 }} penjualan
-                                        </p>
+                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Saldo Penjualan</p>
+                                        <p class="text-3xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]">Rp. {{ formatPrice(store.balance || 0) }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Dari {{ store.totalSold || 0 }} penjualan</p>
                                     </div>
                                     <button
                                         @click="showWithdrawModal = true"
@@ -488,16 +450,8 @@
                                         : '',
                                 ]"
                             >
-                                <p
-                                    class="text-2xl font-bold text-gray-900 dark:text-white"
-                                >
-                                    {{ store.stats.incoming }}
-                                </p>
-                                <p
-                                    class="text-sm text-gray-600 dark:text-gray-400"
-                                >
-                                    Pesanan Masuk
-                                </p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.incoming }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Pesanan Masuk</p>
                             </button>
                             <button
                                 @click="showOrdersSection('processing')"
@@ -508,16 +462,8 @@
                                         : '',
                                 ]"
                             >
-                                <p
-                                    class="text-2xl font-bold text-gray-900 dark:text-white"
-                                >
-                                    {{ store.stats.needShip }}
-                                </p>
-                                <p
-                                    class="text-sm text-gray-600 dark:text-gray-400"
-                                >
-                                    Perlu Dikirim
-                                </p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.needShip }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Perlu Dikirim</p>
                             </button>
                             <button
                                 @click="showOrdersSection('shipping')"
@@ -528,16 +474,8 @@
                                         : '',
                                 ]"
                             >
-                                <p
-                                    class="text-2xl font-bold text-gray-900 dark:text-white"
-                                >
-                                    {{ store.stats.shipped }}
-                                </p>
-                                <p
-                                    class="text-sm text-gray-600 dark:text-gray-400"
-                                >
-                                    Dikirim
-                                </p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.shipped }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Dikirim</p>
                             </button>
                             <button
                                 @click="showOrdersSection('history')"
@@ -548,31 +486,16 @@
                                         : '',
                                 ]"
                             >
-                                <p
-                                    class="text-2xl font-bold text-gray-900 dark:text-white"
-                                >
-                                    {{ store.stats.history }}
-                                </p>
-                                <p
-                                    class="text-sm text-gray-600 dark:text-gray-400"
-                                >
-                                    Riwayat Penjualan
-                                </p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ store.stats.history }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Riwayat Penjualan</p>
                             </button>
                         </div>
                     </section>
 
-                    <section
-                        v-if="activeOrderSection"
-                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 space-y-4"
-                    >
+                    <section v-if="activeOrderSection" class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-6 space-y-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <h2
-                                    class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
-                                >
-                                    {{ getSectionTitle(activeOrderSection) }}
-                                </h2>
+                                <h2 class="text-lg font-semibold text-[#1D1842] dark:text-[#FDA1A2]">{{ getSectionTitle(activeOrderSection) }}</h2>
                                 <button
                                     @click="activeOrderSection = null"
                                     class="p-1 text-gray-500 cursor-pointer transition-all duration-150 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 rounded active:scale-95"
@@ -596,15 +519,10 @@
                         </div>
 
                         <div v-if="ordersLoading" class="text-center py-8">
-                            <p class="text-gray-500 dark:text-gray-400">
-                                Memuat pesanan...
-                            </p>
+                            <p class="text-gray-500 dark:text-gray-400">Memuat pesanan...</p>
                         </div>
 
-                        <div
-                            v-else-if="filteredOrdersBySection.length === 0"
-                            class="text-center py-8"
-                        >
+                        <div v-else-if="filteredOrdersBySection.length === 0" class="text-center py-8">
                             <svg
                                 class="w-16 h-16 mx-auto text-gray-400 mb-3"
                                 fill="none"
@@ -629,51 +547,23 @@
                                 :key="order.id"
                                 class="border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg p-4"
                             >
-                                <div
-                                    class="flex items-start justify-between mb-3"
-                                >
+                                <div class="flex items-start justify-between mb-3">
                                     <div>
-                                        <div
-                                            class="flex items-center gap-2 mb-1"
-                                        >
+                                        <div class="flex items-center gap-2 mb-1">
                                             <span
                                                 class="px-2 py-1 rounded-full text-xs font-semibold"
-                                                :class="
-                                                    getStatusClass(order.status)
-                                                "
+                                                :class="getStatusClass(order.status)"
                                             >
-                                                {{
-                                                    getStatusLabel(order.status)
-                                                }}
+                                                {{ getStatusLabel(order.status) }}
                                             </span>
-                                            <span
-                                                class="text-xs text-gray-500 dark:text-gray-400"
-                                                >ID: #{{ order.id }}</span
-                                            >
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID: #{{ order.id }}</span>
                                         </div>
-                                        <p
-                                            class="text-sm font-semibold text-gray-900 dark:text-white"
-                                        >
-                                            Pesanan dari: {{ order.buyer_name }}
-                                        </p>
-                                        <p
-                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                                        >
-                                            {{ formatDate(order.created_at) }}
-                                        </p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">Pesanan dari: {{ order.buyer_name }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(order.created_at) }}</p>
                                     </div>
                                     <div class="text-right">
-                                        <p
-                                            class="text-lg font-bold text-gray-900 dark:text-white"
-                                        >
-                                            Rp.
-                                            {{ formatPrice(order.total_price) }}
-                                        </p>
-                                        <p
-                                            class="text-xs text-gray-500 dark:text-gray-400"
-                                        >
-                                            {{ order.items.length }} item
-                                        </p>
+                                        <p class="text-lg font-bold text-gray-900 dark:text-white">Rp. {{ formatPrice(order.total_price) }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ order.items.length }} item</p>
                                     </div>
                                 </div>
 
@@ -683,9 +573,7 @@
                                         :key="item.id"
                                         class="flex items-center gap-3 p-2 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded"
                                     >
-                                        <div
-                                            class="w-12 h-12 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
-                                        >
+                                        <div class="w-12 h-12 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20">
                                             <img
                                                 v-if="item.product?.image_url"
                                                 :src="item.product.image_url"
@@ -708,31 +596,10 @@
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p
-                                                class="text-sm font-semibold text-gray-900 dark:text-white truncate"
-                                            >
-                                                {{
-                                                    item.product?.name ||
-                                                    "Produk"
-                                                }}
-                                            </p>
-                                            <p
-                                                class="text-xs text-gray-600 dark:text-gray-400"
-                                            >
-                                                {{ item.qty }} pcs × Rp.
-                                                {{ formatPrice(item.price) }}
-                                            </p>
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ item.product?.name || "Produk" }}</p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-400">{{ item.qty }} pcs × Rp. {{ formatPrice(item.price) }}</p>
                                         </div>
-                                        <p
-                                            class="text-sm font-semibold text-gray-900 dark:text-white"
-                                        >
-                                            Rp.
-                                            {{
-                                                formatPrice(
-                                                    item.price * item.qty
-                                                )
-                                            }}
-                                        </p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">Rp. {{ formatPrice(item.price * item.qty) }}</p>
                                     </div>
                                 </div>
 
@@ -740,11 +607,7 @@
                                     v-if="order.shipping_address"
                                     class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
                                 >
-                                    <p
-                                        class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1"
-                                    >
-                                        Alamat Pengiriman:
-                                    </p>
+                                    <p class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1">Alamat Pengiriman:</p>
                                     <p class="text-gray-700 dark:text-gray-300">
                                         {{ order.shipping_address.name }} -
                                         {{ order.shipping_address.phone }}
@@ -758,16 +621,8 @@
                                     v-if="order.tracking_number"
                                     class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
                                 >
-                                    <p
-                                        class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1"
-                                    >
-                                        Nomor Resi:
-                                    </p>
-                                    <p
-                                        class="font-mono text-gray-900 dark:text-white"
-                                    >
-                                        {{ order.tracking_number }}
-                                    </p>
+                                    <p class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1">Nomor Resi:</p>
+                                    <p class="font-mono text-gray-900 dark:text-white">{{ order.tracking_number }}</p>
                                 </div>
 
                                 <div class="flex flex-wrap gap-2">
@@ -840,9 +695,7 @@
                                 v-if="showForm"
                                 class="bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 space-y-3 border border-dashed border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40"
                             >
-                                <div
-                                    class="grid grid-cols-1 sm:grid-cols-2 gap-3"
-                                >
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
@@ -977,9 +830,7 @@
                         <div class="overflow-x-auto -mx-4 sm:mx-0 max-w-full">
                             <div class="inline-block min-w-full align-middle">
                                 <div class="overflow-hidden">
-                                    <div
-                                        class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-sm font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] rounded-lg px-4 py-3 gap-2"
-                                    >
+                                    <div class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 text-sm font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] rounded-lg px-4 py-3 gap-2">
                                         <div class="truncate">Nama Toko</div>
                                         <div class="truncate">Nama</div>
                                         <div class="truncate">Kategori</div>
@@ -988,40 +839,17 @@
                                         <div class="truncate">Aksi</div>
                                     </div>
 
-                                    <div
-                                        class="space-y-2 mt-2"
-                                        v-if="filteredProducts.length"
-                                    >
+                                    <div class="space-y-2 mt-2" v-if="filteredProducts.length">
                                         <div
                                             v-for="p in filteredProducts"
                                             :key="p.id"
                                             class="grid grid-cols-[120px_150px_100px_80px_100px_100px] sm:grid-cols-6 items-center bg-white dark:bg-[#1D1842] border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 rounded-lg px-4 py-4 gap-2"
                                         >
-                                            <div
-                                                class="text-sm text-gray-700 dark:text-gray-300 truncate"
-                                            >
-                                                {{ store.name }}
-                                            </div>
-                                            <div
-                                                class="text-sm text-[#1D1842] dark:text-[#FDA1A2] font-semibold truncate"
-                                            >
-                                                {{ p.name }}
-                                            </div>
-                                            <div
-                                                class="text-sm text-[#EF3B33] dark:text-[#EF3B33] truncate"
-                                            >
-                                                {{ p.category?.name || "-" }}
-                                            </div>
-                                        <div
-                                            class="text-sm text-[#1D1842] dark:text-[#FDA1A2]"
-                                        >
-                                            {{ p.stock }}
-                                        </div>
-                                        <div
-                                            class="text-sm text-[#EF3B33] dark:text-[#EF3B33] font-semibold"
-                                        >
-                                            Rp. {{ formatPrice(p.price) }}
-                                        </div>
+                                            <div class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ store.name }}</div>
+                                            <div class="text-sm text-[#1D1842] dark:text-[#FDA1A2] font-semibold truncate">{{ p.name }}</div>
+                                            <div class="text-sm text-[#EF3B33] dark:text-[#EF3B33] truncate">{{ p.category?.name || "-" }}</div>
+                                            <div class="text-sm text-[#1D1842] dark:text-[#FDA1A2]">{{ p.stock }}</div>
+                                            <div class="text-sm text-[#EF3B33] dark:text-[#EF3B33] font-semibold">Rp. {{ formatPrice(p.price) }}</div>
                                         <div class="flex gap-2">
                                             <button
                                                 class="px-3 py-1 text-xs rounded-full bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] cursor-pointer transition-all duration-150 hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 hover:shadow-md active:scale-95 active:shadow-inner"
@@ -1065,14 +893,8 @@
                 class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showShippingForm = false"
             >
-                <div
-                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
-                >
-                    <h3
-                        class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
-                    >
-                        Kirim Paket
-                    </h3>
+                <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Kirim Paket</h3>
                     <div class="space-y-4">
                         <div>
                             <label
@@ -1135,28 +957,12 @@
                 class="fixed inset-0 bg-[#FDA1A2]/40 dark:bg-[#1D1842]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                 @click.self="showWithdrawModal = false"
             >
-                <div
-                    class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
-                >
-                    <h3
-                        class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
-                    >
-                        Tarik Saldo
-                    </h3>
+                <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Tarik Saldo</h3>
                     <div class="space-y-4">
-                        <div
-                            class="bg-[#FDA1A2]/10 dark:bg-[#8E0D3C]/20 rounded-lg p-4 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
-                        >
-                            <p
-                                class="text-sm text-gray-600 dark:text-gray-400 mb-1"
-                            >
-                                Saldo Tersedia
-                            </p>
-                            <p
-                                class="text-2xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]"
-                            >
-                                Rp. {{ formatPrice(store.balance || 0) }}
-                            </p>
+                        <div class="bg-[#FDA1A2]/10 dark:bg-[#8E0D3C]/20 rounded-lg p-4 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Saldo Tersedia</p>
+                            <p class="text-2xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]">Rp. {{ formatPrice(store.balance || 0) }}</p>
                         </div>
 
                         <div>
@@ -1173,11 +979,7 @@
                                 @blur="formatWithdrawAmount"
                                 class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                             />
-                            <p
-                                class="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                            >
-                                Contoh: Rp 100.000 atau 100000
-                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Contoh: Rp 100.000 atau 100000</p>
                         </div>
 
                         <div>
@@ -1207,24 +1009,9 @@
                                 <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
                                     Anda belum menambahkan rekening bank.
                                 </p>
-                                <a
-                                    href="/profile"
-                                    class="text-[#EF3B33] font-semibold text-sm hover:underline"
-                                >
-                                    Tambah rekening di profil &rarr;
-                                </a>
+                                <a href="/profile" class="text-[#EF3B33] font-semibold text-sm hover:underline">Tambah rekening di profil &rarr;</a>
                             </div>
-                            <p
-                                v-if="userBanks.length > 0"
-                                class="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                            >
-                                <a
-                                    href="/profile"
-                                    class="text-[#EF3B33] hover:underline"
-                                >
-                                    Kelola rekening di profil
-                                </a>
-                            </p>
+                            <p v-if="userBanks.length > 0" class="text-xs text-gray-500 dark:text-gray-400 mt-1"><a href="/profile" class="text-[#EF3B33] hover:underline">Kelola rekening di profil</a></p>
                         </div>
 
                         <div

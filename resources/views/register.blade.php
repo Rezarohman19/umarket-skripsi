@@ -7,15 +7,12 @@
 
     <title>Daftar - {{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-    <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app-register.js'])
 </head>
 <body>
-    {{-- Error dari Laravel (jika ada) --}}
     @if ($errors->any())
         <div id="laravel-errors" style="display: none;">
             @foreach ($errors->get('name') as $error)

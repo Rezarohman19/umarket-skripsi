@@ -1,6 +1,5 @@
 <template>
     <div class="min-h-screen bg-[#FDA1A2]/10 dark:bg-[#1D1842]">
-        <!-- Header dengan Back Button -->
         <div class="bg-white dark:bg-[#1D1842] border-b border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm sticky top-0 z-40">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
                 <button
@@ -26,22 +25,15 @@
         </div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-            <!-- Loading Store Info -->
             <div v-if="loadingStore" class="text-center py-12">
-                <p class="text-gray-600 dark:text-gray-400">
-                    Memuat informasi toko...
-                </p>
+                <p class="text-gray-600 dark:text-gray-400">Memuat informasi toko...</p>
             </div>
 
-            <!-- Store Info -->
             <div v-else-if="store" class="mb-8">
                 <div class="bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-lg p-6">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                        <!-- Store Photo -->
                         <div class="flex-shrink-0">
-                            <div
-                                class="w-24 h-24 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-full flex items-center justify-center overflow-hidden border-2 border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
-                            >
+                            <div class="w-24 h-24 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-full flex items-center justify-center overflow-hidden border-2 border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
                                 <svg
                                     v-if="!store.photo_url"
                                     class="w-12 h-12 text-gray-400"
@@ -65,19 +57,12 @@
                             </div>
                         </div>
 
-                        <!-- Store Details -->
                         <div class="flex-1">
                             <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                                 {{ store.name }}
                             </h1>
-                            <p
-                                v-if="store.description"
-                                class="text-gray-600 dark:text-gray-400 mb-4"
-                            >
-                                {{ store.description }}
-                            </p>
+                            <p v-if="store.description" class="text-gray-600 dark:text-gray-400 mb-4">{{ store.description }}</p>
                             
-                            <!-- Hubungi Penjual Button -->
                             <button
                                 v-if="store.phone"
                                 @click="contactSeller"
@@ -98,35 +83,22 @@
                                 </svg>
                                 Hubungi Penjual
                             </button>
-                            <p
-                                v-else
-                                class="text-sm text-gray-500 dark:text-gray-400"
-                            >
-                                Nomor WhatsApp tidak tersedia
-                            </p>
+                            <p v-else class="text-sm text-gray-500 dark:text-gray-400">Nomor WhatsApp tidak tersedia</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Products Section -->
             <div>
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                     Produk dari {{ store?.name || "Toko" }}
                 </h2>
 
-                <!-- Loading Products -->
                 <div v-if="loadingProducts" class="text-center py-12">
-                    <p class="text-gray-600 dark:text-gray-400">
-                        Memuat produk...
-                    </p>
+                    <p class="text-gray-600 dark:text-gray-400">Memuat produk...</p>
                 </div>
 
-                <!-- No Products -->
-                <div
-                    v-else-if="products.length === 0"
-                    class="text-center py-12 bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
-                >
+                <div v-else-if="products.length === 0" class="text-center py-12 bg-white dark:bg-[#1D1842] rounded-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
                     <svg
                         class="w-24 h-24 mx-auto text-gray-400 mb-4"
                         fill="none"
@@ -145,22 +117,14 @@
                     </p>
                 </div>
 
-                <!-- Products Grid -->
-                <div
-                    v-else
-                    class="grid gap-3"
-                    style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));"
-                >
+                <div v-else class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
                     <div
                         v-for="product in products"
                         :key="product.id"
                         class="relative bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition-shadow"
                         @click="goToProductDetail(product.id)"
                     >
-                        <!-- Product Image -->
-                        <div
-                            class="w-full h-28 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden"
-                        >
+                        <div class="w-full h-28 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 flex items-center justify-center overflow-hidden">
                             <svg
                                 v-if="!product.image_url"
                                 class="w-14 h-14 text-gray-400"
@@ -183,30 +147,16 @@
                             />
                         </div>
 
-                        <!-- Product Info -->
                         <div class="p-2 pb-1">
-                            <h3
-                                class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1"
-                            >
-                                {{ product.name }}
-                            </h3>
-                            <p
-                                class="text-base font-bold text-[#EF3B33] dark:text-[#EF3B33]"
-                            >
-                                Rp. {{ formatPrice(product.price) }}
-                            </p>
-                            <p
-                                class="text-xs text-gray-500 dark:text-gray-400 mt-1"
-                            >
-                                Stok: {{ product.stock }}
-                            </p>
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">{{ product.name }}</h3>
+                            <p class="text-base font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(product.price) }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Stok: {{ product.stock }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Toast Notification -->
         <ToastNotification
             :visible="toast.visible"
             :message="toast.message"
@@ -221,7 +171,6 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification.vue";
 
-// Get user_id from URL
 const getUserId = () => {
     const path = window.location.pathname;
     const parts = path.split("/");
@@ -292,23 +241,18 @@ const contactSeller = () => {
         return;
     }
 
-    // Format phone number untuk WhatsApp
     let phoneNumber = store.value.phone.toString().replace(/[^\d+]/g, "");
 
-    // Jika dimulai dengan 0, ganti dengan 62
     if (phoneNumber.startsWith("0")) {
         phoneNumber = "62" + phoneNumber.substring(1);
     }
 
-    // Jika belum ada +, tambahkan
     if (!phoneNumber.startsWith("+")) {
         phoneNumber = "+" + phoneNumber;
     }
 
-    // Buat pesan default
     const message = `Halo ${store.value.name},\n\nSaya tertarik dengan produk yang Anda jual. Apakah masih tersedia?\n\nTerima kasih.`;
 
-    // Buka WhatsApp
     const whatsappUrl = `https://wa.me/${phoneNumber.replace("+", "")}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
 };
@@ -327,5 +271,4 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Add any custom styles if needed */
 </style>
