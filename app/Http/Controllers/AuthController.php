@@ -34,8 +34,6 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // regenerate session untuk keamanan
-            $request->session()->regenerate();
 
             // Jika email belum terverifikasi, arahkan ke halaman verifikasi
             if (!Auth::user()->hasVerifiedEmail()) {
@@ -49,6 +47,15 @@ class AuthController extends Controller
 
             // Untuk pengguna biasa, redirect ke beranda
             return redirect('/');
+
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+            'message' => 'Login success',
+            'token' => $token,
+            'user' => $user
+        ]);
 
         }
 
