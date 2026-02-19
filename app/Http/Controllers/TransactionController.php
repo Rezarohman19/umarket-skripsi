@@ -77,8 +77,33 @@ class TransactionController extends Controller
                 return response()->json(['message' => 'Cart not found'], 404);
             }
 
-            // Ambil cart_item_ids dari request (item yang dipilih user)
-            $selectedCartItemIds = $request->input('cart_item_ids', []);
+            // Ambil daftar item yang dipilih. Mendukung beberapa format input:
+            // 1) cart_item_ids: [id, id]
+            // 2) items: [{"id": 31, "qty": 2}, {"id": 35, "qty":1}]
+            // 3) legacy items_id single value
+            $selectedCartItemIds = [];
+            $overrideQtys = []; // id => qty, tidak akan menimpa cart di DB
+
+            if ($request->has('items') && is_array($request->input('items'))) {
+                foreach ($request->input('items') as $it) {
+                    if (!is_array($it) && !is_object($it)) continue;
+                    $id = isset($it['id']) ? (int)$it['id'] : (isset($it->id) ? (int)$it->id : null);
+                    if (!$id) continue;
+                    $selectedCartItemIds[] = $id;
+                    if (isset($it['qty']) || isset($it->qty)) {
+                        $qty = isset($it['qty']) ? (int)$it['qty'] : (int)$it->qty;
+                        if ($qty < 1) {
+                            return response()->json(['message' => 'Invalid quantity for item ' . $id], 400);
+                        }
+                        $overrideQtys[$id] = $qty;
+                    }
+                }
+            } else {
+                $selectedCartItemIds = $request->input('cart_item_ids', []);
+                if (empty($selectedCartItemIds) && $request->filled('items_id')) {
+                    $selectedCartItemIds = [$request->input('items_id')];
+                }
+            }
 
             if (empty($selectedCartItemIds)) {
                 return response()->json(['message' => 'No items selected for checkout'], 400);
@@ -95,12 +120,13 @@ class TransactionController extends Controller
             }
 
             foreach ($cartItems as $item) {
+                $requestedQty = $overrideQtys[$item->id] ?? $item->qty;
                 $stock = $item->product->stock ?? 0;
-                if ($item->qty > $stock) {
+                if ($requestedQty > $stock) {
                     return response()->json([
                         'message' => 'Stok produk tidak mencukupi untuk checkout',
                         'product' => $item->product->name,
-                        'requested_qty' => $item->qty,
+                        'requested_qty' => $requestedQty,
                         'available_stock' => $stock,
                     ], 422);
                 }
@@ -129,12 +155,13 @@ class TransactionController extends Controller
                 $itemDetails = [];
 
                 foreach ($items as $it) {
-                    $subtotal = ($it->product->price ?? 0) * $it->qty;
+                    $usedQty = $overrideQtys[$it->id] ?? $it->qty;
+                    $subtotal = ($it->product->price ?? 0) * $usedQty;
                     $groupTotal += $subtotal;
                     $itemDetails[] = [
                         'id' => $it->product->id,
                         'price' => $it->product->price ?? 0,
-                        'quantity' => $it->qty,
+                        'quantity' => $usedQty,
                         'name' => $it->product->name ?? 'Produk',
                     ];
                 }
@@ -151,10 +178,11 @@ class TransactionController extends Controller
                 ]);
 
                 foreach ($items as $it) {
+                    $usedQty = $overrideQtys[$it->id] ?? $it->qty;
                     TransactionItem::create([
                         'transaction_id' => $transaction->id,
                         'product_id' => $it->product_id,
-                        'qty' => $it->qty,
+                        'qty' => $usedQty,
                         'price' => $it->product->price ?? 0,
                     ]);
                 }
@@ -192,16 +220,39 @@ class TransactionController extends Controller
                 $transaction->snap_token = $snapToken;
                 $transaction->save();
 
+                // === NOTIFIKASI WA KE PENJUAL (PESANAN MASUK BELUM DIBAYAR) ===
+                try {
+                    $firstItemForSeller = $items[0] ?? null;
+                    $seller = $firstItemForSeller?->product?->user;
+                    
+                    if ($seller && $seller->phone) {
+                        $waService = new \App\Services\WhatsAppService();
+                        $message = "*ADA PESANAN BARU!* 🛍️\n\n" .
+                            "Halo {$seller->name},\n" .
+                            "Seseorang baru saja memesan produk Anda!\n\n" .
+                            "No. Pesanan: *{$transaction->order_id}*\n" .
+                            "Total: *Rp " . number_format($transaction->total_price, 0, ',', '.') . "*\n\n" .
+                            "Pesanan saat ini menunggu pembayaran dari pembeli. Kami akan memberitahu Anda lagi jika pembayaran telah selesai.\n\n" .
+                            "Silakan pantau pesanan Anda di dashboard U-Market.";
+                        
+                        $waService->sendMessage($seller->phone, $message);
+                        Log::info("WA Order notification sent to seller: {$seller->name} ({$seller->phone})");
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to send WA Order notification to seller: " . $e->getMessage());
+                }
+
                 $responseTransactions[] = [
                     'transaction' => $transaction,
                     'snap_token' => $snapToken,
                     'seller_id' => $sellerId,
                     'seller_name' => optional(optional($items[0])->product->user)->name,
-                    'items' => collect($items)->map(function ($it) {
+                    'items' => collect($items)->map(function ($it) use ($overrideQtys) {
+                        $usedQty = $overrideQtys[$it->id] ?? $it->qty;
                         return [
                             'product_id' => $it->product_id,
                             'name' => $it->product->name ?? 'Produk',
-                            'qty' => $it->qty,
+                            'qty' => $usedQty,
                             'price' => $it->product->price ?? 0,
                             'image_url' => $it->product->image ? \Illuminate\Support\Facades\Storage::url($it->product->image) : null,
                         ];
@@ -210,8 +261,12 @@ class TransactionController extends Controller
                 ];
             }
 
-            // Hapus hanya cart items yang sudah di-checkout (yang dipilih user)
-            CartItem::whereIn('id', $selectedCartItemIds)->delete();
+            // Jika request meminta untuk mempertahankan item di keranjang (mis. untuk testing/dry-run),
+            // maka jangan hapus cart items. Default: hapus.
+            $preserve = $request->boolean('preserve_cart', false);
+            if (!$preserve) {
+                CartItem::whereIn('id', $selectedCartItemIds)->delete();
+            }
 
             DB::commit();
 

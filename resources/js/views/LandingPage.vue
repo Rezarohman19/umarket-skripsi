@@ -917,17 +917,38 @@ const getPhotoUrl = (photoUrl) => {
     return photoUrl + "?t=" + Date.now();
 };
 
+const isInitialLoad = ref(true);
+
 const checkAuth = async () => {
+    // Gunakan data dari Blade sebagai sumber kebenaran awal
+    if (isInitialLoad.value && window.auth_user) {
+        user.value = window.auth_user;
+        isInitialLoad.value = false;
+        // Kita tetap panggil API untuk refresh data, tapi tidak akan 'mementalkan' status login
+    }
+
     try {
         const response = await axios.get("/api/user", {
             params: { _t: Date.now() },
         });
-        user.value = response.data;
-    } catch (error) {
-        if (error.response?.status !== 401) {
-            console.error("Error checking auth:", error);
+        
+        if (response.data && response.data.id) {
+            user.value = response.data;
+        } else if (!window.auth_user) {
+            user.value = null;
         }
-        user.value = null;
+    } catch (error) {
+        // Jika API gagal tapi Blade bilang kita login, jangan langsung set null
+        // Kecuali jika memang error-nya 401 (benar-benar expired)
+        if (error.response?.status === 401) {
+            // Hanya hapus jika kita tidak punya backup data dari Blade
+            if (!window.auth_user) {
+                user.value = null;
+            }
+        }
+        console.error("Auth check failed, but keeping session if Blade says OK:", error.message);
+    } finally {
+        isInitialLoad.value = false;
     }
 };
 
@@ -976,11 +997,12 @@ const handleAddToCart = async (product) => {
         toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
         return;
     }
-    toast.value = { visible: true, message: "Berhasil", type: "success" };
-    lastAddedProductId.value = product.id;
-
     try {
         await axios.post("/api/cart/add", { product_id: product.id, quantity });
+        
+        toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
+        lastAddedProductId.value = product.id;
+        
         await fetchCartCount();
         await nextTick();
         window.dispatchEvent(new CustomEvent("cartUpdated"));
@@ -1092,6 +1114,7 @@ const handleUserUpdated = async (event) => {
 };
 
 onMounted(async () => {
+    console.log("Blade injected user:", window.auth_user);
     checkWelcomeCardVisibility();
     await checkAuth();
     await fetchProducts();

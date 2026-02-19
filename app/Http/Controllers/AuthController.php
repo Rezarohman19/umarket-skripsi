@@ -42,21 +42,11 @@ class AuthController extends Controller
 
             // Redirect berdasarkan role
             if (Auth::user()->role === 'admin') {
-                return redirect('/admin/dashboard');
+                return redirect()->route('admin.dashboard');
             }
 
-            // Untuk pengguna biasa, redirect ke beranda
-            return redirect('/');
-
-            $user = Auth::user();
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json([
-            'message' => 'Login success',
-            'token' => $token,
-            'user' => $user
-        ]);
-
+            // Redirect intensi awal atau default ke beranda
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -114,6 +104,107 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * API Login - Return Bearer Token (untuk client/SPA terpisah)
+     */
+    public function apiLogin(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Email atau password salah.',
+            ], 401);
+        }
+
+        // Jika email belum terverifikasi
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Silakan verifikasi email Anda terlebih dahulu.',
+            ], 403);
+        }
+
+        // Login ke Web Session
+        Auth::login($user, true);
+
+        // Generate token (Sanctum - opsional jika masih ada yang pakai)
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login success',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+        ]);
+    }
+
+    /**
+     * API Register - Return Bearer Token
+     */
+    public function apiRegister(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'pengguna',
+        ]);
+
+        // Auto login ke session
+        Auth::login($user);
+
+        // Generate token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Kirim email verifikasi
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            \Log::error('Gagal mengirim email verifikasi: '.$e->getMessage());
+        }
+
+        return response()->json([
+            'message' => 'Registration success',
+            'token' => $token,
+            'user' => $user,
+        ], 201);
+    }
+
+    /**
+     * API Logout - Revoke semua tokens
+     */
+    public function apiLogout(Request $request)
+    {
+        // Revoke current token if using Sanctum token
+        if ($request->user() && method_exists($request->user(), 'currentAccessToken') && $request->user()->currentAccessToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        // Logout from Web Session (Blade)
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'message' => 'Logout success',
+        ]);
     }
 
     /**

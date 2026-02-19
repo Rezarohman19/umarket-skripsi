@@ -34,10 +34,10 @@ class SendPaymentReminder extends Command
         // Cari transaksi yang:
         // 1. Statusnya 'pending' atau 'unpaid'
         // 2. Belum pernah dikirimi notifikasi WhatsApp (wa_notified_at is null)
-        // 3. Waktu kadaluarsanya (expiry_time) tinggal <= 4 jam lagi
+        // 3. Waktu kadaluarsanya (expiry_time) tinggal <= 1 jam lagi (Sesuai permintaan USER)
         // 4. Belum lewat waktu kadaluarsanya (masih di masa depan)
 
-        $thresholdTime = now()->addHours(4);
+        $thresholdTime = now()->addHour(1);
 
         $pendingTransactions = Transaction::whereIn('status', ['pending', 'unpaid'])
             ->whereNull('wa_notified_at')
@@ -75,10 +75,14 @@ class SendPaymentReminder extends Command
                 $timeLabel .= "{$remainingMinutes} menit";
             }
 
-            $message = "Halo {$transaction->shipping_name},\n\n";
-            $message .= "Kami dari U-Market ingin menginformasikan bahwa pesanan Anda dengan ID *#{$transaction->order_id}* akan segera berakhir waktu pembayarannya dalam *{$timeLabel}* lagi.\n\n";
+            $appUrl = config('app.url');
+            $orderLink = $appUrl . "/orders";
+
+            $message = "Halo {$transaction->shipping_name}!\n\n";
+            $message .= "Kami dari *U-Market* ingin menginformasikan bahwa pesanan Anda dengan ID *#{$transaction->order_id}* akan segera berakhir waktu pembayarannya dalam *{$timeLabel}* lagi.\n\n";
             $message .= "Total Pembayaran: *Rp " . number_format($transaction->total_price, 0, ',', '.') . "*\n\n";
-            $message .= "Segera lakukan pembayaran agar pesanan Anda tidak dibatalkan secara otomatis oleh sistem.\n\n";
+            $message .= "Segera lakukan pembayaran agar pesanan Anda tidak dibatalkan secara otomatis oleh sistem. Anda dapat melihat detail pesanan dan melakukan pembayaran di sini:\n";
+            $message .= "🔗 " . $orderLink . "\n\n";
             $message .= "Terima kasih telah berbelanja di U-Market!";
 
             $this->info("Mengirim pesan ke {$targetPhone}...");

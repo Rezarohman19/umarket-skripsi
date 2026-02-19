@@ -277,15 +277,26 @@ const goToLogin = () => {
     window.location.href = "/login";
 };
 
+const isInitialLoad = ref(true);
 const checkAuth = async () => {
+    // Gunakan data dari Blade sebagai sumber kebenaran awal
+    if (isInitialLoad.value && window.auth_user) {
+        user.value = window.auth_user;
+        isInitialLoad.value = false;
+    }
+
     try {
         const response = await axios.get("/api/user");
-        user.value = response.data;
-    } catch (error) {
-        if (error.response?.status !== 401) {
-            console.error("Error checking auth:", error);
+        if (response.data && response.data.id) {
+            user.value = response.data;
         }
-        user.value = null;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            // Jika memang tidak login, set null tapi jangan redirect (handled by axios interceptor)
+            user.value = null;
+        }
+    } finally {
+        isInitialLoad.value = false;
     }
 };
 
@@ -340,14 +351,13 @@ const handleAddToCart = async () => {
         return;
     }
 
-    toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
-
     try {
         await axios.post("/api/cart/add", {
             product_id: product.value.id,
             quantity: quantity.value,
         });
 
+        toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
         window.dispatchEvent(new CustomEvent("cartUpdated"));
 
         setTimeout(() => {

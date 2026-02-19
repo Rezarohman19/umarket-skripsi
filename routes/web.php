@@ -3,14 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\TransactionController;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -41,33 +42,63 @@ Route::get('/store/{user_id}', function () {
     return view('store');
 })->name('store');
 
+Route::get('/product/{id}', function ($id) {
+    return view('product-detail');
+});
+
+// Route untuk serve file storage (fallback jika symbolic link tidak bekerja)
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    
+    // Security: pastikan path tidak keluar dari storage/app/public
+    $realPath = realpath($filePath);
+    $storagePath = realpath(storage_path('app/public'));
+    
+    if (!$realPath || strpos($realPath, $storagePath) !== 0) {
+        abort(404);
+    }
+    
+    if (!file_exists($realPath) || !is_file($realPath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($realPath);
+    return response()->file($realPath, [
+        'Content-Type' => $mimeType,
+    ]);
+})->where('path', '.*');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES - UNIFIED (ADMIN + USER)
 |--------------------------------------------------------------------------
 */
-Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-
-// Redirect /admin/login ke /login untuk kompatibilitas
-Route::get('/admin/login', function () {
-    return redirect('/login');
+// Login routes (guest only)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    
+    Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+    
+    // Forgot Password Routes
+    Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    
+    // Redirect /admin/login ke /login untuk kompatibilitas
+    Route::get('/admin/login', function () {
+        return redirect('/login');
+    });
 });
 
-Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// Forgot Password Routes
-Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->middleware('guest')->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('guest')->name('password.email');
-Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->middleware('guest')->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest')->name('password.update');
+// Logout route (authenticated users only)
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| EMAIL VERIFICATION ROUTES
+| EMAIL VERIFICATION ROUTES (Session-based)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
@@ -108,354 +139,342 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| ROUTES UNTUK USER (BUTUH LOGIN)
+| AUTHENTICATED USER WEB PAGES (Session-based)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
 
-    // Profile (Vue page)
-   Route::middleware('auth')->get('/profile', function () {
+
+    Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
 
-    // Tambahkan: route untuk update profil via web (aksi edit profil)
-    Route::middleware('auth')->post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-});
-
-    // Produk
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/products/{id}', [ProductController::class, 'show']);
-
-    // Cart (Vue page)
+    /*
+    |---------- Shopping Pages ----------
+    */
     Route::get('/cart', function () {
         return view('cart');
     })->name('cart');
-    Route::post('/cart/add/{product_id}', [CartController::class, 'add']);
-    Route::post('/cart/remove/{item_id}', [CartController::class, 'remove']);
 
-    // Transactions
-    Route::get('/api/transactions', [TransactionController::class, 'index']);
-    Route::post('/api/checkout', [TransactionController::class, 'checkout']);
-    
-    // Orders (Vue page)
-    Route::get('/orders', function () {
-        return view('orders');
-    })->name('orders');
-    
-    // Open Shop (Vue page)
-    Route::get('/open-shop', function () {
-        return view('open-shop');
-    })->name('open-shop');
-    
-    // Checkout (Vue page)
     Route::get('/checkout', function () {
         return view('checkout');
     })->name('checkout');
-    
-    // Order Confirmation (Vue page)
-    Route::get('/order-confirmation', function () {
+
+    Route::get('/order-confirmation/{id?}', function ($id = null) {
         return view('order-confirmation');
     })->name('order-confirmation');
 
+    Route::get('/orders', function () {
+        return view('orders');
+    })->name('orders');
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES - PROTECTED BY ADMIN MIDDLEWARE
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', \App\Http\Middleware\Admin::class])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin-dashboard');
-    })->name('admin.dashboard');
+    /*
+    |---------- Seller Pages ----------
+    */
+    Route::get('/open-shop', function () {
+        return view('open-shop');
+    })->name('open-shop');
 
-    // Halaman profil admin
-    Route::get('/profile', function () {
-        return view('admin-profile');
-    })->name('admin.profile');
-
-    // Halaman produk admin (SPA Vue)
-    Route::get('/products', function () {
-        return view('admin-products');
-    })->name('admin.products');
-
-    // Halaman penjualan admin (SPA Vue)
-    Route::get('/transactions', function () {
-        return view('admin-sales');
-    })->name('admin.sales');
-
-    // Halaman pengguna admin (SPA Vue)
-    Route::get('/users', function () {
-        return view('admin-users');
-    })->name('admin.users');
 });
 
 /*
 |--------------------------------------------------------------------------
-| API ROUTES (PUBLIC)
+| ADMIN WEB PAGES (Session-based, Protected by Admin Middleware)
 |--------------------------------------------------------------------------
 */
-
-// Product detail page (public - bisa diakses tanpa login)
-Route::get('/product/{id}', function ($id) {
-    return view('product-detail');
-});
-
-// Route untuk serve file storage (fallback jika symbolic link tidak bekerja)
-Route::get('/storage/{path}', function ($path) {
-    $filePath = storage_path('app/public/' . $path);
+Route::middleware(['auth', \App\Http\Middleware\Admin::class])->group(function () {
     
-    // Security: pastikan path tidak keluar dari storage/app/public
-    $realPath = realpath($filePath);
-    $storagePath = realpath(storage_path('app/public'));
-    
-    if (!$realPath || strpos($realPath, $storagePath) !== 0) {
-        abort(404);
-    }
-    
-    if (!file_exists($realPath) || !is_file($realPath)) {
-        abort(404);
-    }
-    
-    $mimeType = mime_content_type($realPath);
-    return response()->file($realPath, [
-        'Content-Type' => $mimeType,
-    ]);
-})->where('path', '.*');
+    /*
+    |---------- Admin Pages ----------
+    */
+    Route::prefix('admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('admin-dashboard');
+        })->name('admin.dashboard');
 
-/*
-|--------------------------------------------------------------------------
-| API ROUTES — USER AUTH
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['web', 'auth:web'])->group(function () {
+        Route::get('/profile', function () {
+            return view('admin-profile');
+        })->name('admin.profile');
 
-    Route::get('/api/user', function() {
-        // Get current authenticated user
-        $user = Auth::user();
-        $userData = $user ? json_decode(json_encode($user), true) : [];
-        
-        // Generate photo_url (timestamp akan ditambahkan di frontend untuk cache busting)
-        if ($user) {
-            $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
-        }
-        
-        return response()->json($userData);
+        Route::get('/products', function () {
+            return view('admin-products');
+        })->name('admin.products');
+
+        Route::get('/transactions', function () {
+            return view('admin-sales');
+        })->name('admin.sales');
+
+        Route::get('/users', function () {
+            return view('admin-users');
+        })->name('admin.users');
     });
 
-    // Profile API (dipanggil dari frontend Vue)
-    Route::get('/api/profile', [ProfileController::class, 'show']);
-    Route::post('/api/profile', [ProfileController::class, 'update']);
+});
 
-    // SELLER BALANCE & WITHDRAWAL
-    Route::get('/seller-balance', [ProfileController::class, 'getBalance']);
-    Route::get('/user-banks', [ProfileController::class, 'getBanks']);
-    Route::post('/user-banks', [ProfileController::class, 'addBank']);
-    Route::delete('/user-banks/{id}', [ProfileController::class, 'deleteBank']);
-    Route::get('/user-withdrawals', [ProfileController::class, 'getWithdrawals']);
-    Route::post('/seller-withdraw', [ProfileController::class, 'withdraw']);
-
+/*
+|--------------------------------------------------------------------------
+| UNIFIED API ENDPOINTS (Moved to Web for Session Support)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('api')->group(function () {
     
-
-    // Produk milik user
-    Route::get('/api/my-products', function () {
-        $products = \App\Models\Product::with('category')
-            ->where('user_id', Auth::id())
+    /* ---------- PUBLIC API ENDPOINTS ---------- */
+    Route::get('/products', function () {
+        $products = \App\Models\Product::with('user:id,name')
+            ->where('stock', '>', 0)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn($p) => [
                 'id' => $p->id,
                 'name' => $p->name,
                 'description' => $p->description,
+                'category' => $p->category,
                 'price' => $p->price,
                 'stock' => $p->stock,
                 'image_url' => $p->image ? Storage::url($p->image) : null,
-                'category' => $p->category ? ['id' => $p->category->id, 'name' => $p->category->name] : null,
+                'user' => $p->user,
+                'user_id' => $p->user_id,
+                'store_name' => $p->user->name ?? 'Toko',
             ]);
-
         return response()->json($products);
     });
 
-    // CRUD Produk (API)
-    Route::post('/api/products', [ProductController::class, 'store']);
-    Route::post('/api/products/{product}', [ProductController::class, 'update']);
-    Route::delete('/api/products/{product}', [ProductController::class, 'destroy']);
-});
+    Route::get('/store/{user_id}/products', function ($user_id) {
+        $products = \App\Models\Product::with('user:id,name,phone')
+            ->where('user_id', $user_id)
+            ->where('stock', '>', 0)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'description' => $p->description,
+                'category' => $p->category,
+                'price' => $p->price,
+                'stock' => $p->stock,
+                'image_url' => $p->image ? Storage::url($p->image) : null,
+                'user' => $p->user,
+                'user_id' => $p->user_id,
+                'store_name' => $p->user->name ?? 'Toko',
+            ]);
+        return response()->json($products);
+    });
 
-Route::middleware('auth')->group(function () {
-
-    Route::post('/api/cart/add', function (Request $request) {
-    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
-
-    $validated = $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-    ]);
-
-    $cart = \App\Models\Cart::firstOrCreate(['user_id' => Auth::id()]);
-
-    $product = \App\Models\Product::find($validated['product_id']);
-    if (!$product) {
-        return response()->json(['message' => 'Produk tidak ditemukan'], 404);
-    }
-
-    $item = \App\Models\CartItem::firstOrCreate(
-        ['cart_id' => $cart->id, 'product_id' => $validated['product_id']],
-        ['qty' => 0]
-    );
-
-    $currentQty = $item->qty;
-    $newQty = $currentQty + $validated['quantity'];
-
-    if ($newQty > $product->stock) {
+    Route::get('/store/{user_id}', function ($user_id) {
+        $user = \App\Models\User::select('id', 'name', 'phone', 'email', 'description', 'photo')
+            ->find($user_id);
+        if (!$user) return response()->json(['message' => 'Store not found'], 404);
         return response()->json([
-            'message' => 'Stok tidak mencukupi. Sisa stok: ' . $product->stock . '. Anda sudah punya ' . $currentQty . ' di keranjang.'
-        ], 422);
-    }
+            'id' => $user->id,
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'email' => $user->email,
+            'description' => $user->description,
+            'photo_url' => $user->photo ? Storage::url($user->photo) : null,
+        ]);
+    });
 
-    $item->qty = $newQty;
-    $item->save();
+    Route::get('/products/{id}', function ($id) {
+        $product = \App\Models\Product::with('user:id,name')->find($id);
+        if (!$product) return response()->json(['message' => 'Not found'], 404);
+        $product->image_url = $product->image ? Storage::url($product->image) : null;
+        $product->store_name = $product->user->name ?? 'Toko';
+        return response()->json($product);
+    });
 
-    return response()->json(['message' => 'Added to cart']);
-});
+    Route::post('/midtrans/notification', [TransactionController::class, 'notification']);
 
-Route::post('/api/cart/remove/{item_id}', function ($item_id) {
-    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
+    /* ---------- AUTHENTICATION ---------- */
+    Route::post('/auth/login', [AuthController::class, 'apiLogin']);
+    Route::post('/auth/register', [AuthController::class, 'apiRegister']);
+    
+    Route::get('/auth/check', function () {
+        if (Auth::check()) {
+            $user = Auth::user();
+            return response()->json([
+                'authenticated' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'photo_url' => $user->photo ? Storage::url($user->photo) : null,
+                    'email_verified_at' => $user->email_verified_at,
+                ]
+            ]);
+        }
+        return response()->json(['authenticated' => false]);
+    });
 
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
-
-    $item = \App\Models\CartItem::where('cart_id', $cart->id)
-        ->where('id', $item_id)
-        ->first();
-
-    if (!$item) return response()->json(['message' => 'Item not found'], 404);
-
-    $item->delete();
-
-    return response()->json(['message' => 'Item removed from cart']);
-});
-
-Route::get('/api/cart', function () {
-    if (!Auth::check()) return response()->json(['items' => []], 401);
-
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['items' => []]);
-
-    $items = \App\Models\CartItem::with(['product.user'])
-        ->where('cart_id', $cart->id)
-        ->get()
-        ->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'product_id' => $item->product_id,
-                'qty' => $item->qty,
-                'quantity' => $item->qty,
-                'price' => $item->product->price ?? 0,
-                'store_name' => $item->product->user->name ?? 'Toko',
-                'product' => [
-                    'id' => $item->product->id ?? null,
-                    'name' => $item->product->name ?? 'Produk',
-                    'description' => $item->product->description ?? '',
-                    'price' => $item->product->price ?? 0,
-                    'stock' => $item->product->stock ?? 0,
-                    'image_url' => $item->product->image ? Storage::url($item->product->image) : null,
-                    'user' => $item->product->user ?? null,
-                ],
-            ];
+    /* ---------- PROTECTED API ROUTES ---------- */
+    Route::middleware(['auth'])->group(function () {
+        Route::post('/auth/logout', [AuthController::class, 'apiLogout']);
+        Route::get('/user', function () {
+            $user = Auth::user();
+            $userData = $user ? json_decode(json_encode($user), true) : [];
+            if ($user) $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
+            return response()->json($userData);
         });
 
-    return response()->json(['items' => $items]);
-});
+        Route::get('/profile', [ProfileController::class, 'show']);
+        Route::post('/profile', [ProfileController::class, 'update']);
 
-Route::get('/api/cart/count', function () {
-    if (!Auth::check()) return response()->json(['count' => 0]);
+        Route::get('/seller-balance', [ProfileController::class, 'getBalance']);
+        Route::get('/user-banks', [ProfileController::class, 'getBanks']);
+        Route::post('/user-banks', [ProfileController::class, 'addBank']);
+        Route::delete('/user-banks/{id}', [ProfileController::class, 'deleteBank']);
+        Route::get('/user-withdrawals', [ProfileController::class, 'getWithdrawals']);
+        Route::post('/seller-withdraw', [ProfileController::class, 'withdraw']);
 
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['count' => 0]);
+        // Cart
+        Route::get('/cart', function () {
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) return response()->json(['items' => []]);
+            $items = \App\Models\CartItem::with(['product', 'product.user'])->where('cart_id', $cart->id)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'product_id' => $item->product_id,
+                    'qty' => $item->qty,
+                    'product' => $item->product ? [
+                        'id' => $item->product->id,
+                        'name' => $item->product->name,
+                        'description' => $item->product->description,
+                        'price' => (float) $item->product->price,
+                        'stock' => $item->product->stock,
+                        'image_url' => $item->product->image ? Storage::url($item->product->image) : null,
+                        'user' => $item->product->user ? ['id' => $item->product->user->id, 'name' => $item->product->user->name] : null,
+                    ] : null,
+                ];
+            });
+            return response()->json(['items' => $items]);
+        });
+        Route::post('/cart/add', function (Request $request) {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1',
+            ]);
+            $cart = \App\Models\Cart::firstOrCreate(['user_id' => Auth::id()]);
+            $product = \App\Models\Product::find($validated['product_id']);
+            if (!$product) return response()->json(['message' => 'Produk tidak ditemukan'], 404);
+            $item = \App\Models\CartItem::firstOrCreate(
+                ['cart_id' => $cart->id, 'product_id' => $validated['product_id']],
+                ['qty' => 0]
+            );
+            $newQty = $item->qty + $validated['quantity'];
+            if ($newQty > $product->stock) return response()->json(['message' => 'Stok tidak mencukupi'], 422);
+            $item->qty = $newQty;
+            $item->save();
+            return response()->json(['message' => 'Added to cart']);
+        });
+        Route::post('/cart/remove/{item_id}', function ($item_id) {
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
+            
+            // Pastikan item yang dihapus memang milik keranjang user ini
+            $deleted = \App\Models\CartItem::where('cart_id', $cart->id)
+                ->where('id', $item_id)
+                ->delete();
+                
+            if ($deleted) {
+                return response()->json(['message' => 'Item removed from cart']);
+            }
+            return response()->json(['message' => 'Item not found in your cart'], 404);
+        });
+        Route::get('/cart/count', function () {
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) return response()->json(['count' => 0]);
+            $count = \App\Models\CartItem::where('cart_id', $cart->id)->count();
+            return response()->json(['count' => $count]);
+        });
+        Route::post('/cart/update', function (Request $request) {
+            $validated = $request->validate([
+                'item_id' => 'required',
+                'qty' => 'required|integer|min:1',
+            ]);
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
+            
+            $item = \App\Models\CartItem::with('product')
+                ->where('cart_id', $cart->id)
+                ->where('id', $validated['item_id'])
+                ->first();
+                
+            if (!$item) return response()->json(['message' => 'Item not found in your cart'], 404);
+            
+            if ($item->product && $validated['qty'] > $item->product->stock) {
+                return response()->json(['message' => 'Stok tidak mencukupi'], 422);
+            }
+            
+            $item->qty = $validated['qty'];
+            $item->save();
+            return response()->json(['message' => 'Item updated']);
+        });
 
-    // Hitung jumlah item (per produk)
-    $count = \App\Models\CartItem::where('cart_id', $cart->id)->count();
+        Route::get('/transactions', [TransactionController::class, 'index']);
+        Route::post('/checkout', [TransactionController::class, 'checkout']);
+        
+        Route::post('/transactions/{id}/mark-delivered', function (Request $request, $id) {
+            $transaction = \App\Models\Transaction::findOrFail($id);
+            if ($transaction->user_id !== Auth::id()) return response()->json(['message' => 'Unauthorized'], 403);
+            if ($transaction->status !== 'shipping') return response()->json(['message' => 'Invalid status'], 400);
+            $transaction->status = 'delivered';
+            $transaction->save();
+            return response()->json(['message' => 'Pesanan diterima']);
+        });
 
-    return response()->json(['count' => $count]);
-});
+        Route::get('/seller/orders', [TransactionController::class, 'sellerOrders']);
+        Route::post('/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus']);
+        Route::get('/my-products', function () {
+            return \App\Models\Product::with('category')->where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
+        });
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::post('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
-Route::post('/api/cart/update', function (Request $request) {
-    if (!Auth::check()) return response()->json(['message' => 'Unauthenticated'], 401);
+        /* ---------- ADMIN ---------- */
+        Route::middleware([\App\Http\Middleware\Admin::class])->group(function () {
+            Route::get('/admin/users', function () {
+                $users = \App\Models\User::withCount('products')->get();
+                
+                $data = $users->map(function($user) {
+                    // Anggap online jika aktif dalam 5 menit terakhir
+                    $isOnline = false;
+                    if ($user->last_seen_at) {
+                        $isOnline = $user->last_seen_at->gt(now()->subMinutes(5));
+                    }
+                    
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                        'products_count' => $user->products_count,
+                        'status' => $isOnline ? 'online' : 'offline',
+                        'is_current' => Auth::id() === $user->id
+                    ];
+                });
 
-    $validated = $request->validate([
-        'item_id' => 'required|integer',
-        'qty' => 'required|integer|min:1',
-    ]);
-
-    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
-    if (!$cart) return response()->json(['message' => 'Cart not found'], 404);
-
-    $item = \App\Models\CartItem::with('product')
-        ->where('cart_id', $cart->id)
-        ->where('id', $validated['item_id'])
-        ->first();
-
-    if (!$item) return response()->json(['message' => 'Item not found'], 404);
-
-    $stock = $item->product->stock ?? 0;
-    if ($validated['qty'] > $stock) {
-        return response()->json(['message' => 'Stock tidak mencukupi', 'stock' => $stock], 422);
-    }
-
-    $item->qty = $validated['qty'];
-    $item->save();
-
-    return response()->json([
-        'message' => 'Item updated',
-        'item' => [
-            'id' => $item->id,
-            'product_id' => $item->product_id,
-            'qty' => $item->qty,
-        ]
-    ]);
-});
-
-    // Checkout API (menggunakan session auth)
-Route::post('/api/checkout', [TransactionController::class, 'checkout'])->middleware('auth');
-
-// Seller Orders API
-Route::get('/api/seller/orders', [TransactionController::class, 'sellerOrders'])->middleware('auth');
-Route::post('/api/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus'])->middleware('auth');
-
-// Buyer Orders API - Update status to delivered
-Route::post('/api/transactions/{id}/mark-delivered', function (Request $request, $id) {
-    if (!Auth::check()) {
-        return response()->json(['message' => 'Unauthenticated'], 401);
-    }
-
-    $transaction = \App\Models\Transaction::findOrFail($id);
-
-    // Validasi: hanya pembeli yang bisa update status menjadi delivered
-    if ($transaction->user_id !== Auth::id()) {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
-
-    // Validasi: hanya bisa update jika status adalah shipping
-    if ($transaction->status !== 'shipping') {
-        return response()->json(['message' => 'Hanya pesanan yang sedang dikirim yang bisa ditandai diterima'], 400);
-    }
-
-    $transaction->status = 'delivered';
-    $transaction->save();
-
-    return response()->json([
-        'message' => 'Pesanan berhasil ditandai diterima',
-        'transaction' => $transaction
-    ]);
-})->middleware('auth');
-
-// Return Request API
-Route::post('/api/transactions/{id}/request-return', [TransactionController::class, 'requestReturn'])->middleware('auth');
-Route::post('/api/seller/orders/{id}/approve-return', [TransactionController::class, 'approveReturn'])->middleware('auth');
-
+                return response()->json($data);
+            });
+            Route::get('/admin/transactions', function () {
+                return \App\Models\Transaction::with(['user', 'items'])->orderBy('created_at', 'desc')->get();
+            });
+            Route::get('/admin/sales-data', function (Request $request) {
+                $days = (int) ($request->query('days', 30));
+                $sales = \App\Models\Transaction::where('status', 'paid')->where('created_at', '>=', now()->subDays($days))->selectRaw('DATE(created_at) as date, SUM(total_price) as total')->groupBy('date')->get()->pluck('total', 'date');
+                $data = [];
+                for ($i = 0; $i < $days; $i++) {
+                    $date = now()->subDays($days - 1 - $i)->format('Y-m-d');
+                    $data[] = ['date' => $date, 'total' => $sales->get($date, 0)];
+                }
+                return response()->json($data);
+            });
+            Route::get('/admin/popular-products', function () {
+                return \App\Models\Product::withSum(['transactionItems' => function($q){ $q->whereHas('transaction', function($t){ $t->whereIn('status', ['paid','shipping','delivered']); }); }], 'qty')->orderByDesc('transaction_items_sum_qty')->take(10)->get();
+            });
+        });
+    });
 });
