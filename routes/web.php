@@ -426,6 +426,8 @@ Route::prefix('api')->group(function () {
         });
 
         Route::get('/seller/orders', [TransactionController::class, 'sellerOrders']);
+        Route::get('/seller/unread-orders-count', [TransactionController::class, 'getUnreadOrdersCount']);
+        Route::post('/seller/mark-orders-as-read', [TransactionController::class, 'markOrdersAsRead']);
         Route::post('/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus']);
         Route::get('/my-products', function () {
             return \App\Models\Product::with('category')->where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();

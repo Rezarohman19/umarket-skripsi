@@ -133,6 +133,18 @@
                             />
                         </svg>
                         <span v-if="!sidebarCollapsed">Toko Saya</span>
+                        <!-- Notification Badge -->
+                        <span 
+                            v-if="unreadOrdersCount > 0"
+                            class="ml-auto bg-[#EF3B33] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] h-[18px] flex items-center justify-center shadow-lg transform translate-x-1"
+                            :title="unreadOrdersCount + ' pesanan baru'"
+                        >
+                            {{ unreadOrdersCount > 99 ? '99+' : unreadOrdersCount }}
+                        </span>
+                        <div 
+                            v-if="sidebarCollapsed && unreadOrdersCount > 0"
+                            class="absolute top-1 right-1 w-2.5 h-2.5 bg-[#EF3B33] rounded-full border border-[#8E0D3C] shadow-sm animate-pulse"
+                        ></div>
                     </a>
                 </nav>
 
@@ -798,6 +810,7 @@ const user = ref(window.auth_user || null);
 const cartCount = ref(0);
 const showLoginModal = ref(false);
 const showWelcomeCard = ref(true);
+const unreadOrdersCount = ref(0);
 const toast = ref({ visible: false, message: "", type: "success" });
 const confirmModal = ref({ visible: false, title: "", message: "" });
 
@@ -1029,6 +1042,16 @@ const fetchCartCount = async () => {
     }
 };
 
+const fetchUnreadOrdersCount = async () => {
+    if (!user.value) return;
+    try {
+        const response = await axios.get("/api/seller/unread-orders-count");
+        unreadOrdersCount.value = response.data.count || 0;
+    } catch (error) {
+        console.error("Error fetching unread orders count:", error);
+    }
+};
+
 const handleMyOrders = () => {
     if (!user.value) {
         showLoginModal.value = true;
@@ -1119,9 +1142,11 @@ onMounted(async () => {
     await checkAuth();
     await fetchProducts();
     await fetchCartCount();
+    await fetchUnreadOrdersCount();
     startAutoSlide();
     window.addEventListener("cartUpdated", fetchCartCount);
     window.addEventListener("userUpdated", handleUserUpdated);
+    window.addEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 });
 
 onBeforeUnmount(() => {
@@ -1129,6 +1154,7 @@ onBeforeUnmount(() => {
     
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
+    window.removeEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 });
 </script>
 

@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderNotificationMail;
 
 use Midtrans\Snap;
 use Midtrans\Config as MidtransConfig;
@@ -220,26 +222,17 @@ class TransactionController extends Controller
                 $transaction->snap_token = $snapToken;
                 $transaction->save();
 
-                // === NOTIFIKASI WA KE PENJUAL (PESANAN MASUK BELUM DIBAYAR) ===
+                // === NOTIFIKASI EMAIL KE PENJUAL (PESANAN MASUK BELUM DIBAYAR) ===
                 try {
                     $firstItemForSeller = $items[0] ?? null;
                     $seller = $firstItemForSeller?->product?->user;
                     
-                    if ($seller && $seller->phone) {
-                        $waService = new \App\Services\WhatsAppService();
-                        $message = "*ADA PESANAN BARU!* 🛍️\n\n" .
-                            "Halo {$seller->name},\n" .
-                            "Seseorang baru saja memesan produk Anda!\n\n" .
-                            "No. Pesanan: *{$transaction->order_id}*\n" .
-                            "Total: *Rp " . number_format($transaction->total_price, 0, ',', '.') . "*\n\n" .
-                            "Pesanan saat ini menunggu pembayaran dari pembeli. Kami akan memberitahu Anda lagi jika pembayaran telah selesai.\n\n" .
-                            "Silakan pantau pesanan Anda di dashboard U-Market.";
-                        
-                        $waService->sendMessage($seller->phone, $message);
-                        Log::info("WA Order notification sent to seller: {$seller->name} ({$seller->phone})");
+                    if ($seller && $seller->email) {
+                        Mail::to($seller->email)->send(new OrderNotificationMail($transaction, $seller, false));
+                        Log::info("Email Order notification sent to seller: {$seller->name} ({$seller->email})");
                     }
                 } catch (\Exception $e) {
-                    Log::error("Failed to send WA Order notification to seller: " . $e->getMessage());
+                    Log::error("Failed to send Email Order notification to seller: " . $e->getMessage());
                 }
 
                 $responseTransactions[] = [
@@ -414,29 +407,19 @@ class TransactionController extends Controller
                 'status' => $transaction->status,
             ]);
 
-            // === KIRIM NOTIFIKASI WHATSAPP KE PENJUAL ===
+            // === KIRIM NOTIFIKASI EMAIL KE PENJUAL ===
             if ($newStatus === 'paid' && $oldStatus !== 'paid') {
                 try {
                     $transaction->load(['items.product.user']);
                     $firstItem = $transaction->items->first();
                     $seller = $firstItem->product->user ?? null;
 
-                    if ($seller && $seller->phone) {
-                        $waService = new \App\Services\WhatsAppService();
-                        $message = "*PESANAN BARU MASUK!* 🚀\n\n" .
-                            "Halo {$seller->name},\n" .
-                            "Ada pesanan baru yang telah DIBAYAR.\n\n" .
-                            "No. Pesanan: {$transaction->order_id}\n" .
-                            "Total: Rp " . number_format($transaction->total_price, 0, ',', '.') . "\n" .
-                            "Status: SUDAH DIBAYAR ✅\n\n" .
-                            "Mohon segera proses pengiriman pesanan ini melalui dashboard U Market Anda.\n\n" .
-                            "Terima kasih!";
-                        
-                        $waService->sendMessage($seller->phone, $message);
-                        Log::info("WA Notification sent to seller: {$seller->name} ({$seller->phone})");
+                    if ($seller && $seller->email) {
+                        Mail::to($seller->email)->send(new OrderNotificationMail($transaction, $seller, true));
+                        Log::info("Email Notification sent to seller (Paid): {$seller->name} ({$seller->email})");
                     }
                 } catch (\Exception $e) {
-                    Log::error("Failed to send WA notification: " . $e->getMessage());
+                    Log::error("Failed to send Email notification for paid order: " . $e->getMessage());
                 }
             }
 
@@ -586,4 +569,34 @@ class TransactionController extends Controller
 
         return response()->json(['message' => 'Pengembalian disetujui', 'transaction' => $transaction]);
     }
+
+    public function getUnreadOrdersCount()
+    {
+        $seller = Auth::user();
+        $productIds = \App\Models\Product::where('user_id', $seller->id)->pluck('id');
+
+        $count = Transaction::whereHas('items', function ($q) use ($productIds) {
+            $q->whereIn('product_id', $productIds);
+        })
+            ->whereIn('status', ['paid', 'processing']) // New orders are usually paid or started processing
+            ->whereNull('seller_read_at')
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    public function markOrdersAsRead()
+    {
+        $seller = Auth::user();
+        $productIds = \App\Models\Product::where('user_id', $seller->id)->pluck('id');
+
+        Transaction::whereHas('items', function ($q) use ($productIds) {
+            $q->whereIn('product_id', $productIds);
+        })
+            ->whereNull('seller_read_at')
+            ->update(['seller_read_at' => now()]);
+
+        return response()->json(['message' => 'Orders marked as read']);
+    }
 }
+

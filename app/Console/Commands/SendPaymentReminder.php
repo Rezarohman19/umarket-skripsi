@@ -4,9 +4,10 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Transaction;
-use App\Services\WhatsAppService;
+use App\Mail\PaymentReminderMail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SendPaymentReminder extends Command
 {
@@ -22,25 +23,19 @@ class SendPaymentReminder extends Command
      *
      * @var string
      */
-    protected $description = 'Kirim pengingat WhatsApp ke pengguna yang pembayarannya akan segera berakhir';
+    protected $description = 'Kirim pengingat Email ke pengguna yang pembayarannya akan segera berakhir';
 
     /**
      * Execute the console command.
      */
-    public function handle(WhatsAppService $waService)
+    public function handle()
     {
         $this->info('Memeriksa pembayaran yang akan berakhir...');
-
-        // Cari transaksi yang:
-        // 1. Statusnya 'pending' atau 'unpaid'
-        // 2. Belum pernah dikirimi notifikasi WhatsApp (wa_notified_at is null)
-        // 3. Waktu kadaluarsanya (expiry_time) tinggal <= 1 jam lagi (Sesuai permintaan USER)
-        // 4. Belum lewat waktu kadaluarsanya (masih di masa depan)
 
         $thresholdTime = now()->addHour(1);
 
         $pendingTransactions = Transaction::whereIn('status', ['pending', 'unpaid'])
-            ->whereNull('wa_notified_at')
+            ->whereNull('wa_notified_at') // Keeping the field name to track notification state
             ->whereNotNull('expiry_time')
             ->where('expiry_time', '<=', $thresholdTime)
             ->where('expiry_time', '>', now())
@@ -52,16 +47,12 @@ class SendPaymentReminder extends Command
 
         foreach ($pendingTransactions as $transaction) {
             $user = $transaction->user;
-            // Gunakan shipping_phone jika ada, jika tidak gunakan phone user
-            $targetPhone = $transaction->shipping_phone ?: ($user ? $user->phone : null);
+            $targetEmail = $user ? $user->email : null;
 
-            if (!$targetPhone) {
-                Log::warning("Gagal mengirim pengingat: Nomor telepon tidak ditemukan untuk transaksi #{$transaction->id}");
+            if (!$targetEmail) {
+                Log::warning("Gagal mengirim pengingat: Email tidak ditemukan untuk transaksi #{$transaction->id}");
                 continue;
             }
-
-            // Sanitasi nomor telepon (pastikan format 62...)
-            $targetPhone = $this->formatPhoneNumber($targetPhone);
 
             $expiryTime = Carbon::parse($transaction->expiry_time);
             $remainingHours = now()->diffInHours($expiryTime);
@@ -75,47 +66,21 @@ class SendPaymentReminder extends Command
                 $timeLabel .= "{$remainingMinutes} menit";
             }
 
-            $appUrl = config('app.url');
-            $orderLink = $appUrl . "/orders";
-
-            $message = "Halo {$transaction->shipping_name}!\n\n";
-            $message .= "Kami dari *U-Market* ingin menginformasikan bahwa pesanan Anda dengan ID *#{$transaction->order_id}* akan segera berakhir waktu pembayarannya dalam *{$timeLabel}* lagi.\n\n";
-            $message .= "Total Pembayaran: *Rp " . number_format($transaction->total_price, 0, ',', '.') . "*\n\n";
-            $message .= "Segera lakukan pembayaran agar pesanan Anda tidak dibatalkan secara otomatis oleh sistem. Anda dapat melihat detail pesanan dan melakukan pembayaran di sini:\n";
-            $message .= "🔗 " . $orderLink . "\n\n";
-            $message .= "Terima kasih telah berbelanja di U-Market!";
-
-            $this->info("Mengirim pesan ke {$targetPhone}...");
-            $response = $waService->sendMessage($targetPhone, $message);
-
-            if ($response['status']) {
-                $transaction->wa_notified_at = now();
+            $this->info("Mengirim email ke {$targetEmail}...");
+            
+            try {
+                Mail::to($targetEmail)->send(new PaymentReminderMail($transaction, $timeLabel));
+                
+                $transaction->wa_notified_at = now(); // Mark as notified
                 $transaction->save();
+                
                 $this->info("Berhasil mengirim pengingat untuk transaksi #{$transaction->id}");
-            } else {
-                $this->error("Gagal mengirim pengingat ke {$targetPhone}: " . ($response['message'] ?? 'Unknown error'));
+            } catch (\Exception $e) {
+                $this->error("Gagal mengirim email ke {$targetEmail}: " . $e->getMessage());
+                Log::error("Failed to send payment reminder email: " . $e->getMessage());
             }
         }
 
         $this->info('Selesai.');
-    }
-
-    /**
-     * Format phone number to 62...
-     */
-    protected function formatPhoneNumber($phone)
-    {
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-        
-        if (substr($phone, 0, 1) === '0') {
-            $phone = '62' . substr($phone, 1);
-        } elseif (substr($phone, 0, 2) === '62') {
-            // Already correct
-        } else {
-            // Assume it's without country code and append 62
-            $phone = '62' . $phone;
-        }
-
-        return $phone;
     }
 }

@@ -123,6 +123,18 @@
                         />
                     </svg>
                     <span v-if="!sidebarCollapsed">Toko Saya</span>
+                    <!-- Notification Badge -->
+                    <span 
+                        v-if="unreadOrdersCount > 0"
+                        class="ml-auto bg-[#EF3B33] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] h-[18px] flex items-center justify-center shadow-lg transform translate-x-1"
+                        :title="unreadOrdersCount + ' pesanan baru'"
+                    >
+                        {{ unreadOrdersCount > 99 ? '99+' : unreadOrdersCount }}
+                    </span>
+                    <div 
+                        v-if="sidebarCollapsed && unreadOrdersCount > 0"
+                        class="absolute top-1 right-1 w-2.5 h-2.5 bg-[#EF3B33] rounded-full border border-[#8E0D3C] shadow-sm animate-pulse"
+                    ></div>
                 </a>
             </nav>
 
@@ -276,12 +288,29 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const confirmModal = ref({ visible: false, title: "", message: "" });
+const user = ref(window.auth_user || null);
+const unreadOrdersCount = ref(0);
+
+const fetchUnreadOrdersCount = async () => {
+    if (!user.value) return;
+    try {
+        const response = await axios.get("/api/seller/unread-orders-count");
+        unreadOrdersCount.value = response.data.count || 0;
+    } catch (error) {
+        console.error("Error fetching unread orders count:", error);
+    }
+};
+
+onMounted(async () => {
+    await fetchUnreadOrdersCount();
+    window.addEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
+});
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
 };
