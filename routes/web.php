@@ -459,9 +459,64 @@ Route::prefix('api')->group(function () {
 
                 return response()->json($data);
             });
+
+            Route::post('/admin/users', function (Request $request) {
+                $validated = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'password' => 'required|string|min:8',
+                    'role' => 'required|in:admin,pengguna',
+                ]);
+
+                $user = \App\Models\User::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
+                    'role' => $validated['role'],
+                    'email_verified_at' => now(),
+                ]);
+
+                return response()->json(['message' => 'User created successfully', 'user' => $user]);
+            });
+
+            Route::post('/admin/users/{id}', function (Request $request, $id) {
+                $user = \App\Models\User::findOrFail($id);
+                
+                $validated = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+                    'password' => 'nullable|string|min:8',
+                    'role' => 'required|in:admin,pengguna',
+                ]);
+
+                $user->name = $validated['name'];
+                $user->email = $validated['email'];
+                $user->role = $validated['role'];
+
+                if (!empty($validated['password'])) {
+                    $user->password = Hash::make($validated['password']);
+                }
+
+                $user->save();
+
+                return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+            });
+
+            Route::delete('/admin/users/{id}', function ($id) {
+                if (Auth::id() == $id) {
+                    return response()->json(['message' => 'Tidak dapat menghapus diri sendiri'], 403);
+                }
+
+                $user = \App\Models\User::findOrFail($id);
+                $user->delete();
+
+                return response()->json(['message' => 'User deleted successfully']);
+            });
+
             Route::get('/admin/transactions', function () {
                 return \App\Models\Transaction::with(['user', 'items'])->orderBy('created_at', 'desc')->get();
             });
+
             Route::get('/admin/sales-data', function (Request $request) {
                 $days = (int) ($request->query('days', 30));
                 $sales = \App\Models\Transaction::where('status', 'paid')->where('created_at', '>=', now()->subDays($days))->selectRaw('DATE(created_at) as date, SUM(total_price) as total')->groupBy('date')->get()->pluck('total', 'date');
