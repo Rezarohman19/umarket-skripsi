@@ -678,7 +678,7 @@
                                         @click="handleApproveReturn(order)"
                                         class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner"
                                     >
-                                        Proses Pengembalian
+                                        Terima Pengembalian
                                     </button>
                                 </div>
                             </div>
@@ -1210,7 +1210,7 @@ const getStatusLabel = (status) => {
         cancelled: "Dibatalkan",
         canceled: "Dibatalkan",
         expired: "Dibatalkan",
-        return_requested: "Pengajuan Pengembalian",
+        return_requested: "Proses Pengembalian",
         returned: "Dikembalikan",
     };
     return labels[status] || status;

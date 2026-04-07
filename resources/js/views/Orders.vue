@@ -689,7 +689,7 @@ const getStatusLabel = (status) => {
         failed: "Gagal",
         expired: "Dibatalkan",
         cancelled: "Dibatalkan",
-        return_requested: "Pengembalian Diajukan",
+        return_requested: "Proses Pengembalian",
         returned: "Dikembalikan",
     };
     return statusMap[status] || status;
@@ -867,7 +867,7 @@ const getPurchaseActions = (status, transaction) => {
             });
         } else if (transaction?.status === 'return_requested') {
              actions.push({
-                label: "Pengembalian Diajukan",
+                label: "Proses Pengembalian",
                 type: "info",
                 variant: "warning",
                 disabled: true,
