@@ -279,30 +279,40 @@ const removeItem = (item) => {
         visible: true,
         title: "Hapus Produk",
         message: `Hapus "${item.product_name}" dari keranjang?`,
-        onConfirm: () => {
+        onConfirm: async () => {
             closeConfirmModal();
-            const itemToRemove = { ...item };
-            const itemIndex = cartItems.value.findIndex(i => i.id === item.id);
-            const index = selectedItems.value.indexOf(item.id);
-            if (index > -1) selectedItems.value.splice(index, 1);
-            cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
+            
+            // Backup data sebelum optimistically removing
+            const backupCartItems = [...cartItems.value];
+            const backupSelectedItems = [...selectedItems.value];
+            const backupCartCount = cartCount.value;
+
+            // Optimistic update
+            const itemToRemoveId = item.id;
+            selectedItems.value = selectedItems.value.filter(id => id !== itemToRemoveId);
+            cartItems.value = cartItems.value.filter(i => i.id !== itemToRemoveId);
             cartCount.value = cartItems.value.length;
-            showToast("Produk dihapus dari keranjang", "success");
-            axios.post(`/api/cart/remove/${item.id}`)
-                .then(() => {
-                    window.dispatchEvent(new CustomEvent("cartUpdated"));
-                })
-                .catch((error) => {
-                    console.error("Error removing item:", error);
-                    if (itemIndex > -1) {
-                        cartItems.value.splice(itemIndex, 0, itemToRemove);
-                    } else {
-                        cartItems.value.push(itemToRemove);
-                    }
-                    cartCount.value = cartItems.value.length;
-                    showToast("Gagal menghapus produk", "error");
+
+            try {
+                const response = await axios.post(`/api/cart/remove/${itemToRemoveId}`);
+                showToast("Produk dihapus dari keranjang", "success");
+                window.dispatchEvent(new CustomEvent("cartUpdated"));
+            } catch (error) {
+                console.error("Error removing item:", error);
+                
+                // Rollback jika gagal
+                cartItems.value = backupCartItems;
+                selectedItems.value = backupSelectedItems;
+                cartCount.value = backupCartCount;
+                
+                const message = error.response?.data?.message || "Gagal menghapus produk";
+                showToast(message, "error");
+
+                // Jika errornya adalah 401 atau session expired, baru refresh total
+                if (error.response?.status === 401 || error.response?.status === 419) {
                     fetchCartItems();
-                });
+                }
+            }
         }
     };
 };

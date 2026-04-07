@@ -104,7 +104,17 @@
 
                             <div class="mb-6">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Deskripsi Produk</h3>
-                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ product.description || "Tidak ada deskripsi produk" }}</p>
+                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ product.description || "Tidak ada deskripsi produk" }}</p>
+                                
+                                <button
+                                    @click="shareToWhatsApp"
+                                    class="mt-5 flex items-center gap-2 px-4 py-2 bg-[#25D366] hover:bg-[#1DA851] text-white text-sm font-medium rounded-lg transition-colors shadow-md"
+                                >
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.718.997 5.335 2.823 7.357L2.667 24l7.994-2.59a9.874 9.874 0 004.772 1.286h.005c5.432 0 9.748-4.317 9.748-9.747 0-2.605-.994-5.052-2.799-6.897a9.875 9.875 0 00-7.035-2.9"/>
+                                    </svg>
+                                    Bagikan ke WhatsApp
+                                </button>
                             </div>
                         </div>
 
@@ -277,15 +287,26 @@ const goToLogin = () => {
     window.location.href = "/login";
 };
 
+const isInitialLoad = ref(true);
 const checkAuth = async () => {
+    // Gunakan data dari Blade sebagai sumber kebenaran awal
+    if (isInitialLoad.value && window.auth_user) {
+        user.value = window.auth_user;
+        isInitialLoad.value = false;
+    }
+
     try {
         const response = await axios.get("/api/user");
-        user.value = response.data;
-    } catch (error) {
-        if (error.response?.status !== 401) {
-            console.error("Error checking auth:", error);
+        if (response.data && response.data.id) {
+            user.value = response.data;
         }
-        user.value = null;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            // Jika memang tidak login, set null tapi jangan redirect (handled by axios interceptor)
+            user.value = null;
+        }
+    } finally {
+        isInitialLoad.value = false;
     }
 };
 
@@ -340,14 +361,13 @@ const handleAddToCart = async () => {
         return;
     }
 
-    toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
-
     try {
         await axios.post("/api/cart/add", {
             product_id: product.value.id,
             quantity: quantity.value,
         });
 
+        toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
         window.dispatchEvent(new CustomEvent("cartUpdated"));
 
         setTimeout(() => {
@@ -398,6 +418,15 @@ const handleCheckout = async () => {
             type: "error" 
         };
     }
+};
+
+const shareToWhatsApp = () => {
+    if (!product.value) return;
+    
+    const text = `Lihat produk ini di U Market!\n\n*${product.value.name}*\nHarga: Rp. ${formatPrice(product.value.price)}\n\n*Deskripsi:*\n${product.value.description || '-'}\n\nLink: ${window.location.href}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    
+    window.open(whatsappUrl, "_blank");
 };
 
 onMounted(async () => {

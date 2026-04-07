@@ -15,10 +15,16 @@ class Admin
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         if (Auth::user()->role !== 'admin') {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthorized access.'], 403);
+            }
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
         }
 

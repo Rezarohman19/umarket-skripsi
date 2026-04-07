@@ -103,7 +103,7 @@
                     </a>
 
                     <a href="#" :class="[
-                            'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition',
+                            'flex items-center rounded-lg bg-[#FDA1A2]/30 text-white font-medium transition relative',
                             sidebarCollapsed ? 'px-2 py-3 justify-center' : 'px-4 py-3'
                         ]"
                     >
@@ -124,6 +124,18 @@
                             />
                         </svg>
                         <span v-if="!sidebarCollapsed">Toko Saya</span>
+                        <!-- Notification Badge -->
+                        <span 
+                            v-if="unreadOrdersCount > 0"
+                            class="ml-auto bg-[#EF3B33] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] h-[18px] flex items-center justify-center shadow-lg transform translate-x-1"
+                            :title="unreadOrdersCount + ' pesanan baru'"
+                        >
+                            {{ unreadOrdersCount > 99 ? '99+' : unreadOrdersCount }}
+                        </span>
+                        <div 
+                            v-if="sidebarCollapsed && unreadOrdersCount > 0"
+                            class="absolute top-1 right-1 w-2.5 h-2.5 bg-[#EF3B33] rounded-full border border-[#8E0D3C] shadow-sm animate-pulse"
+                        ></div>
                     </a>
                 </nav>
 
@@ -666,7 +678,7 @@
                                         @click="handleApproveReturn(order)"
                                         class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner"
                                     >
-                                        Proses Pengembalian
+                                        Terima Pengembalian
                                     </button>
                                 </div>
                             </div>
@@ -1078,6 +1090,7 @@ const searchQuery = ref("");
 const showMobileSearch = ref(false);
 const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
 const toast = ref({ visible: false, message: "", type: "success" });
+const unreadOrdersCount = ref(0);
 
 const store = ref({
     name: "Nama Toko",
@@ -1197,7 +1210,7 @@ const getStatusLabel = (status) => {
         cancelled: "Dibatalkan",
         canceled: "Dibatalkan",
         expired: "Dibatalkan",
-        return_requested: "Pengajuan Pengembalian",
+        return_requested: "Proses Pengembalian",
         returned: "Dikembalikan",
     };
     return labels[status] || status;
@@ -1696,6 +1709,28 @@ const fetchCartCount = async () => {
     }
 };
 
+const fetchUnreadOrdersCount = async () => {
+    if (!user.value) return;
+    try {
+        const response = await axios.get("/api/seller/unread-orders-count");
+        unreadOrdersCount.value = response.data.count || 0;
+    } catch (error) {
+        console.error("Error fetching unread orders count:", error);
+    }
+};
+
+const markOrdersAsRead = async () => {
+    if (!user.value) return;
+    try {
+        await axios.post("/api/seller/mark-orders-as-read");
+        unreadOrdersCount.value = 0;
+        // Dispatch event for other pages
+        window.dispatchEvent(new CustomEvent('sellerOrdersOptimized'));
+    } catch (error) {
+        console.error("Error marking orders as read:", error);
+    }
+};
+
 const fetchIncomingOrders = async () => {
     if (!user.value) {
         ordersLoading.value = false;
@@ -2001,6 +2036,10 @@ onMounted(async () => {
         await fetchIncomingOrders();
         await fetchSellerBalance();
         await fetchUserBanks();
+        await fetchUnreadOrdersCount();
+        
+        // Mark as read when shop page is accessed
+        await markOrdersAsRead();
     }
 
     window.addEventListener("cartUpdated", fetchCartCount);
@@ -2011,6 +2050,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
+    window.removeEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 });
 </script>
 

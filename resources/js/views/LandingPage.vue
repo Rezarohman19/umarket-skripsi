@@ -133,6 +133,18 @@
                             />
                         </svg>
                         <span v-if="!sidebarCollapsed">Toko Saya</span>
+                        <!-- Notification Badge -->
+                        <span 
+                            v-if="unreadOrdersCount > 0"
+                            class="ml-auto bg-[#EF3B33] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] h-[18px] flex items-center justify-center shadow-lg transform translate-x-1"
+                            :title="unreadOrdersCount + ' pesanan baru'"
+                        >
+                            {{ unreadOrdersCount > 99 ? '99+' : unreadOrdersCount }}
+                        </span>
+                        <div 
+                            v-if="sidebarCollapsed && unreadOrdersCount > 0"
+                            class="absolute top-1 right-1 w-2.5 h-2.5 bg-[#EF3B33] rounded-full border border-[#8E0D3C] shadow-sm animate-pulse"
+                        ></div>
                     </a>
                 </nav>
 
@@ -798,6 +810,7 @@ const user = ref(window.auth_user || null);
 const cartCount = ref(0);
 const showLoginModal = ref(false);
 const showWelcomeCard = ref(true);
+const unreadOrdersCount = ref(0);
 const toast = ref({ visible: false, message: "", type: "success" });
 const confirmModal = ref({ visible: false, title: "", message: "" });
 
@@ -917,17 +930,38 @@ const getPhotoUrl = (photoUrl) => {
     return photoUrl + "?t=" + Date.now();
 };
 
+const isInitialLoad = ref(true);
+
 const checkAuth = async () => {
+    // Gunakan data dari Blade sebagai sumber kebenaran awal
+    if (isInitialLoad.value && window.auth_user) {
+        user.value = window.auth_user;
+        isInitialLoad.value = false;
+        // Kita tetap panggil API untuk refresh data, tapi tidak akan 'mementalkan' status login
+    }
+
     try {
         const response = await axios.get("/api/user", {
             params: { _t: Date.now() },
         });
-        user.value = response.data;
-    } catch (error) {
-        if (error.response?.status !== 401) {
-            console.error("Error checking auth:", error);
+        
+        if (response.data && response.data.id) {
+            user.value = response.data;
+        } else if (!window.auth_user) {
+            user.value = null;
         }
-        user.value = null;
+    } catch (error) {
+        // Jika API gagal tapi Blade bilang kita login, jangan langsung set null
+        // Kecuali jika memang error-nya 401 (benar-benar expired)
+        if (error.response?.status === 401) {
+            // Hanya hapus jika kita tidak punya backup data dari Blade
+            if (!window.auth_user) {
+                user.value = null;
+            }
+        }
+        console.error("Auth check failed, but keeping session if Blade says OK:", error.message);
+    } finally {
+        isInitialLoad.value = false;
     }
 };
 
@@ -976,11 +1010,12 @@ const handleAddToCart = async (product) => {
         toast.value = { visible: true, message: `Stok tidak mencukupi. Sisa stok: ${stock}`, type: "error" };
         return;
     }
-    toast.value = { visible: true, message: "Berhasil", type: "success" };
-    lastAddedProductId.value = product.id;
-
     try {
         await axios.post("/api/cart/add", { product_id: product.id, quantity });
+        
+        toast.value = { visible: true, message: "Produk berhasil ditambahkan ke keranjang!", type: "success" };
+        lastAddedProductId.value = product.id;
+        
         await fetchCartCount();
         await nextTick();
         window.dispatchEvent(new CustomEvent("cartUpdated"));
@@ -1004,6 +1039,16 @@ const fetchCartCount = async () => {
     } catch (error) {
         console.error("Error fetching cart count:", error);
         cartCount.value = 0;
+    }
+};
+
+const fetchUnreadOrdersCount = async () => {
+    if (!user.value) return;
+    try {
+        const response = await axios.get("/api/seller/unread-orders-count");
+        unreadOrdersCount.value = response.data.count || 0;
+    } catch (error) {
+        console.error("Error fetching unread orders count:", error);
     }
 };
 
@@ -1092,13 +1137,16 @@ const handleUserUpdated = async (event) => {
 };
 
 onMounted(async () => {
+    console.log("Blade injected user:", window.auth_user);
     checkWelcomeCardVisibility();
     await checkAuth();
     await fetchProducts();
     await fetchCartCount();
+    await fetchUnreadOrdersCount();
     startAutoSlide();
     window.addEventListener("cartUpdated", fetchCartCount);
     window.addEventListener("userUpdated", handleUserUpdated);
+    window.addEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 });
 
 onBeforeUnmount(() => {
@@ -1106,6 +1154,7 @@ onBeforeUnmount(() => {
     
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
+    window.removeEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 });
 </script>
 

@@ -13,6 +13,9 @@
     @vite(['resources/css/app.css', 'resources/js/app-profile.js'])
 </head>
 <body>
+    <script>
+        window.auth_user = {!! json_encode(auth()->check() ? array_merge(auth()->user()->toArray(), ['photo_url' => auth()->user()->photo ? \Illuminate\Support\Facades\Storage::url(auth()->user()->photo) : null]) : null) !!};
+    </script>
     <div id="app"></div>
 </body>
 </html>

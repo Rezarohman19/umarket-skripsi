@@ -144,6 +144,18 @@
                             />
                         </svg>
                         <span v-if="!sidebarCollapsed">Toko Saya</span>
+                        <!-- Notification Badge -->
+                        <span 
+                            v-if="unreadOrdersCount > 0"
+                            class="ml-auto bg-[#EF3B33] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] h-[18px] flex items-center justify-center shadow-lg transform translate-x-1"
+                            :title="unreadOrdersCount + ' pesanan baru'"
+                        >
+                            {{ unreadOrdersCount > 99 ? '99+' : unreadOrdersCount }}
+                        </span>
+                        <div 
+                            v-if="sidebarCollapsed && unreadOrdersCount > 0"
+                            class="absolute top-1 right-1 w-2.5 h-2.5 bg-[#EF3B33] rounded-full border border-[#8E0D3C] shadow-sm animate-pulse"
+                        ></div>
                     </a>
                 </nav>
 
@@ -595,6 +607,7 @@ const searchQuery = ref("");
 const showMobileSearch = ref(false);
 const confirmModal = ref({ visible: false, title: "", message: "", onConfirm: null });
 const toast = ref({ visible: false, message: "", type: "success" });
+const unreadOrdersCount = ref(0);
 
 const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value;
@@ -676,7 +689,7 @@ const getStatusLabel = (status) => {
         failed: "Gagal",
         expired: "Dibatalkan",
         cancelled: "Dibatalkan",
-        return_requested: "Pengembalian Diajukan",
+        return_requested: "Proses Pengembalian",
         returned: "Dikembalikan",
     };
     return statusMap[status] || status;
@@ -853,7 +866,7 @@ const getPurchaseActions = (status, transaction) => {
             });
         } else if (transaction?.status === 'return_requested') {
              actions.push({
-                label: "Pengembalian Diajukan",
+                label: "Proses Pengembalian",
                 type: "info",
                 variant: "warning",
                 disabled: true,
@@ -1199,10 +1212,22 @@ const fetchCartCount = async () => {
     }
 };
 
+const fetchUnreadOrdersCount = async () => {
+    if (!user.value) return;
+    try {
+        const response = await axios.get("/api/seller/unread-orders-count");
+        unreadOrdersCount.value = response.data.count || 0;
+    } catch (error) {
+        console.error("Error fetching unread orders count:", error);
+    }
+};
+
 onMounted(async () => {
     await checkAuth();
     await fetchCartCount();
+    await fetchUnreadOrdersCount();
     await fetchTransactions();
+    window.addEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 
     window.addEventListener("cartUpdated", fetchCartCount);
 
@@ -1219,6 +1244,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
+    window.removeEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
 });
 </script>
 
