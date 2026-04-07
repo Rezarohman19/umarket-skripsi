@@ -705,30 +705,29 @@ const getOrderGroupDisplayStatus = (orderGroup) => {
 const getStatusBadgeClass = (status) => {
     const classMap = {
         belum_bayar:
-            "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
         dikemas:
-            "bg-[#FDA1A2]/30 dark:bg-[#FDA1A2]/20 text-[#8E0D3C] dark:text-[#FDA1A2]",
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
         dikirim:
-            "bg-[#8E0D3C]/20 dark:bg-[#8E0D3C]/30 text-[#8E0D3C] dark:text-[#FDA1A2]",
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
         riwayat:
-            "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
+            "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
         pending:
-            "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
-        paid: "bg-[#FDA1A2]/30 dark:bg-[#FDA1A2]/20 text-[#8E0D3C] dark:text-[#FDA1A2]",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
+        paid: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
         processing:
-            "bg-[#FDA1A2]/30 dark:bg-[#FDA1A2]/20 text-[#8E0D3C] dark:text-[#FDA1A2]",
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
         shipping:
-            "bg-[#8E0D3C]/20 dark:bg-[#8E0D3C]/30 text-[#8E0D3C] dark:text-[#FDA1A2]",
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
         completed:
-            "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
+            "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
         delivered:
-            "bg-[#1D1842]/20 dark:bg-[#1D1842]/40 text-[#1D1842] dark:text-[#FDA1A2]",
-        failed: "bg-[#EF3B33]/20 dark:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2]",
-        expired: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
-        cancelled:
-            "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
+            "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
+        failed: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
+        expired: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
+        cancelled: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
         return_requested: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
-        returned: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
+        returned: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
     };
     return (
         classMap[status] ||

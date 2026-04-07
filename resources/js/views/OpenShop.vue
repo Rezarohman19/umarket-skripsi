@@ -458,7 +458,7 @@
                                 :class="[
                                     'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'processing'
-                                        ? 'ring-2 ring-[#FDA1A2] dark:ring-[#FDA1A2]'
+                                        ? 'ring-2 ring-[#EF3B33] dark:ring-[#FDA1A2]'
                                         : '',
                                 ]"
                             >
@@ -470,7 +470,7 @@
                                 :class="[
                                     'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'shipping'
-                                        ? 'ring-2 ring-[#8E0D3C] dark:ring-[#8E0D3C]'
+                                        ? 'ring-2 ring-[#EF3B33] dark:ring-[#FDA1A2]'
                                         : '',
                                 ]"
                             >
@@ -482,7 +482,7 @@
                                 :class="[
                                     'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-lg p-4 text-center cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner',
                                     activeOrderSection === 'history'
-                                        ? 'ring-2 ring-[#1D1842] dark:ring-[#1D1842]'
+                                        ? 'ring-2 ring-[#EF3B33] dark:ring-[#FDA1A2]'
                                         : '',
                                 ]"
                             >
@@ -634,14 +634,14 @@
                                                 'processing'
                                             )
                                         "
-                                        class="px-3 py-1.5 bg-[#EF3B33] text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
+                                        class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner"
                                     >
                                         Mulai Kemas
                                     </button>
                                     <button
                                         v-if="order.status === 'processing'"
                                         @click="contactBuyer(order)"
-                                        class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner flex items-center gap-1"
+                                        class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner flex items-center gap-1"
                                     >
                                         <svg
                                             class="w-4 h-4"
@@ -657,7 +657,7 @@
                                     <button
                                         v-if="order.status === 'processing'"
                                         @click="updateOrderStatus(order.id, 'shipping')"
-                                        class="px-3 py-1.5 bg-[#EF3B33] text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner"
+                                        class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner"
                                     >
                                         Tandai Dikirim
                                     </button>
@@ -1206,27 +1206,27 @@ const getStatusLabel = (status) => {
 const getStatusClass = (status) => {
     const classes = {
         unpaid:
-            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
         pending:
-            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
-        paid: "bg-[#FDA1A2]/30 text-[#8E0D3C] dark:bg-[#FDA1A2]/20 dark:text-[#FDA1A2]",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
+        paid: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
         processing:
-            "bg-[#FDA1A2]/30 text-[#8E0D3C] dark:bg-[#FDA1A2]/20 dark:text-[#FDA1A2]",
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
         shipping:
-            "bg-[#8E0D3C]/20 text-[#8E0D3C] dark:bg-[#8E0D3C]/30 dark:text-[#FDA1A2]",
+            "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
         delivered:
-            "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
+            "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
         completed:
-            "bg-[#1D1842]/20 text-[#1D1842] dark:bg-[#1D1842]/40 dark:text-[#FDA1A2]",
+            "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
         returned:
-            "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300",
+            "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
         cancelled:
-            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
         canceled:
-            "bg-[#EF3B33]/20 text-[#EF3B33] dark:bg-[#EF3B33]/20 dark:text-[#FDA1A2]",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
         failed:
-            "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
-        expired: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700",
+            "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
+        expired: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
         return_requested: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300",
     };
     return (
