@@ -26,9 +26,21 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
-            // Foto produk wajib saat tambah produk baru
-            'image'       => 'required|image|max:5120',
+            'image'       => 'nullable|image|max:5120',
+            'image_2'     => 'nullable|image|max:5120',
+            'images'      => 'nullable|array',
+            'images.*'    => 'image|max:5120',
         ]);
+
+        $hasAnyImage = $request->hasFile('image') || $request->hasFile('image_2') || $request->hasFile('images');
+        if (!$hasAnyImage) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'images' => ['Minimal upload 1 foto produk.'],
+                ],
+            ], 422);
+        }
 
         // Kategori sekarang wajib, auto-create jika belum ada
         $catName = trim($request->input('category'));
@@ -45,15 +57,20 @@ class ProductController extends Controller
         unset($validated['category']);
         $validated['category_id'] = $categoryId;
 
-        // Upload image jika ada
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
             $validated['image'] = $path;
+        }
+        if ($request->hasFile('image_2')) {
+            $path2 = $request->file('image_2')->store('products', 'public');
+            $validated['image_2'] = $path2;
         }
 
         $validated['user_id'] = Auth::id();
 
         $product = Product::create($validated);
+        $this->syncProductImages($request, $product, false);
+        $product->refresh();
 
         return response()->json([
             'message' => 'Produk berhasil disimpan',
@@ -78,8 +95,10 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price'       => 'required|numeric',
             'stock'       => 'required|integer|min:0',
-            // Foto produk opsional saat update (jika tidak diubah, pakai yang lama)
             'image'       => 'nullable|image|max:5120',
+            'image_2'     => 'nullable|image|max:5120',
+            'images'      => 'nullable|array',
+            'images.*'    => 'image|max:5120',
         ]);
 
         // Jika ada input kategori, auto-create jika belum ada
@@ -101,8 +120,14 @@ class ProductController extends Controller
             $path = $request->file('image')->store('products', 'public');
             $validated['image'] = $path;
         }
+        if ($request->hasFile('image_2')) {
+            $path2 = $request->file('image_2')->store('products', 'public');
+            $validated['image_2'] = $path2;
+        }
 
         $product->update($validated);
+        $this->syncProductImages($request, $product, true);
+        $product->refresh();
 
         return response()->json($product);
     }
@@ -114,5 +139,35 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Product deleted'
         ]);
+    }
+
+    private function syncProductImages(Request $request, Product $product, bool $isUpdate): void
+    {
+        if (!$request->hasFile('images')) {
+            return;
+        }
+
+        if ($isUpdate) {
+            foreach ($product->productImages as $oldImage) {
+                Storage::disk('public')->delete($oldImage->path);
+            }
+            $product->productImages()->delete();
+        }
+
+        $savedPaths = [];
+        foreach ($request->file('images', []) as $index => $file) {
+            $path = $file->store('products', 'public');
+            $savedPaths[] = $path;
+            $product->productImages()->create([
+                'path' => $path,
+                'sort_order' => $index,
+            ]);
+        }
+
+        if (!empty($savedPaths)) {
+            $product->image = $savedPaths[0] ?? $product->image;
+            $product->image_2 = $savedPaths[1] ?? null;
+            $product->save();
+        }
     }
 }

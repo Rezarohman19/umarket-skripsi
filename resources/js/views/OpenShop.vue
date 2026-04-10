@@ -780,9 +780,9 @@
                                     <div class="sm:col-span-2">
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                            >Foto Produk</label
+                                            >Foto Produk (bisa lebih dari 1)</label
                                         >
-                                        <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-3 flex-wrap">
                                             <label
                                                 class="w-28 h-28 border border-dashed border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg flex items-center justify-center bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 cursor-pointer"
                                             >
@@ -790,31 +790,32 @@
                                                     type="file"
                                                     accept="image/*"
                                                     class="hidden"
+                                                    multiple
                                                     @change="onImageChange"
                                                 />
-                                                <template
-                                                    v-if="form.imagePreview"
+                                                <span
+                                                    class="text-xs text-gray-500 dark:text-gray-400"
+                                                    >Upload</span
                                                 >
-                                                    <img
-                                                        :src="form.imagePreview"
-                                                        alt="preview"
-                                                        class="w-full h-full object-cover rounded-lg"
-                                                    />
-                                                </template>
-                                                <template v-else>
-                                                    <span
-                                                        class="text-xs text-gray-500 dark:text-gray-400"
-                                                        >Upload</span
-                                                    >
-                                                </template>
                                             </label>
-                                            <button
-                                                v-if="form.imagePreview"
-                                                class="text-xs text-red-500 hover:text-red-600"
-                                                @click="removeImage"
+                                            <div
+                                                v-for="(preview, index) in form.imagePreviews"
+                                                :key="`preview-${index}`"
+                                                class="relative w-28 h-28"
                                             >
-                                                Hapus Foto
-                                            </button>
+                                                <img
+                                                    :src="preview"
+                                                    alt="preview"
+                                                    class="w-full h-full object-cover rounded-lg border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white text-xs"
+                                                    @click="removeImage(index)"
+                                                >
+                                                    x
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1114,8 +1115,8 @@ const form = ref({
     description: "",
     price: 0,
     stock: 0,
-    imageFile: null,
-    imagePreview: null,
+    imageFiles: [],
+    imagePreviews: [],
 });
 
 const incomingOrders = ref([]);
@@ -1394,8 +1395,8 @@ const resetForm = () => {
         description: "",
         price: 0,
         stock: 0,
-        imageFile: null,
-        imagePreview: null,
+        imageFiles: [],
+        imagePreviews: [],
     };
     priceInput.value = "";
 };
@@ -1413,8 +1414,8 @@ const editProduct = (p) => {
         description: p.description || "",
         price: p.price,
         stock: p.stock,
-        imageFile: null,
-        imagePreview: p.image_url || null,
+        imageFiles: [],
+        imagePreviews: Array.isArray(p.image_urls) ? p.image_urls : [p.image_url].filter(Boolean),
     };
     priceInput.value = p.price > 0 ? formatPriceString(p.price) : "";
     showForm.value = true;
@@ -1461,7 +1462,7 @@ const submitForm = async () => {
     if (form.value.stock === null || form.value.stock === "" || Number(form.value.stock) < 0) {
         missingFields.push("Stok");
     }
-    if (!form.value.id && !form.value.imageFile && !form.value.imagePreview) {
+    if (!form.value.id && (!form.value.imageFiles || form.value.imageFiles.length === 0)) {
         missingFields.push("Foto produk");
     }
 
@@ -1481,10 +1482,10 @@ const submitForm = async () => {
     payload.append("description", form.value.description || "");
     payload.append("price", form.value.price);
     payload.append("stock", form.value.stock);
-    if (form.value.imageFile) {
-        payload.append("image", form.value.imageFile);
-    } else if (form.value.imagePreview === null && form.value.id) {
-        payload.append("remove_image", "1");
+    if (form.value.imageFiles.length > 0) {
+        form.value.imageFiles.forEach((file) => {
+            payload.append("images[]", file);
+        });
     }
 
     try {
@@ -1600,29 +1601,24 @@ const resizeImage = (file, maxWidth, maxHeight) => {
 };
 
 const onImageChange = async (event) => {
-    const file = event.target.files?.[0];
-    if (file) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    for (const file of files) {
         try {
-            form.value.imagePreview = URL.createObjectURL(file);
-            
             const resizedFile = await resizeImage(file, 1200, 1200);
-            
-            form.value.imageFile = resizedFile;
-            form.value.imagePreview = URL.createObjectURL(resizedFile);
-            
-            console.log(`Original size: ${(file.size / 1024).toFixed(2)} KB`);
-            console.log(`Resized size: ${(resizedFile.size / 1024).toFixed(2)} KB`);
+            form.value.imageFiles.push(resizedFile);
+            form.value.imagePreviews.push(URL.createObjectURL(resizedFile));
         } catch (error) {
-            console.error("Error resizing image:", error);
-            form.value.imageFile = file;
-            form.value.imagePreview = URL.createObjectURL(file);
+            form.value.imageFiles.push(file);
+            form.value.imagePreviews.push(URL.createObjectURL(file));
         }
     }
 };
 
-const removeImage = () => {
-    form.value.imageFile = null;
-    form.value.imagePreview = null;
+const removeImage = (index) => {
+    form.value.imageFiles.splice(index, 1);
+    form.value.imagePreviews.splice(index, 1);
 };
 
 const fetchProducts = async () => {

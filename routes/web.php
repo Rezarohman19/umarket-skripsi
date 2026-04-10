@@ -235,6 +235,7 @@ Route::prefix('api')->group(function () {
                 'price' => $p->price,
                 'stock' => $p->stock,
                 'image_url' => $p->image ? Storage::url($p->image) : null,
+                'image_urls' => $p->image_urls,
                 'user' => $p->user,
                 'user_id' => $p->user_id,
                 'store_name' => $p->user->name ?? 'Toko',
@@ -256,6 +257,7 @@ Route::prefix('api')->group(function () {
                 'price' => $p->price,
                 'stock' => $p->stock,
                 'image_url' => $p->image ? Storage::url($p->image) : null,
+                'image_urls' => $p->image_urls,
                 'user' => $p->user,
                 'user_id' => $p->user_id,
                 'store_name' => $p->user->name ?? 'Toko',
@@ -432,7 +434,7 @@ Route::prefix('api')->group(function () {
         Route::post('/seller/orders/{id}/update-status', [TransactionController::class, 'updateSellerOrderStatus']);
         Route::post('/seller/orders/{id}/approve-return', [TransactionController::class, 'approveReturn']);
         Route::get('/my-products', function () {
-            return \App\Models\Product::with('category')->where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
+            return \App\Models\Product::with(['category', 'productImages'])->where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
         });
         Route::post('/products', [ProductController::class, 'store']);
         Route::post('/products/{product}', [ProductController::class, 'update']);

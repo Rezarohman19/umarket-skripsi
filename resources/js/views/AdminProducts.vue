@@ -486,9 +486,9 @@
                             <div>
                                 <label
                                     class="block text-[#1D1842] dark:text-[#FDA1A2] mb-1"
-                                    >Gambar Produk</label
+                                    >Gambar Produk (bisa lebih dari 1)</label
                                 >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-3 flex-wrap">
                                     <label
                                         class="w-28 h-28 border border-dashed border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg flex items-center justify-center bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 cursor-pointer hover:bg-[#FDA1A2]/20 dark:hover:bg-[#1D1842]/60 transition"
                                     >
@@ -496,27 +496,29 @@
                                             type="file"
                                             accept="image/*"
                                             class="hidden"
+                                            multiple
                                             @change="onImageChange"
                                         />
-                                        <template v-if="form.imagePreview">
-                                            <img
-                                                :src="form.imagePreview"
-                                                alt="preview"
-                                                class="w-full h-full object-cover rounded-lg"
-                                            />
-                                        </template>
-                                        <template v-else>
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Upload</span>
-                                        </template>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Upload</span>
                                     </label>
-                                    <button
-                                        v-if="form.imagePreview"
-                                        type="button"
-                                        class="text-xs text-red-500 hover:text-red-600 transition"
-                                        @click="removeImage"
+                                    <div
+                                        v-for="(preview, index) in form.imagePreviews"
+                                        :key="`preview-${index}`"
+                                        class="relative w-28 h-28"
                                     >
-                                        Hapus Foto
-                                    </button>
+                                        <img
+                                            :src="preview"
+                                            alt="preview"
+                                            class="w-full h-full object-cover rounded-lg border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30"
+                                        />
+                                        <button
+                                            type="button"
+                                            class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white text-xs"
+                                            @click="removeImage(index)"
+                                        >
+                                            x
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -592,8 +594,8 @@ const form = ref({
     description: "",
     price: 0,
     stock: 0,
-    imageFile: null,
-    imagePreview: null,
+    imageFiles: [],
+    imagePreviews: [],
 });
 
 const formatPrice = (price) =>
@@ -684,8 +686,8 @@ const resetForm = () => {
         description: "",
         price: 0,
         stock: 0,
-        imageFile: null,
-        imagePreview: null,
+        imageFiles: [],
+        imagePreviews: [],
     };
     priceInput.value = "";
 };
@@ -728,20 +730,21 @@ const handleConfirmDelete = async () => {
 const closeModal = () => {
     showModal.value = false;
     priceInput.value = "";
-    form.value.imagePreview = null;
+    form.value.imagePreviews = [];
 };
 
 const onImageChange = (event) => {
-    const file = event.target.files?.[0];
-    if (file) {
-        form.value.imageFile = file;
-        form.value.imagePreview = URL.createObjectURL(file);
-    }
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    files.forEach((file) => {
+        form.value.imageFiles.push(file);
+        form.value.imagePreviews.push(URL.createObjectURL(file));
+    });
 };
 
-const removeImage = () => {
-    form.value.imageFile = null;
-    form.value.imagePreview = null;
+const removeImage = (index) => {
+    form.value.imageFiles.splice(index, 1);
+    form.value.imagePreviews.splice(index, 1);
 };
 
 const saveProduct = async () => {
@@ -759,7 +762,7 @@ const saveProduct = async () => {
     if (form.value.stock === null || form.value.stock === "" || Number(form.value.stock) < 0) {
         missingFields.push("Stok");
     }
-    if (!form.value.imageFile && !form.value.imagePreview) {
+    if (!form.value.imageFiles.length) {
         missingFields.push("Foto produk");
     }
 
@@ -780,9 +783,7 @@ const saveProduct = async () => {
     payload.append("description", form.value.description || "");
     payload.append("price", String(form.value.price || 0));
     payload.append("stock", String(form.value.stock || 0));
-    if (form.value.imageFile) {
-        payload.append("image", form.value.imageFile);
-    }
+    form.value.imageFiles.forEach((file) => payload.append("images[]", file));
 
     try {
         await axios.post("/api/products", payload, {

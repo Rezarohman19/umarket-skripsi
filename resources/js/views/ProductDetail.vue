@@ -59,10 +59,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
                     <div class="w-full">
                         <div
-                            class="w-full h-64 sm:h-80 md:h-96 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-xl flex items-center justify-center overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
+                            class="w-full h-64 sm:h-80 md:h-96 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 rounded-xl flex items-center justify-center overflow-hidden border border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20 relative"
+                            @touchstart="handleTouchStart"
+                            @touchend="handleTouchEnd"
                         >
                             <svg
-                                v-if="!product.image_url"
+                                v-if="!productImages.length"
                                 class="w-32 h-32 text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
@@ -77,10 +79,38 @@
                             </svg>
                             <img
                                 v-else
-                                :src="product.image_url"
-                                :alt="product.name"
+                                :src="productImages[currentImageIndex]"
+                                :alt="`${product.name} - ${currentImageIndex + 1}`"
                                 class="w-full h-full object-cover"
                             />
+
+                            <template v-if="productImages.length > 1">
+                                <button
+                                    @click="prevImage"
+                                    class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition"
+                                    type="button"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    @click="nextImage"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition"
+                                    type="button"
+                                >
+                                    ›
+                                </button>
+
+                                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                                    <button
+                                        v-for="(_, index) in productImages"
+                                        :key="`dot-${index}`"
+                                        type="button"
+                                        class="w-2.5 h-2.5 rounded-full transition"
+                                        :class="index === currentImageIndex ? 'bg-white' : 'bg-white/50'"
+                                        @click="setImageIndex(index)"
+                                    />
+                                </div>
+                            </template>
                         </div>
                     </div>
 
@@ -333,7 +363,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification.vue";
 const getProductId = () => {
@@ -349,9 +379,19 @@ const showSellerPhoneModal = ref(false);
 const user = ref(null);
 const toast = ref({ visible: false, message: "", type: "success" });
 const seller = ref(null);
+const currentImageIndex = ref(0);
+const touchStartX = ref(0);
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 const sellerPhone = ref("");
+const productImages = computed(() => {
+    if (!product.value) return [];
+    if (Array.isArray(product.value.image_urls) && product.value.image_urls.length) {
+        return product.value.image_urls.filter(Boolean);
+    }
+
+    return [product.value.image_url, product.value.image_2_url].filter(Boolean);
+});
 
 const goBack = () => {
     window.history.back();
@@ -368,7 +408,6 @@ const goToLogin = () => {
 
 const isInitialLoad = ref(true);
 const checkAuth = async () => {
-    // Gunakan data dari Blade sebagai sumber kebenaran awal
     if (isInitialLoad.value && window.auth_user) {
         user.value = window.auth_user;
         isInitialLoad.value = false;
@@ -381,7 +420,6 @@ const checkAuth = async () => {
         }
     } catch (error) {
         if (error.response?.status === 401) {
-            // Jika memang tidak login, set null tapi jangan redirect (handled by axios interceptor)
             user.value = null;
         }
     } finally {
@@ -396,11 +434,44 @@ const fetchProduct = async () => {
 
         const response = await axios.get(`/api/products/${productId}`);
         product.value = response.data;
+        currentImageIndex.value = 0;
     } catch (error) {
         console.error("Error fetching product:", error);
         product.value = null;
     } finally {
         loading.value = false;
+    }
+};
+
+const nextImage = () => {
+    if (productImages.value.length <= 1) return;
+    currentImageIndex.value = (currentImageIndex.value + 1) % productImages.value.length;
+};
+
+const prevImage = () => {
+    if (productImages.value.length <= 1) return;
+    currentImageIndex.value =
+        (currentImageIndex.value - 1 + productImages.value.length) % productImages.value.length;
+};
+
+const setImageIndex = (index) => {
+    if (index < 0 || index >= productImages.value.length) return;
+    currentImageIndex.value = index;
+};
+
+const handleTouchStart = (event) => {
+    touchStartX.value = event.changedTouches?.[0]?.clientX || 0;
+};
+
+const handleTouchEnd = (event) => {
+    const touchEndX = event.changedTouches?.[0]?.clientX || 0;
+    const diff = touchEndX - touchStartX.value;
+    if (Math.abs(diff) < 40) return;
+
+    if (diff < 0) {
+        nextImage();
+    } else {
+        prevImage();
     }
 };
 
@@ -419,7 +490,6 @@ const fetchSellerInfo = async () => {
         seller.value = response.data || null;
         if (seller.value?.phone) sellerPhone.value = seller.value.phone;
     } catch (error) {
-        // optional, fallback: keep disabled state
         seller.value = null;
     }
 };

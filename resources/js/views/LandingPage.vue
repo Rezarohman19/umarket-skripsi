@@ -445,7 +445,7 @@
                                                 Selamat Datang di <span class="text-[#EF3B33]">U Market</span>
                                             </h2>
                                             <p class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-snug mb-1 sm:mb-2.5 max-w-2xl mx-auto px-1 sm:px-4 break-words line-clamp-2 sm:line-clamp-none">
-                                                Platform e-commerce terpercaya untuk mahasiswa Unila dan masyarakat umum. 
+                                                Platform e-commerce terpercaya dan spesial untuk warga Unila serta masyarakat umum. 
                                                 Temukan berbagai produk berkualitas dari penjual lokal atau kelola toko Anda sendiri!
                                             </p>
                                             
@@ -933,11 +933,9 @@ const getPhotoUrl = (photoUrl) => {
 const isInitialLoad = ref(true);
 
 const checkAuth = async () => {
-    // Gunakan data dari Blade sebagai sumber kebenaran awal
     if (isInitialLoad.value && window.auth_user) {
         user.value = window.auth_user;
         isInitialLoad.value = false;
-        // Kita tetap panggil API untuk refresh data, tapi tidak akan 'mementalkan' status login
     }
 
     try {
@@ -951,10 +949,7 @@ const checkAuth = async () => {
             user.value = null;
         }
     } catch (error) {
-        // Jika API gagal tapi Blade bilang kita login, jangan langsung set null
-        // Kecuali jika memang error-nya 401 (benar-benar expired)
         if (error.response?.status === 401) {
-            // Hanya hapus jika kita tidak punya backup data dari Blade
             if (!window.auth_user) {
                 user.value = null;
             }
