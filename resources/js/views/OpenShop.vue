@@ -434,10 +434,15 @@
 
                             <div class="bg-gradient-to-r from-[#FDA1A2]/20 to-[#EF3B33]/20 dark:from-[#8E0D3C]/30 dark:to-[#EF3B33]/20 rounded-xl p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30">
                                 <div class="flex items-center justify-between gap-4">
-                                    <div>
+                                        <div>
                                         <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Saldo Penjualan</p>
                                         <p class="text-3xl font-bold text-[#EF3B33] dark:text-[#FDA1A2]">Rp. {{ formatPrice(store.balance || 0) }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Dari {{ store.totalSold || 0 }} penjualan</p>
+                                    </div>
+                                    <div class="px-6 border-l border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 text-center">
+                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Kunjungan Toko</p>
+                                        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ store.visits || 0 }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total lihat toko</p>
                                     </div>
                                     <button
                                         @click="showWithdrawModal = true"
@@ -1097,6 +1102,7 @@ const store = ref({
     name: "Nama Toko",
     balance: 0,
     totalSold: 0,
+    visits: 0,
     stats: {
         incoming: 0,
         needShip: 0,
@@ -2004,10 +2010,12 @@ const fetchSellerBalance = async () => {
         const response = await axios.get("/seller-balance");
         store.value.balance = response.data.balance || 0;
         store.value.totalSold = response.data.total_sold || 0;
+        store.value.visits = response.data.total_visits || 0;
     } catch (error) {
         console.error("Error fetching seller balance:", error);
         store.value.balance = 0;
         store.value.totalSold = 0;
+        store.value.visits = 0;
     }
 };
 

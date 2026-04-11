@@ -265,10 +265,22 @@ Route::prefix('api')->group(function () {
         return response()->json($products);
     });
 
-    Route::get('/store/{user_id}', function ($user_id) {
+    Route::get('/store/{user_id}', function (Request $request, $user_id) {
         $user = \App\Models\User::select('id', 'name', 'phone', 'email', 'description', 'photo')
             ->find($user_id);
         if (!$user) return response()->json(['message' => 'Store not found'], 404);
+
+        // Tracker kunjungan toko
+        try {
+            \App\Models\StoreVisit::firstOrCreate([
+                'store_id' => $user->id,
+                'ip_address' => $request->ip(),
+                'visit_date' => now()->toDateString(),
+            ]);
+        } catch (\Exception $e) {
+            // Abaikan jika duplicate / gagal menyimpan
+        }
+
         return response()->json([
             'id' => $user->id,
             'name' => $user->name,

@@ -184,10 +184,14 @@ class ProfileController extends Controller
 
         $balance = max(0, $totalSold - $totalWithdrawn);
 
+        // Kunjungan toko
+        $totalVisits = \App\Models\StoreVisit::where('store_id', $user->id)->count();
+
         return response()->json([
             'balance' => $balance,
             'total_sold' => $totalSold,
             'total_withdrawn' => $totalWithdrawn,
+            'total_visits' => $totalVisits,
         ]);
     }
 
