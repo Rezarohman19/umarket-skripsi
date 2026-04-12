@@ -644,6 +644,10 @@
                                     >
                                         {{ product.name }}
                                     </h3>
+                                    <p class="text-[10px] sm:text-xs font-semibold text-[#EF3B33] mb-1">
+                                        <span v-if="product.availability === 'pre-order'">Pre-Order</span>
+                                        <span v-else>Tersedia</span>
+                                    </p>
                                     <p
                                         class="text-sm sm:text-base font-bold text-[#EF3B33] dark:text-[#EF3B33] mb-1"
                                     >

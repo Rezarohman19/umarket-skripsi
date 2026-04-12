@@ -30,6 +30,7 @@ class ProductController extends Controller
             'image_2'     => 'nullable|image|max:5120',
             'images'      => 'nullable|array',
             'images.*'    => 'image|max:5120',
+            'availability'=> 'required|in:available,pre-order',
         ]);
 
         $hasAnyImage = $request->hasFile('image') || $request->hasFile('image_2') || $request->hasFile('images');
@@ -99,6 +100,7 @@ class ProductController extends Controller
             'image_2'     => 'nullable|image|max:5120',
             'images'      => 'nullable|array',
             'images.*'    => 'image|max:5120',
+            'availability'=> 'required|in:available,pre-order',
         ]);
 
         // Jika ada input kategori, auto-create jika belum ada

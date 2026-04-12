@@ -18,6 +18,7 @@ class Product extends Model
         'image',
         'image_2',
         'user_id', // penjual
+        'availability',
     ];
 
     protected $with = ['category', 'productImages'];

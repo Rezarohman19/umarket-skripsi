@@ -785,6 +785,19 @@
                                     <div class="sm:col-span-2">
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                            >Ketersediaan</label
+                                        >
+                                        <select
+                                            v-model="form.availability"
+                                            class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none"
+                                        >
+                                            <option value="available">Tersedia (Available)</option>
+                                            <option value="pre-order">Pre-Order</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                                             >Foto Produk (bisa lebih dari 1)</label
                                         >
                                         <div class="flex items-center gap-3 flex-wrap">
@@ -1403,6 +1416,7 @@ const resetForm = () => {
         stock: 0,
         imageFiles: [],
         imagePreviews: [],
+        availability: "available",
     };
     priceInput.value = "";
 };
@@ -1420,8 +1434,8 @@ const editProduct = (p) => {
         description: p.description || "",
         price: p.price,
         stock: p.stock,
-        imageFiles: [],
         imagePreviews: Array.isArray(p.image_urls) ? p.image_urls : [p.image_url].filter(Boolean),
+        availability: p.availability || "available",
     };
     priceInput.value = p.price > 0 ? formatPriceString(p.price) : "";
     showForm.value = true;
@@ -1488,6 +1502,7 @@ const submitForm = async () => {
     payload.append("description", form.value.description || "");
     payload.append("price", form.value.price);
     payload.append("stock", form.value.stock);
+    payload.append("availability", form.value.availability);
     if (form.value.imageFiles.length > 0) {
         form.value.imageFiles.forEach((file) => {
             payload.append("images[]", file);

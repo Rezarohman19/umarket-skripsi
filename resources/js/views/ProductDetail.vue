@@ -130,6 +130,10 @@
                             <div class="mb-6">
                                 <p class="text-3xl sm:text-4xl font-bold text-[#EF3B33] dark:text-[#EF3B33]">Rp. {{ formatPrice(product.price) }}</p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Stok: {{ product.stock }} pcs</p>
+                                <p class="text-sm text-[#EF3B33] font-semibold mt-1">
+                                    <span v-if="product.availability === 'pre-order'">Status: Pre-Order</span>
+                                    <span v-else>Status: Tersedia</span>
+                                </p>
                             </div>
 
                             <div class="mb-6">
