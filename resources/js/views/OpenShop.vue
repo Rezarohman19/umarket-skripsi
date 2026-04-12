@@ -1434,6 +1434,7 @@ const editProduct = (p) => {
         description: p.description || "",
         price: p.price,
         stock: p.stock,
+        imageFiles: [],
         imagePreviews: Array.isArray(p.image_urls) ? p.image_urls : [p.image_url].filter(Boolean),
         availability: p.availability || "available",
     };
