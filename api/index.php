@@ -1,5 +1,19 @@
 <?php
 
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
+register_shutdown_function(function () {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        http_response_code(500);
+        header('Content-Type: text/plain');
+        echo "SHUTDOWN FATAL ERROR:\n";
+        print_r($error);
+    }
+});
+
 // Ensure /tmp directories exist for Laravel on Vercel's serverless environment
 $dirs = [
     '/tmp/storage',
@@ -12,6 +26,7 @@ $dirs = [
     '/tmp/storage/app/public',
     '/tmp/storage/logs',
     '/tmp/views',
+    '/tmp/cache',
 ];
 foreach ($dirs as $dir) {
     if (!is_dir($dir)) {
@@ -39,6 +54,11 @@ $defaultEnv = [
     'SESSION_DRIVER' => 'cookie',
     'LOG_CHANNEL' => 'stderr',
     'VIEW_COMPILED_PATH' => '/tmp/storage/framework/views',
+    'APP_CONFIG_CACHE' => '/tmp/cache/config.php',
+    'APP_EVENTS_CACHE' => '/tmp/cache/events.php',
+    'APP_PACKAGES_CACHE' => '/tmp/cache/packages.php',
+    'APP_ROUTES_CACHE' => '/tmp/cache/routes.php',
+    'APP_SERVICES_CACHE' => '/tmp/cache/services.php',
 ];
 
 foreach ($defaultEnv as $k => $v) {
@@ -61,5 +81,13 @@ if (empty($_SERVER['REMOTE_ADDR'])) {
     }
 }
 
-// Forward to public/index.php
-require __DIR__ . '/../public/index.php';
+try {
+    // Forward to public/index.php
+    require __DIR__ . '/../public/index.php';
+} catch (\Throwable $e) {
+    http_response_code(500);
+    header('Content-Type: text/plain');
+    echo "CAUGHT EXCEPTION: " . get_class($e) . ": " . $e->getMessage() . "\n";
+    echo "FILE: " . $e->getFile() . ":" . $e->getLine() . "\n";
+    echo "TRACE:\n" . $e->getTraceAsString();
+}

@@ -56,6 +56,11 @@
     "CACHE_STORE": "array",
     "SESSION_DRIVER": "cookie",
     "LOG_CHANNEL": "stderr",
-    "VIEW_COMPILED_PATH": "/tmp/storage/framework/views"
+    "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
+    "APP_CONFIG_CACHE": "/tmp/cache/config.php",
+    "APP_EVENTS_CACHE": "/tmp/cache/events.php",
+    "APP_PACKAGES_CACHE": "/tmp/cache/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/cache/routes.php",
+    "APP_SERVICES_CACHE": "/tmp/cache/services.php"
   }
 }
