@@ -1,8 +1,7 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2-cli-alpine
 
 # Install system dependencies & PHP extensions
 RUN apk add --no-cache \
-    nginx \
     nodejs \
     npm \
     git \
@@ -17,28 +16,25 @@ RUN apk add --no-cache \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www/html
+# Create non-root user (UID 1000) for Hugging Face Spaces
+RUN adduser -D -u 1000 user
 
-# Copy application files
-COPY . .
+WORKDIR /app
 
-# Install Composer and NPM dependencies, and build assets
+# Copy files
+COPY --chown=user:user . .
+
+# Install dependencies and build frontend
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN npm install
 RUN npm run build
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Fix permissions for Laravel storage & cache
+RUN chown -R user:user /app/storage /app/bootstrap/cache
+RUN chmod -R 775 /app/storage /app/bootstrap/cache
 
-# Copy Nginx config
-COPY ./docker/nginx.conf /etc/nginx/http.d/default.conf
+USER user
 
-# Copy entrypoint script
-COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+EXPOSE 7860
 
-EXPOSE 80
-
-CMD ["/usr/local/bin/entrypoint.sh"]
+CMD ["sh", "-c", "php artisan storage:link --force && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=7860"]
