@@ -114,26 +114,37 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
     
     $user = \App\Models\User::find($id);
     if (!$user) {
-        return redirect('/login')->withErrors(['email' => 'Pengguna tidak ditemukan.']);
+        return redirect('/login')->withErrors(['email' => 'Pengguna tidak ditemukan. Silakan registrasi kembali.']);
     }
 
+    // 1. Jika sudah terverifikasi sebelumnya
+    if ($user->hasVerifiedEmail()) {
+        if (!Auth::check() || Auth::id() != $user->id) {
+            Auth::login($user);
+        }
+        return redirect('/')->with('success', 'Email Anda sudah terverifikasi sebelumnya. Selamat datang kembali!');
+    }
+
+    // 2. Validasi hash email kecocokan dengan email pemilik
     if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi email tidak valid atau telah kedaluwarsa.']);
+        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi email tidak valid. Silakan masuk dan minta tautan verifikasi baru.']);
     }
 
-    if (!$user->hasVerifiedEmail()) {
-        $user->markEmailAsVerified();
-        event(new \Illuminate\Auth\Events\Verified($user));
-        \Log::info('Verification fulfilled successfully for user: ' . $id);
+    // 3. Validasi waktu kedaluwarsa jika parameter expires ada
+    if ($request->has('expires') && now()->timestamp > (int) $request->query('expires')) {
+        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi telah kedaluwarsa. Silakan masuk ke akun Anda untuk mengirim ulang email verifikasi.']);
     }
 
-    // Jika belum login di sesi browser ini (misal dibuka di HP), langsung login-kan user
-    if (!Auth::check()) {
-        Auth::login($user);
-    }
+    // 4. Tandai email terverifikasi
+    $user->markEmailAsVerified();
+    event(new \Illuminate\Auth\Events\Verified($user));
+    \Log::info('Verification fulfilled successfully for user: ' . $id);
 
-    return redirect('/')->with('success', 'Selamat! Alamat email Anda telah berhasil diverifikasi.');
-})->middleware(['signed:relative'])->name('verification.verify');
+    // 5. Otomatis login-kan pengguna jika belum login atau login sebagai user lain
+    Auth::login($user);
+
+    return redirect('/')->with('success', 'Selamat! Alamat email Anda (' . $user->email . ') telah berhasil diverifikasi. Akun Anda kini aktif sepenuhnya.');
+})->name('verification.verify');
 
 Route::middleware(['auth'])->group(function () {
     // Halaman notice verifikasi
@@ -177,7 +188,7 @@ Route::middleware(['auth'])->group(function () {
 | AUTHENTICATED USER WEB PAGES (Session-based)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
 
 

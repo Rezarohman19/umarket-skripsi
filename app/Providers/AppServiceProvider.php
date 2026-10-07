@@ -20,22 +20,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public static function getPublicBaseUrl(): string
     {
-        // 1. If the current request came through an external domain (like trycloudflare or LAN IP)
-        if (request()->hasHeader('Host')) {
-            $host = request()->getHost();
-            if (!in_array($host, ['localhost', '127.0.0.1', '0.0.0.0', '::1'])) {
-                return request()->getSchemeAndHttpHost();
-            }
-        }
-
-        // 2. If APP_URL in .env is set to a public tunnel URL
+        // 1. If APP_URL is configured as a public HTTPS URL (like Vercel)
         $appUrl = config('app.url');
-        if (!empty($appUrl) && !str_contains($appUrl, '127.0.0.1') && !str_contains($appUrl, 'localhost')) {
+        if (!empty($appUrl) && str_starts_with($appUrl, 'https://')) {
             return rtrim($appUrl, '/');
         }
 
-        // 3. Fallback to request scheme and host or config
-        return request()->getSchemeAndHttpHost() ?: config('app.url', 'http://127.0.0.1:8000');
+        // 2. If the current request came through an external domain
+        if (request()->hasHeader('Host')) {
+            $host = request()->getHost();
+            if (!in_array($host, ['localhost', '127.0.0.1', '0.0.0.0', '::1'])) {
+                $scheme = request()->isSecure() || str_ends_with($host, '.vercel.app') || str_ends_with($host, '.trycloudflare.com') ? 'https' : request()->getScheme();
+                return $scheme . '://' . $host;
+            }
+        }
+
+        return config('app.url', 'https://umarket-skripsi.vercel.app');
     }
 
     /**
@@ -117,16 +117,19 @@ class AppServiceProvider extends ServiceProvider
 
         // Customizing the email verification message
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
+            $fromAddress = config('mail.from.address') ?: 'marketunila@gmail.com';
             return (new MailMessage)
-                ->from(config('mail.from.address'), 'U-Market Unila')
-                ->replyTo(config('mail.from.address'), 'U-Market Unila')
+                ->from($fromAddress, 'U-Market Unila')
+                ->replyTo($fromAddress, 'U-Market Unila')
                 ->subject('[U-Market] Verifikasi Alamat Email Anda')
                 ->greeting('Halo, ' . $notifiable->name . '!')
                 ->line('Terima kasih telah mendaftar di U-Market (E-Commerce Universitas Lampung).')
                 ->line('Silakan klik tombol di bawah ini untuk memverifikasi dan mengaktifkan akun Anda:')
                 ->action('Verifikasi Email Saya', $url)
-                ->line('Link verifikasi ini berlaku selama 60 menit.')
-                ->line('Jika Anda tidak merasa mendaftar, silakan abaikan email ini.')
+                ->line('Tautan verifikasi ini berlaku selama 60 menit.')
+                ->line('Jika tombol di atas tidak dapat diklik pada aplikasi email Anda, silakan salin tautan berikut dan buka di peramban browser Anda:')
+                ->line($url)
+                ->line('Jika Anda tidak merasa mendaftar di U-Market, silakan abaikan email ini.')
                 ->salutation('Salam hangat, Tim Pengembang U-Market');
         });
 

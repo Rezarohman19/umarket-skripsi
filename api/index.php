@@ -67,6 +67,14 @@ $defaultEnv = [
     'APP_PACKAGES_CACHE' => '/tmp/cache/packages.php',
     'APP_ROUTES_CACHE' => '/tmp/cache/routes.php',
     'APP_SERVICES_CACHE' => '/tmp/cache/services.php',
+    'MAIL_MAILER' => 'smtp',
+    'MAIL_HOST' => 'smtp.gmail.com',
+    'MAIL_PORT' => '587',
+    'MAIL_USERNAME' => 'marketunila@gmail.com',
+    'MAIL_PASSWORD' => 'quix iowh xfnc wfjm',
+    'MAIL_ENCRYPTION' => 'tls',
+    'MAIL_FROM_ADDRESS' => 'marketunila@gmail.com',
+    'MAIL_FROM_NAME' => 'U-Market',
 ];
 
 foreach ($defaultEnv as $k => $v) {
