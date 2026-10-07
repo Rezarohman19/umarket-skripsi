@@ -49,5 +49,17 @@ foreach ($defaultEnv as $k => $v) {
     }
 }
 
+// Ensure REMOTE_ADDR is always set for Symfony/Laravel proxy handling
+if (empty($_SERVER['REMOTE_ADDR'])) {
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $_SERVER['REMOTE_ADDR'] = trim($ips[0]);
+    } elseif (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+    } else {
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    }
+}
+
 // Forward to public/index.php
 require __DIR__ . '/../public/index.php';
