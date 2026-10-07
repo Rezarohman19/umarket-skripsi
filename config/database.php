@@ -59,8 +59,10 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA', env('DB_SSL_CA')),
-                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('DB_SSL_VERIFY', false),
+                PDO::MYSQL_ATTR_SSL_CA => in_array(env('MYSQL_ATTR_SSL_CA', env('DB_SSL_CA')), [true, 'true', '1', 1], true)
+                    ? (file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : (file_exists('/etc/ssl/certs/ca-certificates.crt') ? '/etc/ssl/certs/ca-certificates.crt' : true))
+                    : env('MYSQL_ATTR_SSL_CA', env('DB_SSL_CA')),
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => filter_var(env('DB_SSL_VERIFY', false), FILTER_VALIDATE_BOOLEAN),
             ], fn($val) => !is_null($val) && $val !== '') : [],
         ],
 

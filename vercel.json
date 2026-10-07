@@ -39,16 +39,23 @@
     }
   ],
   "env": {
+    "VERCEL": "1",
+    "APP_NAME": "U-Market",
     "APP_ENV": "production",
-    "APP_DEBUG": "false",
-    "APP_CONFIG_CACHE": "/tmp/config.php",
-    "APP_EVENTS_CACHE": "/tmp/events.php",
-    "APP_PACKAGES_CACHE": "/tmp/packages.php",
-    "APP_ROUTES_CACHE": "/tmp/routes.php",
-    "APP_SERVICES_CACHE": "/tmp/services.php",
-    "VIEW_COMPILED_PATH": "/tmp/views",
+    "APP_KEY": "base64:l5d04LB8osrG/nKoJiZYLgMZsEXHkY8Q+jOMhcGgefA=",
+    "APP_DEBUG": "true",
+    "APP_URL": "https://umarket-skripsi.vercel.app",
+    "DB_CONNECTION": "mysql",
+    "DB_HOST": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    "DB_PORT": "4000",
+    "DB_DATABASE": "test",
+    "DB_USERNAME": "daw8YEYXR9uL45q.root",
+    "DB_PASSWORD": "lJbn1OctVTSmONWr",
+    "DB_SSL_CA": "true",
+    "DB_SSL_VERIFY": "false",
     "CACHE_STORE": "array",
     "SESSION_DRIVER": "cookie",
-    "LOG_CHANNEL": "stderr"
+    "LOG_CHANNEL": "stderr",
+    "VIEW_COMPILED_PATH": "/tmp/storage/framework/views"
   }
 }
