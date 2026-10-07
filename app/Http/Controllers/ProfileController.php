@@ -169,27 +169,32 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         
-        $totalSold = \App\Models\Transaction::where('user_id', '!=', $user->id)
-            ->whereHas('items', function($query) use ($user) {
-                $query->whereHas('product', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                });
-            })
-            ->whereIn('status', ['delivered', 'completed'])
-            ->sum('total_price');
+        $sellerItems = \App\Models\TransactionItem::whereHas('product', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->whereHas('transaction', function($q) {
+            $q->whereIn('status', ['delivered', 'completed']);
+        });
 
-        $totalWithdrawn = \App\Models\Withdrawal::where('user_id', $user->id)
+        $totalRevenue = (float) ($sellerItems->selectRaw('COALESCE(SUM(price * qty), 0) as total')->value('total') ?? 0);
+
+        // Jumlah transaksi penjualan yang berhasil selesai
+        $totalSoldCount = \App\Models\Transaction::whereHas('items.product', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->whereIn('status', ['delivered', 'completed'])->count();
+
+        $totalWithdrawn = (float) \App\Models\Withdrawal::where('user_id', $user->id)
             ->where('status', 'completed')
             ->sum('amount');
 
-        $balance = max(0, $totalSold - $totalWithdrawn);
+        $balance = max(0, $totalRevenue - $totalWithdrawn);
 
-        // Kunjungan toko
+        // Kunjungan toko (total lihat toko & produk)
         $totalVisits = \App\Models\StoreVisit::where('store_id', $user->id)->count();
 
         return response()->json([
             'balance' => $balance,
-            'total_sold' => $totalSold,
+            'total_sold' => $totalSoldCount,
+            'total_revenue' => $totalRevenue,
             'total_withdrawn' => $totalWithdrawn,
             'total_visits' => $totalVisits,
         ]);
@@ -205,19 +210,21 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Minimum Rp 50.000'], 422);
         }
 
-        // Re-calculate balance for security
-        $totalSold = \App\Models\Transaction::where('user_id', '!=', $user->id)
-            ->whereHas('items', function($query) use ($user) {
-                $query->whereHas('product', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                });
-            })
-            ->whereIn('status', ['delivered', 'completed'])
-            ->sum('total_price');
-        $totalWithdrawn = \App\Models\Withdrawal::where('user_id', $user->id)
-            ->where('status', 'completed')
+        // Re-calculate balance for security (hitung item milik seller ini)
+        $sellerItems = \App\Models\TransactionItem::whereHas('product', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->whereHas('transaction', function($q) {
+            $q->whereIn('status', ['delivered', 'completed']);
+        });
+
+        $totalRevenue = (float) ($sellerItems->selectRaw('COALESCE(SUM(price * qty), 0) as total')->value('total') ?? 0);
+
+        // Kurangi penarikan yang sudah selesai atau sedang pending
+        $totalWithdrawn = (float) \App\Models\Withdrawal::where('user_id', $user->id)
+            ->whereIn('status', ['completed', 'pending'])
             ->sum('amount');
-        $balance = max(0, $totalSold - $totalWithdrawn);
+
+        $balance = max(0, $totalRevenue - $totalWithdrawn);
 
         if ($amount > $balance) {
             return response()->json(['message' => 'Saldo tidak cukup'], 422);

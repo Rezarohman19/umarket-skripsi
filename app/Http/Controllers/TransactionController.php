@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderNotificationMail;
+use App\Services\WhatsAppService;
 
 use Midtrans\Snap;
 use Midtrans\Config as MidtransConfig;
@@ -105,6 +106,9 @@ class TransactionController extends Controller
                 if (empty($selectedCartItemIds) && $request->filled('items_id')) {
                     $selectedCartItemIds = [$request->input('items_id')];
                 }
+                if (empty($selectedCartItemIds)) {
+                    $selectedCartItemIds = CartItem::where('cart_id', $cart->id)->pluck('id')->toArray();
+                }
             }
 
             if (empty($selectedCartItemIds)) {
@@ -144,6 +148,16 @@ class TransactionController extends Controller
 
             $shippingAddress = $request->input('shipping_address', []);
             $responseTransactions = [];
+            $voucherCode = $request->input('voucher_code');
+            $voucher = null;
+
+            // Validate voucher if provided
+            if ($voucherCode) {
+                $voucher = \App\Models\Voucher::where('code', strtoupper(trim($voucherCode)))->first();
+                if (!$voucher || !$voucher->isValid() || !$voucher->canBeUsedBy($user->id)) {
+                    $voucher = null; // Invalid voucher, ignore silently
+                }
+            }
 
             // Initialize Midtrans configuration once
             MidtransConfig::$serverKey = config('midtrans.server_key');
@@ -168,15 +182,39 @@ class TransactionController extends Controller
                     ];
                 }
 
+                // Apply voucher discount (if voucher is store-specific, only apply to that seller)
+                $discountAmount = 0;
+                if ($voucher) {
+                    if ($voucher->user_id && $voucher->user_id != $sellerId) {
+                        $discountAmount = 0;
+                    } else {
+                        $discountAmount = $voucher->calculateDiscount($groupTotal);
+                    }
+                    if ($discountAmount > 0) {
+                        $itemDetails[] = [
+                            'id' => 'DISCOUNT-' . $voucher->code,
+                            'price' => -$discountAmount,
+                            'quantity' => 1,
+                            'name' => 'Diskon Voucher ' . $voucher->code,
+                        ];
+                    }
+                }
+
+                $finalTotal = max(0, $groupTotal - $discountAmount);
+
                 // Buat transaksi per penjual
                 $transaction = Transaction::create([
                     'user_id' => $user->id,
-                    'total_price' => $groupTotal,
+                    'total_price' => $finalTotal,
                     'status' => 'pending',
                     'payment_method' => 'midtrans',
                     'shipping_name' => $shippingAddress['name'] ?? $user->name,
                     'shipping_phone' => $shippingAddress['phone'] ?? $user->phone,
                     'shipping_address' => $shippingAddress['address'] ?? $user->address,
+                    'destination_lat' => $shippingAddress['destination_lat'] ?? $shippingAddress['lat'] ?? null,
+                    'destination_lng' => $shippingAddress['destination_lng'] ?? $shippingAddress['lng'] ?? null,
+                    'voucher_code' => $discountAmount > 0 ? $voucher->code : null,
+                    'discount_amount' => $discountAmount,
                 ]);
 
                 foreach ($items as $it) {
@@ -194,16 +232,26 @@ class TransactionController extends Controller
                 $transaction->order_id = $orderId;
                 $transaction->save();
 
+                // Record voucher usage
+                if ($voucher && $discountAmount > 0) {
+                    $voucher->recordUsage($user->id, $transaction->id, $discountAmount);
+                }
+
                 // Siapkan parameter Midtrans untuk group ini
                 $params = [
                     'transaction_details' => [
                         'order_id' => $orderId,
-                        'gross_amount' => $groupTotal,
+                        'gross_amount' => $finalTotal,
                     ],
                     'item_details' => $itemDetails,
                     'customer_details' => [
                         'first_name' => $user->name,
                         'email' => $user->email,
+                    ],
+                    'callbacks' => [
+                        'finish' => url('/order-confirmation'),
+                        'unfinish' => url('/orders'),
+                        'error' => url('/orders'),
                     ],
                 ];
 
@@ -235,6 +283,25 @@ class TransactionController extends Controller
                     Log::error("Failed to send Email Order notification to seller: " . $e->getMessage());
                 }
 
+                // === NOTIFIKASI WHATSAPP KE PENJUAL (PESANAN BARU) ===
+                try {
+                    $wa = new WhatsAppService();
+                    $firstItemForSeller = $firstItemForSeller ?? ($items[0] ?? null);
+                    $seller = $seller ?? $firstItemForSeller?->product?->user;
+
+                    if ($seller && $seller->phone && $wa->isEnabled()) {
+                        $wa->notifySellerNewOrder(
+                            $seller->phone,
+                            $user->name,
+                            $orderId,
+                            $groupTotal
+                        );
+                        Log::info("WhatsApp notification sent to seller: {$seller->name} ({$seller->phone})");
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to send WhatsApp notification to seller: " . $e->getMessage());
+                }
+
                 $responseTransactions[] = [
                     'transaction' => $transaction,
                     'snap_token' => $snapToken,
@@ -250,7 +317,11 @@ class TransactionController extends Controller
                             'image_url' => $it->product->image ? \Illuminate\Support\Facades\Storage::url($it->product->image) : null,
                         ];
                     })->values(),
-                    'total' => $groupTotal,
+                    'total' => $finalTotal,
+                    'subtotal' => $groupTotal,
+                    'discount_amount' => $discountAmount,
+                    'voucher_code' => $discountAmount > 0 && $voucher ? $voucher->code : null,
+                    'status' => $transaction->status,
                 ];
             }
 
@@ -266,6 +337,8 @@ class TransactionController extends Controller
             return response()->json([
                 'message' => 'Checkout success',
                 'transactions' => $responseTransactions,
+                'snap_token' => $responseTransactions[0]['snap_token'] ?? null,
+                'transaction' => $responseTransactions[0]['transaction'] ?? null,
             ]);
         } catch (\Exception $e) {
             // Log exception detail to laravel.log for easier debugging
@@ -421,6 +494,27 @@ class TransactionController extends Controller
                 } catch (\Exception $e) {
                     Log::error("Failed to send Email notification for paid order: " . $e->getMessage());
                 }
+
+                // === NOTIFIKASI WHATSAPP KE PENJUAL (PEMBAYARAN DITERIMA) ===
+                try {
+                    $wa = new WhatsAppService();
+                    $transaction->load(['items.product.user', 'user']);
+                    $firstItem = $firstItem ?? $transaction->items->first();
+                    $seller = $seller ?? ($firstItem->product->user ?? null);
+                    $buyer = $transaction->user;
+
+                    if ($seller && $seller->phone && $wa->isEnabled()) {
+                        $wa->notifySellerPaymentReceived(
+                            $seller->phone,
+                            $buyer->name ?? 'Pembeli',
+                            $transaction->order_id,
+                            $transaction->total_price
+                        );
+                        Log::info("WhatsApp payment notification sent to seller: {$seller->name}");
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to send WhatsApp payment notification: " . $e->getMessage());
+                }
             }
 
             return response()->json(['message' => 'OK'], 200);
@@ -509,6 +603,38 @@ class TransactionController extends Controller
 
         $transaction->save();
 
+        // === NOTIFIKASI WHATSAPP SAAT STATUS BERUBAH ===
+        try {
+            $wa = new WhatsAppService();
+            if ($wa->isEnabled()) {
+                $transaction->load(['items.product.user', 'user']);
+                $buyer = $transaction->user;
+                $firstItem = $transaction->items->first();
+                $seller = $firstItem?->product?->user;
+
+                // Notif ke buyer saat pesanan dikirim
+                if ($request->status === 'shipping' && $oldStatus !== 'shipping' && $buyer && $buyer->phone) {
+                    $wa->notifyBuyerOrderShipped(
+                        $buyer->phone,
+                        $transaction->order_id,
+                        $seller->name ?? 'Penjual'
+                    );
+                    Log::info("WhatsApp shipping notification sent to buyer: {$buyer->name}");
+                }
+
+                // Notif ke buyer saat pesanan sampai
+                if ($request->status === 'delivered' && $oldStatus !== 'delivered' && $buyer && $buyer->phone) {
+                    $wa->notifyBuyerOrderDelivered(
+                        $buyer->phone,
+                        $transaction->order_id
+                    );
+                    Log::info("WhatsApp delivered notification sent to buyer: {$buyer->name}");
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to send WhatsApp status notification: " . $e->getMessage());
+        }
+
         return response()->json([
             'message' => 'Status updated',
             'transaction' => $transaction
@@ -535,6 +661,27 @@ class TransactionController extends Controller
 
         $transaction->status = 'return_requested';
         $transaction->save();
+
+        // === NOTIFIKASI WHATSAPP KE SELLER (RETURN REQUEST) ===
+        try {
+            $wa = new WhatsAppService();
+            if ($wa->isEnabled()) {
+                $transaction->load(['items.product.user']);
+                $firstItem = $transaction->items->first();
+                $seller = $firstItem?->product?->user;
+
+                if ($seller && $seller->phone) {
+                    $wa->notifySellerReturnRequested(
+                        $seller->phone,
+                        $user->name,
+                        $transaction->order_id
+                    );
+                    Log::info("WhatsApp return request notification sent to seller: {$seller->name}");
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to send WhatsApp return notification: " . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Pengajuan pengembalian berhasil', 'transaction' => $transaction]);
     }
@@ -566,6 +713,25 @@ class TransactionController extends Controller
 
         $transaction->status = 'returned';
         $transaction->save();
+
+        // === NOTIFIKASI WHATSAPP KE BUYER (RETURN APPROVED) ===
+        try {
+            $wa = new WhatsAppService();
+            if ($wa->isEnabled()) {
+                $transaction->load('user');
+                $buyer = $transaction->user;
+
+                if ($buyer && $buyer->phone) {
+                    $wa->notifyBuyerReturnApproved(
+                        $buyer->phone,
+                        $transaction->order_id
+                    );
+                    Log::info("WhatsApp return approved notification sent to buyer: {$buyer->name}");
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to send WhatsApp return approved notification: " . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Pengembalian disetujui', 'transaction' => $transaction]);
     }

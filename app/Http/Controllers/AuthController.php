@@ -70,7 +70,16 @@ class AuthController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+            'password' => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*[0-9]).+$/'],
+        ], [
+            'name.required'      => 'Nama lengkap wajib diisi.',
+            'email.required'     => 'Alamat email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'email.unique'       => 'Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.',
+            'password.required'  => 'Kata sandi wajib diisi.',
+            'password.min'       => 'Kata sandi minimal 8 karakter.',
+            'password.regex'     => 'Kata sandi wajib mengandung minimal 1 huruf kapital dan 1 nomor.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $user = User::create([
@@ -85,12 +94,11 @@ class AuthController extends Controller
         // Kirim email verifikasi
         try {
             $user->sendEmailVerificationNotification();
+            return redirect()->route('verification.notice')->with('success', 'Email verifikasi telah berhasil dikirim ke ' . $user->email . '! Silakan periksa Kotak Masuk (Inbox) atau folder Spam/Junk email Anda.');
         } catch (\Throwable $e) {
-            // Optional: log error pengiriman email
             \Log::error('Gagal mengirim email verifikasi: '.$e->getMessage());
+            return redirect()->route('verification.notice')->with('error', 'Gagal mengirim email verifikasi otomatis: ' . $e->getMessage() . '. Silakan klik tombol "Kirim Ulang Email Verifikasi".');
         }
-
-        return redirect()->route('verification.notice');
     }
 
     /**
@@ -157,7 +165,16 @@ class AuthController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+            'password' => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*[0-9]).+$/'],
+        ], [
+            'name.required'      => 'Nama lengkap wajib diisi.',
+            'email.required'     => 'Alamat email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'email.unique'       => 'Email ini sudah terdaftar.',
+            'password.required'  => 'Kata sandi wajib diisi.',
+            'password.min'       => 'Kata sandi minimal 8 karakter.',
+            'password.regex'     => 'Kata sandi wajib mengandung minimal 1 huruf kapital dan 1 nomor.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $user = User::create([
@@ -236,6 +253,8 @@ class AuthController extends Controller
         // Generate Token Manual jika ingin kontrol lebih (tapi Laravel punya facade Password)
         $token = Str::random(64);
 
+        // Simpan token ke database dengan enkripsi Bcrypt (Standar Resmi OWASP & Laravel)
+        // Permintaan baru otomatis menganulir (menghapus) keabsahan token sebelumnya
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
             [
@@ -245,19 +264,19 @@ class AuthController extends Controller
             ]
         );
 
-        // Kebutuhan reset password Laravel biasanya menggunakan Notification
-        // Namun kita bisa menggunakan cara manual untuk kemudahan visual di demo
-        // Redirect dengan token agar user bisa "melihat" simulasi jika email lambat
-        
-        // Menggunakan Notification standar Laravel:
+        // Mengirimkan notifikasi email resmi berisi link token terbaru
         try {
             $user->sendPasswordResetNotification($token);
         } catch (\Exception $e) {
             \Log::error('Gagal mengirim email reset password: '.$e->getMessage());
-            return back()->withErrors(['email' => 'Gagal mengirim email reset password. Silakan cek konfigurasi email Anda.']);
+            return back()->withErrors(['email' => 'Gagal mengirim email reset password. Silakan periksa konfigurasi email Anda.']);
         }
 
-        return back()->with('success', 'Link reset password telah dikirim ke email Anda.');
+        // Bersihkan cache redirect lama untuk email ini
+        \Illuminate\Support\Facades\Cache::forget('reset_redirect_' . md5($request->email));
+
+        return back()->with('success', 'Link reset password telah dikirim ke email Anda.')
+                     ->with('reset_email', $request->email);
     }
 
     /**
@@ -265,6 +284,30 @@ class AuthController extends Controller
      */
     public function resetPasswordForm(Request $request, $token)
     {
+        // Validasi Standar Resmi: pastikan token cocok dengan token terbaru di database & belum kadaluarsa
+        $reset = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        $isValid = $reset 
+            && Hash::check($token, $reset->token) 
+            && !Carbon::parse($reset->created_at)->addMinutes(60)->isPast();
+
+        if (!$isValid) {
+            return redirect()->route('password.request')->withErrors([
+                'email' => 'Link reset password ini sudah tidak berlaku karena Anda telah meminta link baru atau sudah lewat dari 60 menit. Silakan buka email TERBARU atau minta link baru di bawah ini.'
+            ]);
+        }
+
+        // Catat di Cache agar layar laptop otomatis berpindah ke form ini secara real-time
+        if ($request->filled('email')) {
+            \Illuminate\Support\Facades\Cache::put(
+                'reset_redirect_' . md5($request->email),
+                route('password.reset', ['token' => $token, 'email' => $request->email], false),
+                now()->addMinutes(10)
+            );
+        }
+
         return view('reset-password', ['token' => $token, 'email' => $request->email]);
     }
 
@@ -274,30 +317,50 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:6|confirmed',
+            'token'    => 'required',
+            'email'    => 'required|email|exists:users,email',
+            'password' => ['required', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*[0-9]).+$/'],
+        ], [
+            'password.required'  => 'Kata sandi wajib diisi.',
+            'password.min'       => 'Kata sandi minimal 8 karakter.',
+            'password.regex'     => 'Kata sandi wajib mengandung minimal 1 huruf kapital dan 1 nomor.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $reset = DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
+        // 1. Verifikasi kecocokan token dengan hash Bcrypt di database
         if (!$reset || !Hash::check($request->token, $reset->token)) {
-            return back()->withErrors(['email' => 'Token reset password tidak valid atau sudah kadaluarsa.']);
+            return back()->withErrors(['email' => 'Token reset password tidak valid atau sudah kadaluarsa. Pastikan Anda membuka link dari email TERBARU yang kami kirimkan.']);
         }
 
-        // Cek waktu (opsional, Laravel default 60 menit)
+        // 2. Verifikasi batas waktu (kedaluwarsa 60 menit)
         if (Carbon::parse($reset->created_at)->addMinutes(60)->isPast()) {
-             return back()->withErrors(['email' => 'Token reset password sudah kadaluarsa.']);
+            return back()->withErrors(['email' => 'Token reset password sudah kadaluarsa (lebih dari 60 menit). Silakan minta link reset baru.']);
         }
 
+        // 3. Update password user dengan hash Bcrypt yang aman
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
+        // 4. Prinsip Sekali Pakai (One-Time Use): Hapus token seketika dari database setelah digunakan
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-        return redirect()->route('login')->with('success', 'Password Anda berhasil diperbarui. Silakan login.');
+        // Bersihkan cache redirect
+        if ($request->filled('email')) {
+            \Illuminate\Support\Facades\Cache::forget('reset_redirect_' . md5($request->email));
+        }
+
+        // 5. Logout jika user sedang dalam sesi login agar bisa login bersih dengan password baru
+        if (Auth::check()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return redirect()->route('login')->with('success', 'Kata sandi Anda berhasil diperbarui! Silakan masuk dengan kata sandi baru.');
     }
 }

@@ -39,26 +39,85 @@
                             >
                                 Alamat Pengiriman
                             </h2>
-                            <button
-                                @click="showAddressModal = true"
-                                class="text-sm text-[#EF3B33] dark:text-[#EF3B33]"
-                            >
-                                Ubah
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    @click="showMapPickerModal = true"
+                                    class="text-xs bg-[#EF3B33]/10 hover:bg-[#EF3B33]/20 text-[#EF3B33] dark:text-[#FDA1A2] px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1"
+                                >
+                                    <span>📍 Peta</span>
+                                </button>
+                                <button
+                                    @click="showAddressModal = true"
+                                    class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 px-2 py-1.5 font-medium transition-colors"
+                                >
+                                    Ubah Data
+                                </button>
+                            </div>
                         </div>
                         <div class="space-y-2">
-                            <p class="text-gray-900 dark:text-white font-medium">
-                                {{ shippingAddress.name }}
-                            </p>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                {{ shippingAddress.phone }}
-                            </p>
+                            <div class="flex items-center gap-2">
+                                <p class="text-gray-900 dark:text-white font-medium">
+                                    {{ shippingAddress.name }}
+                                </p>
+                                <span class="text-gray-400">•</span>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                    {{ shippingAddress.phone }}
+                                </p>
+                            </div>
                             <p class="text-gray-600 dark:text-gray-400 text-sm">
                                 {{
                                     shippingAddress.address ||
                                     "Alamat belum diisi"
                                 }}
                             </p>
+
+                            <!-- Destination Pin Highlight -->
+                            <div
+                                v-if="shippingAddress.lat && shippingAddress.lng"
+                                class="mt-3 flex items-center justify-between bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40 rounded-xl px-3.5 py-2.5"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <span class="text-green-600 dark:text-green-400 text-sm">📍</span>
+                                    <div>
+                                        <p class="text-xs font-semibold text-green-700 dark:text-green-300">
+                                            Titik Tujuan Terkunci di Peta
+                                        </p>
+                                        <p class="text-[11px] text-green-600/80 dark:text-green-400/80 font-mono">
+                                            GPS: {{ Number(shippingAddress.lat).toFixed(5) }}, {{ Number(shippingAddress.lng).toFixed(5) }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    @click="showMapPickerModal = true"
+                                    class="text-xs text-green-700 dark:text-green-300 font-semibold underline hover:opacity-80"
+                                >
+                                    Ganti Titik
+                                </button>
+                            </div>
+
+                            <div
+                                v-else
+                                class="mt-3 bg-red-50/60 dark:bg-red-950/20 border border-dashed border-[#EF3B33]/40 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <span class="text-lg">🗺️</span>
+                                    <div>
+                                        <p class="text-xs font-bold text-[#1D1842] dark:text-[#FDA1A2]">
+                                            Tentukan Titik di Peta (ShopeeFood Style)
+                                        </p>
+                                        <p class="text-[11px] text-gray-500 dark:text-gray-400">
+                                            Pilih titik maps agar pengiriman ada rute garis biru dan kurir sampai ke tujuan.
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    @click="showMapPickerModal = true"
+                                    class="w-full sm:w-auto px-3.5 py-2 bg-[#EF3B33] hover:bg-[#d32f2f] text-white text-xs font-bold rounded-lg shadow-sm transition-colors whitespace-nowrap flex items-center justify-center gap-1.5"
+                                >
+                                    <span>Buka Peta</span>
+                                    <span>→</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="space-y-6">
@@ -159,6 +218,75 @@
                         >
                             Ringkasan Pesanan
                         </h2>
+
+                        <!-- Voucher Promo Box -->
+                        <div class="mb-5 p-3.5 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/60 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/40 rounded-xl space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl">🎟️</span>
+                                    <div>
+                                        <p class="text-xs font-bold text-[#1D1842] dark:text-[#FDA1A2]">Voucher Diskon</p>
+                                        <p class="text-[11px] text-gray-500">Hemat belanja dengan kupon promo</p>
+                                    </div>
+                                </div>
+                                <button
+                                    @click="showVoucherModal = true"
+                                    type="button"
+                                    class="px-2.5 py-1 bg-[#EF3B33] hover:bg-[#d92f25] text-white text-xs font-semibold rounded-lg shadow-sm transition-all cursor-pointer"
+                                >
+                                    Pilih Kupon
+                                </button>
+                            </div>
+
+                            <!-- Applied Voucher Pill -->
+                            <div
+                                v-if="appliedVoucher"
+                                class="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/50 rounded-lg flex items-center justify-between"
+                            >
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="text-emerald-600 font-bold text-sm">🎉</span>
+                                    <div class="truncate">
+                                        <p class="text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300 truncate">
+                                            {{ appliedVoucher.code }}
+                                        </p>
+                                        <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
+                                            Hemat Rp. {{ formatPrice(discountAmount) }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    @click="removeVoucher"
+                                    type="button"
+                                    class="text-xs text-red-500 hover:text-red-700 font-bold ml-2 p-1"
+                                    title="Hapus voucher"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <!-- Input Voucher Code (if none applied) -->
+                            <div v-else class="flex gap-1.5">
+                                <input
+                                    v-model="voucherInputCode"
+                                    @keyup.enter="applyVoucherByCode"
+                                    type="text"
+                                    placeholder="Ketik kode promo (cth: UMARKETHEMAT)"
+                                    class="flex-1 px-3 py-1.5 text-xs uppercase font-mono bg-white dark:bg-[#1D1842] border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#EF3B33]"
+                                />
+                                <button
+                                    @click="applyVoucherByCode"
+                                    type="button"
+                                    :disabled="applyingVoucher || !voucherInputCode.trim()"
+                                    class="px-3 py-1.5 bg-gray-800 dark:bg-gray-700 hover:bg-black text-white text-xs font-semibold rounded-lg disabled:opacity-40 transition-colors cursor-pointer"
+                                >
+                                    {{ applyingVoucher ? '...' : 'Pakai' }}
+                                </button>
+                            </div>
+                            <p v-if="voucherErrorMessage" class="text-[11px] text-red-500 font-medium">
+                                ⚠️ {{ voucherErrorMessage }}
+                            </p>
+                        </div>
+
                         <div class="space-y-3 mb-6">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600 dark:text-gray-400"
@@ -167,6 +295,13 @@
                                 <span class="text-[#1D1842] dark:text-[#FDA1A2]"
                                     >Rp. {{ formatPrice(subtotal) }}</span
                                 >
+                            </div>
+                            <div v-if="appliedVoucher && discountAmount > 0" class="flex justify-between text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
+                                <span class="flex items-center gap-1">
+                                    <span>🎟️</span>
+                                    <span>Diskon Voucher ({{ appliedVoucher.code }})</span>
+                                </span>
+                                <span>- Rp. {{ formatPrice(discountAmount) }}</span>
                             </div>
                             <div
                                 class="border-t border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 pt-3 flex justify-between"
@@ -230,59 +365,69 @@
                         <div
                             v-for="(t, index) in paymentTransactions"
                             :key="index"
-                            class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+                            class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 transition-all"
                             :class="{
-                                'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50':
+                                'bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border-[#EF3B33]/40':
                                     currentPaymentIndex === index
                             }"
                         >
                             <div class="flex justify-between items-start mb-2">
-                                <div>
+                                <div class="min-w-0 pr-2">
                                     <p
                                         class="font-semibold text-[#1D1842] dark:text-[#FDA1A2]"
                                     >
                                         {{ t.seller_name || "Toko" }}
                                     </p>
-                                    <p class="text-xs text-gray-500">
-                                        {{ t.transaction?.order_id }}
+                                    <p class="text-xs text-gray-500 font-mono">
+                                        {{ t.transaction?.order_id || t.order_id }}
                                     </p>
+                                    <!-- Voucher Diskon Pill -->
+                                    <span
+                                        v-if="t.discount_amount > 0 || t.voucher_code"
+                                        class="inline-flex items-center gap-1 mt-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/50 px-2 py-0.5 rounded-md"
+                                    >
+                                        <span>🎟️ Diskon ({{ t.voucher_code || 'Promo' }}):</span>
+                                        <strong>-Rp {{ formatPrice(t.discount_amount) }}</strong>
+                                    </span>
                                 </div>
-                                <span class="font-bold text-[#EF3B33]"
-                                    >Rp {{ formatPrice(t.total) }}</span
-                                >
+                                <div class="text-right flex-shrink-0">
+                                    <p v-if="t.discount_amount > 0" class="text-xs text-gray-400 line-through mb-0.5">
+                                        Rp {{ formatPrice(t.subtotal || (Number(t.total) + Number(t.discount_amount))) }}
+                                    </p>
+                                    <span class="font-bold text-base sm:text-lg text-[#EF3B33]">
+                                        Rp {{ formatPrice(t.total) }}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center mt-3">
+                            <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
                                 <span
-                                    class="text-xs px-2 py-1 rounded-full"
+                                    class="text-xs px-2.5 py-1 rounded-full font-medium"
                                     :class="{
-                                        'bg-green-100 text-green-800':
-                                            t.status === 'success' ||
-                                            t.status === 'settlement',
-                                        'bg-yellow-100 text-yellow-800':
+                                        'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300':
+                                            isPaidStatus(t.status),
+                                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300':
                                             t.status === 'pending',
-                                        'bg-red-100 text-red-800':
+                                        'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300':
                                             t.status === 'failed',
-                                        'bg-gray-100 text-gray-800': !t.status,
+                                        'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300':
+                                            !t.status || t.status === 'unpaid',
                                     }"
                                 >
                                     {{ getStatusLabel(t.status) }}
                                 </span>
                                 <button
-                                    v-if="
-                                        t.status !== 'success' &&
-                                        t.status !== 'settlement'
-                                    "
+                                    v-if="!isPaidStatus(t.status)"
                                     @click="processPayment(index)"
-                                    class="px-3 py-1.5 bg-[#EF3B33] text-white text-sm rounded-md shadow-sm hover:bg-[#D12B24] transition-colors"
+                                    class="px-3.5 py-1.5 bg-[#EF3B33] text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-[#D12B24] transition-colors cursor-pointer"
                                 >
                                     Bayar Sekarang
                                 </button>
                                 <span
                                     v-else
-                                    class="text-green-600 text-sm font-medium flex items-center"
+                                    class="text-green-600 dark:text-green-400 text-xs font-semibold flex items-center gap-1"
                                 >
                                     <svg
-                                        class="w-4 h-4 mr-1"
+                                        class="w-4 h-4 mr-0.5"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -294,7 +439,7 @@
                                             d="M5 13l4 4L19 7"
                                         ></path>
                                     </svg>
-                                    Berhasil
+                                    Pembayaran Selesai
                                 </span>
                             </div>
                         </div>
@@ -363,8 +508,22 @@
                             <textarea
                                 v-model="shippingAddress.address"
                                 rows="3"
+                                placeholder="Detail alamat, nama jalan, patokan..."
                                 class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-[#1D1842] dark:text-white focus:outline-none"
                             ></textarea>
+                        </div>
+                        <div>
+                            <button
+                                @click="showMapPickerModal = true"
+                                type="button"
+                                class="w-full py-2.5 px-3 bg-red-50 dark:bg-red-950/40 border border-[#EF3B33]/30 rounded-xl text-xs font-bold text-[#EF3B33] dark:text-[#FDA1A2] hover:bg-red-100 flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <span>🗺️</span>
+                                <span>{{ (shippingAddress.lat && shippingAddress.lng) ? 'Ubah Titik Lokasi di Peta' : 'Pilih Titik Lokasi di Peta (ShopeeFood Style)' }}</span>
+                            </button>
+                            <p v-if="shippingAddress.lat && shippingAddress.lng" class="text-[11px] text-green-600 dark:text-green-400 mt-1 text-center font-mono">
+                                ✓ Koordinat: {{ Number(shippingAddress.lat).toFixed(5) }}, {{ Number(shippingAddress.lng).toFixed(5) }}
+                            </p>
                         </div>
                         <div class="flex gap-3">
                             <button
@@ -384,23 +543,139 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Modal Pilih Voucher Diskon -->
+        <transition name="modal">
+            <div
+                v-if="showVoucherModal"
+                class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                @click.self="showVoucherModal = false"
+            >
+                <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 relative max-h-[85vh] flex flex-col">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">🎟️</span>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-bold text-[#1D1842] dark:text-[#FDA1A2]">Pilih Voucher Diskon</h3>
+                                <p class="text-xs text-gray-500">Pilih kupon promo terbaik untuk pesanan kamu</p>
+                            </div>
+                        </div>
+                        <button
+                            @click="showVoucherModal = false"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                        >
+                            ✕
+                        </button>
+                    </div>
+
+                    <!-- Voucher List Scrollable -->
+                    <div class="my-4 space-y-3 overflow-y-auto flex-1 pr-1">
+                        <div
+                            v-for="v in availableVouchers"
+                            :key="v.id"
+                            class="relative p-4 rounded-xl border transition-all"
+                            :class="[
+                                appliedVoucher?.code === v.code
+                                    ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-400 dark:border-emerald-600 shadow-sm'
+                                    : (getVoucherEligibleSubtotal(v) >= v.min_purchase && (!v.seller_id || getVoucherEligibleSubtotal(v) > 0)
+                                        ? 'bg-gradient-to-r from-red-50/40 via-white to-orange-50/40 dark:from-[#8E0D3C]/10 dark:to-transparent border-red-200 dark:border-[#8E0D3C]/40 hover:border-[#EF3B33]'
+                                        : 'bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-800 opacity-60')
+                            ]"
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="space-y-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="px-2 py-0.5 font-mono font-bold text-xs bg-[#EF3B33] text-white rounded">
+                                            {{ v.code }}
+                                        </span>
+                                        <span class="text-xs font-semibold text-gray-900 dark:text-white truncate">
+                                            {{ v.name }}
+                                        </span>
+                                        <span v-if="v.seller_id" class="px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 rounded-full border border-amber-300">
+                                            🏪 {{ v.store_name }}
+                                        </span>
+                                        <span v-else class="px-2 py-0.5 text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 rounded-full border border-blue-300">
+                                            🌐 Promo U-Market
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        {{ v.description || (v.type === 'percentage' ? `Diskon ${parseFloat(v.value)}%` : `Potongan Rp. ${formatPrice(v.value)}`) }}
+                                    </p>
+                                    <div class="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 pt-1 flex-wrap">
+                                        <span>Min. Belanja: Rp. {{ formatPrice(v.min_purchase) }}</span>
+                                        <span v-if="v.max_discount">• Maks. Potongan: Rp. {{ formatPrice(v.max_discount) }}</span>
+                                    </div>
+                                </div>
+                                <button
+                                    v-if="appliedVoucher?.code === v.code"
+                                    @click="removeVoucher"
+                                    type="button"
+                                    class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm cursor-pointer whitespace-nowrap"
+                                >
+                                    ✓ Digunakan
+                                </button>
+                                <button
+                                    v-else
+                                    @click="selectVoucher(v)"
+                                    type="button"
+                                    :disabled="getVoucherEligibleSubtotal(v) < v.min_purchase || (v.seller_id && getVoucherEligibleSubtotal(v) === 0)"
+                                    class="px-3 py-1.5 bg-[#EF3B33] hover:bg-[#d92f25] disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                                >
+                                    {{ v.seller_id && getVoucherEligibleSubtotal(v) === 0 ? 'Bukan Toko Ini' : (getVoucherEligibleSubtotal(v) < v.min_purchase ? 'Belum Cukup' : 'Gunakan') }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div v-if="availableVouchers.length === 0" class="text-center py-8 text-gray-500 text-xs">
+                            Sedang memuat voucher atau belum ada voucher aktif saat ini.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- Address Map Picker Modal (ShopeeFood Destination Picker) -->
+        <AddressMapPicker
+            v-if="showMapPickerModal"
+            :initial-address="shippingAddress.address"
+            :initial-lat="shippingAddress.lat"
+            :initial-lng="shippingAddress.lng"
+            @confirm="onLocationConfirmed"
+            @close="showMapPickerModal = false"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+import AddressMapPicker from "../components/AddressMapPicker.vue";
 
 const loading = ref(true);
 const processing = ref(false);
 const checkoutItems = ref([]);
 const user = ref(null);
+const showMapPickerModal = ref(false);
 const shippingAddress = ref({
     name: "",
     phone: "",
     address: "",
+    lat: null,
+    lng: null,
+    destination_lat: null,
+    destination_lng: null,
 });
 const showAddressModal = ref(false);
+
+const onLocationConfirmed = (loc) => {
+    shippingAddress.value.address = loc.address;
+    shippingAddress.value.lat = loc.lat;
+    shippingAddress.value.lng = loc.lng;
+    shippingAddress.value.destination_lat = loc.lat;
+    shippingAddress.value.destination_lng = loc.lng;
+    showMapPickerModal.value = false;
+    showAddressModal.value = false;
+};
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 const goBack = () => {
     window.location.href = "/cart";
@@ -411,8 +686,113 @@ const subtotal = computed(() => {
         0,
     );
 });
-const shippingCost = computed(() => 0);
-const totalPrice = computed(() => subtotal.value);
+const availableVouchers = ref([]);
+const showVoucherModal = ref(false);
+const voucherInputCode = ref("");
+const appliedVoucher = ref(null);
+const applyingVoucher = ref(false);
+const voucherErrorMessage = ref("");
+
+const fetchVouchers = async () => {
+    try {
+        const response = await axios.get("/api/vouchers");
+        availableVouchers.value = response.data || [];
+    } catch (err) {
+        console.error("Error fetching vouchers:", err);
+    }
+};
+
+const getVoucherEligibleSubtotal = (v) => {
+    if (!v) return 0;
+    if (!v.seller_id) return subtotal.value;
+    return checkoutItems.value
+        .filter((item) => item.seller_id == v.seller_id)
+        .reduce((sum, item) => sum + item.price * item.qty, 0);
+};
+
+const discountAmount = computed(() => {
+    if (!appliedVoucher.value) return 0;
+    const v = appliedVoucher.value;
+    const eligibleSubtotal = getVoucherEligibleSubtotal(v);
+    if (eligibleSubtotal < (v.min_purchase || 0)) return 0;
+    if (v.type === 'percentage') {
+        let disc = eligibleSubtotal * (parseFloat(v.value) / 100);
+        if (v.max_discount) {
+            disc = Math.min(disc, parseFloat(v.max_discount));
+        }
+        return Math.round(disc);
+    }
+    return Math.min(parseFloat(v.value), eligibleSubtotal);
+});
+
+const totalPrice = computed(() => Math.max(0, subtotal.value - discountAmount.value));
+
+const selectVoucher = (v) => {
+    const eligibleSubtotal = getVoucherEligibleSubtotal(v);
+    if (v.seller_id && eligibleSubtotal <= 0) {
+        voucherErrorMessage.value = `Voucher ini khusus untuk produk dari toko "${v.store_name}"`;
+        return;
+    }
+    if (eligibleSubtotal < (v.min_purchase || 0)) {
+        voucherErrorMessage.value = `Minimal belanja Rp ${formatPrice(v.min_purchase)} untuk voucher ini`;
+        return;
+    }
+    appliedVoucher.value = v;
+    voucherErrorMessage.value = "";
+    showVoucherModal.value = false;
+};
+
+const removeVoucher = () => {
+    appliedVoucher.value = null;
+    voucherInputCode.value = "";
+    voucherErrorMessage.value = "";
+};
+
+const applyVoucherByCode = async () => {
+    const code = voucherInputCode.value.trim().toUpperCase();
+    if (!code) return;
+
+    try {
+        applyingVoucher.value = true;
+        voucherErrorMessage.value = "";
+
+        const response = await axios.post("/api/vouchers/apply", {
+            code: code,
+            subtotal: subtotal.value,
+        });
+
+        const vData = response.data.voucher;
+        if (vData.seller_id) {
+            const storeSubtotal = checkoutItems.value
+                .filter((item) => item.seller_id == vData.seller_id)
+                .reduce((sum, item) => sum + item.price * item.qty, 0);
+            if (storeSubtotal <= 0) {
+                voucherErrorMessage.value = `Voucher ini khusus untuk produk toko "${vData.store_name}". Keranjang Anda tidak memiliki produk dari toko tersebut.`;
+                return;
+            }
+            if (storeSubtotal < (vData.min_purchase || 0)) {
+                voucherErrorMessage.value = `Minimal belanja Rp ${formatPrice(vData.min_purchase)} untuk produk toko "${vData.store_name}".`;
+                return;
+            }
+        }
+
+        appliedVoucher.value = {
+            code: vData.code,
+            name: vData.name,
+            type: vData.type,
+            value: vData.value,
+            max_discount: vData.max_discount,
+            min_purchase: vData.min_purchase || 0,
+            seller_id: vData.seller_id,
+            store_name: vData.store_name,
+        };
+        showVoucherModal.value = false;
+    } catch (err) {
+        voucherErrorMessage.value = err.response?.data?.message || "Kode voucher tidak valid atau sudah kadaluarsa.";
+    } finally {
+        applyingVoucher.value = false;
+    }
+};
 const hasInvalid = computed(() => {
     return checkoutItems.value.some(
         (item) => item.stock !== undefined && item.qty > item.stock,
@@ -454,6 +834,7 @@ const fetchCheckoutItems = async () => {
         checkoutItems.value = selectedItems.map((item) => ({
             id: item.id,
             product_id: item.product_id,
+            seller_id: item.product?.user_id || item.seller_id || null,
             product_name: item.product?.name || "Produk",
             product_description: item.product?.description || "",
             price: item.product?.price || item.price || 0,
@@ -483,6 +864,10 @@ const fetchUserProfile = async () => {
             name: response.data.name || "",
             phone: response.data.phone || "",
             address: response.data.address || "",
+            lat: response.data.latitude || response.data.lat || shippingAddress.value.lat || null,
+            lng: response.data.longitude || response.data.lng || shippingAddress.value.lng || null,
+            destination_lat: response.data.latitude || response.data.lat || shippingAddress.value.destination_lat || null,
+            destination_lng: response.data.longitude || response.data.lng || shippingAddress.value.destination_lng || null,
         };
     } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -496,24 +881,33 @@ const saveAddress = () => {
 const paymentTransactions = ref([]);
 const showPaymentModal = ref(false);
 const currentPaymentIndex = ref(0);
+
+const isPaidStatus = (status) => {
+    return status === "success" ||
+        status === "settlement" ||
+        status === "capture" ||
+        status === "paid" ||
+        status === "processing" ||
+        status === "shipping" ||
+        status === "delivered" ||
+        status === "completed";
+};
+
 const allPaymentsCompleted = computed(() => {
-    return paymentTransactions.value.every(
-        (t) => t.status === "success" || t.status === "settlement",
-    );
+    return paymentTransactions.value.every((t) => isPaidStatus(t.status));
 });
+
 const getStatusLabel = (status) => {
-    switch (status) {
-        case "success":
-            return "Berhasil";
-        case "settlement":
-            return "Berhasil";
-        case "pending":
-            return "Menunggu Pembayaran";
-        case "failed":
-            return "Gagal";
-        default:
-            return "Belum Dibayar";
+    if (isPaidStatus(status)) {
+        return "Sudah Dibayar";
     }
+    if (status === "pending") {
+        return "Menunggu Pembayaran";
+    }
+    if (status === "failed") {
+        return "Gagal";
+    }
+    return "Belum Dibayar";
 };
 
 const ensureMidtransLoaded = (callback) => {
@@ -523,7 +917,7 @@ const ensureMidtransLoaded = (callback) => {
     }
     const script = document.createElement("script");
     script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-    script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
+    script.setAttribute("data-client-key", "Mid-client-PWVFJy65rpPL1JmL");
     script.onload = () => callback();
     document.head.appendChild(script);
 };
@@ -548,6 +942,7 @@ const handleConfirmPayment = async () => {
         const checkoutData = {
             shipping_address: shippingAddress.value,
             cart_item_ids: checkoutItems.value.map((item) => item.id),
+            voucher_code: appliedVoucher.value?.code || null,
         };
         const response = await axios.post("/api/checkout", checkoutData);
         if (
@@ -560,7 +955,7 @@ const handleConfirmPayment = async () => {
 
             paymentTransactions.value = response.data.transactions.map((t) => ({
                 ...t,
-                status: null,
+                status: t.status === "pending" || t.status === "unpaid" ? null : t.status,
             }));
             showPaymentModal.value = true;
             currentPaymentIndex.value = 0;
@@ -595,20 +990,52 @@ const processPayment = (index) => {
             onSuccess: function (result) {
                 console.log("Payment success:", result);
                 updateTransactionStatus(index, "success");
+                const oid = result.order_id || t.transaction?.order_id || t.order_id || '';
+                window.location.href = `/order-confirmation?order_id=${oid}&transaction_status=settlement&status_code=200`;
             },
             onPending: function (result) {
                 console.log("Payment pending:", result);
                 updateTransactionStatus(index, "pending");
+                setTimeout(() => checkTransactionStatusFromBackend(index), 2500);
             },
             onError: function (result) {
                 console.error("Payment error:", result);
                 updateTransactionStatus(index, "failed");
             },
             onClose: function () {
-                console.log("Payment modal closed");
+                console.log("Payment modal closed, checking status...");
+                checkTransactionStatusFromBackend(index);
             },
         });
     });
+};
+
+const checkTransactionStatusFromBackend = async (index) => {
+    const t = paymentTransactions.value[index];
+    const txId = t?.transaction?.id || t?.id;
+    if (!txId) return;
+
+    try {
+        const response = await axios.get(`/api/transactions/${txId}/status`);
+        if (response.data && response.data.status) {
+            const st = response.data.status;
+            paymentTransactions.value[index].status = st;
+            if (response.data.total_price) {
+                paymentTransactions.value[index].total = response.data.total_price;
+            }
+            if (response.data.discount_amount) {
+                paymentTransactions.value[index].discount_amount = response.data.discount_amount;
+            }
+            if (response.data.voucher_code) {
+                paymentTransactions.value[index].voucher_code = response.data.voucher_code;
+            }
+            if (isPaidStatus(st)) {
+                updateTransactionStatus(index, "success");
+            }
+        }
+    } catch (err) {
+        console.error("Error checking transaction status:", err);
+    }
 };
 
 const updateTransactionStatus = (index, status) => {
@@ -649,6 +1076,7 @@ const finishPaymentProcess = () => {
 onMounted(async () => {
     await fetchUserProfile();
     await fetchCheckoutItems();
+    await fetchVouchers();
 });
 </script>
 

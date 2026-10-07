@@ -511,6 +511,31 @@
                                 </div>
                             </div>
 
+                            <!-- Alamat Pengiriman & Penerima Info -->
+                            <div
+                                v-if="orderGroup.shipping_address"
+                                class="mb-4 p-2.5 bg-blue-50/70 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-lg text-xs flex items-start justify-between gap-2"
+                            >
+                                <div class="flex items-start gap-1.5 min-w-0">
+                                    <span class="text-blue-600 dark:text-blue-400 mt-0.5">🏠</span>
+                                    <div class="space-y-0.5">
+                                        <p class="font-semibold text-gray-800 dark:text-gray-200">
+                                            Alamat Tujuan: {{ orderGroup.shipping_name || 'Pembeli' }}
+                                            <span v-if="orderGroup.shipping_phone" class="font-normal text-gray-500">({{ orderGroup.shipping_phone }})</span>
+                                        </p>
+                                        <p class="text-gray-600 dark:text-gray-400 text-[11px] leading-relaxed line-clamp-2">
+                                            {{ orderGroup.shipping_address }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <span
+                                    v-if="orderGroup.status === 'dikirim'"
+                                    class="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-100/80 dark:bg-blue-900/40 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1"
+                                >
+                                    <span>🛵 Dalam Pengiriman</span>
+                                </span>
+                            </div>
+
                             <div
                                 class="flex justify-end mb-4 pt-4 border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/20"
                             >
@@ -533,9 +558,11 @@
                                             : '',
                                         action.variant === 'primary'
                                             ? 'bg-[#EF3B33] text-white shadow-md hover:bg-[#d92f25] hover:shadow-lg active:scale-95 active:shadow-inner'
-                                            : action.variant === 'warning'
-                                                ? 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md hover:shadow-lg active:scale-95 active:shadow-inner'
-                                                : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 active:scale-95',
+                                            : action.variant === 'tracking'
+                                                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg active:scale-95 active:shadow-inner'
+                                                : action.variant === 'warning'
+                                                    ? 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-md hover:shadow-lg active:scale-95 active:shadow-inner'
+                                                    : 'bg-[#1D1842]/20 dark:bg-[#1D1842]/30 text-[#1D1842] dark:text-[#FDA1A2] hover:bg-[#1D1842]/30 dark:hover:bg-[#1D1842]/40 active:scale-95',
                                     ]"
                                 >
                                     {{ action.label }}
@@ -590,6 +617,28 @@
             :type="toast.type"
             @close="toast.visible = false"
         />
+
+        <!-- Modal Lacak Pesanan Real-time -->
+        <div
+            v-if="trackingModal.visible"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            @click.self="trackingModal.visible = false"
+        >
+            <div class="bg-white dark:bg-[#1D1842] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 relative">
+                <button
+                    @click="trackingModal.visible = false"
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors z-10"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <OrderTrackingMap
+                    :transaction-id="trackingModal.transactionId"
+                    :order-id="trackingModal.orderId"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -598,6 +647,23 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ToastNotification from "../components/ToastNotification.vue";
+import OrderTrackingMap from "../components/OrderTrackingMap.vue";
+
+const trackingModal = ref({
+    visible: false,
+    transactionId: null,
+    orderId: "",
+});
+
+const openTracking = (orderGroup) => {
+    const txId = orderGroup.transaction_id || orderGroup.transaction?.id || orderGroup.id;
+    const ordId = orderGroup.order_id || orderGroup.transaction?.order_id || `#${txId}`;
+    trackingModal.value = {
+        visible: true,
+        transactionId: txId,
+        orderId: ordId,
+    };
+};
 
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const mobileMenuOpen = ref(false);
@@ -631,15 +697,22 @@ const getGroupedOrders = (status) => {
     filtered.forEach((order) => {
         const key = `${order.transaction_id}-${order.store}`;
         if (!grouped[key]) {
+            const tx = order.transaction;
             grouped[key] = {
                 id: key,
                 transaction_id: order.transaction_id,
+                order_id: tx?.order_id || `#${order.transaction_id}`,
                 store: order.store,
                 status: order.status,
                 items: [],
                 total: 0,
                 actions: order.actions || [],
-                transaction: order.transaction,
+                transaction: tx,
+                shipping_name: tx?.shipping_name || user.value?.name || 'Pembeli',
+                shipping_phone: tx?.shipping_phone || user.value?.phone || '',
+                shipping_address: tx?.shipping_address || user.value?.address || '',
+                destination_lat: tx?.destination_lat,
+                destination_lng: tx?.destination_lng,
             };
         }
         grouped[key].items.push({
@@ -750,15 +823,17 @@ const getStatusBadgeClass = (status) => {
 
 const formatPrice = (price) => new Intl.NumberFormat("id-ID").format(price);
 
-const fetchTransactions = async () => {
+const fetchTransactions = async (showLoading = true) => {
     if (!user.value) {
-        loading.value = false;
+        if (showLoading) loading.value = false;
         return;
     }
 
     try {
-        loading.value = true;
-        const purchaseResponse = await axios.get("/api/transactions");
+        if (showLoading) loading.value = true;
+        const purchaseResponse = await axios.get("/api/transactions", {
+            params: { _t: Date.now() },
+        });
         const purchaseTransactions = purchaseResponse.data || [];
         orders.value = purchaseTransactions.flatMap((transaction) => {
             if (transaction.items && transaction.items.length > 0) {
@@ -818,9 +893,9 @@ const fetchTransactions = async () => {
         });
     } catch (error) {
         console.error("Error fetching transactions:", error);
-        orders.value = [];
+        if (showLoading) orders.value = [];
     } finally {
-        loading.value = false;
+        if (showLoading) loading.value = false;
     }
 };
 
@@ -855,6 +930,11 @@ const getPurchaseActions = (status, transaction) => {
     if (status === "dikirim" || transaction?.status === "shipping" || transaction?.status === "return_requested") {
         if (transaction?.status === 'shipping') {
             actions.push({
+                label: "📍 Lacak Pesanan",
+                type: "track_order",
+                variant: "tracking",
+            });
+            actions.push({
                 label: "Tandai Diterima",
                 type: "mark_delivered",
                 variant: "primary",
@@ -873,6 +953,13 @@ const getPurchaseActions = (status, transaction) => {
             });
         }
     }
+    if (transaction?.status === 'delivered') {
+        actions.push({
+            label: "📍 Lacak Pesanan",
+            type: "track_order",
+            variant: "tracking",
+        });
+    }
     return actions;
 };
 
@@ -884,6 +971,8 @@ const handleAction = (type, orderGroup) => {
 
     if (type === "continue_payment") {
         handleContinuePayment(orderGroup);
+    } else if (type === "track_order") {
+        openTracking(orderGroup);
     } else if (type === "contact") {
         contactSellerWhatsApp(orderGroup);
     } else if (type === "mark_delivered") {
@@ -984,9 +1073,8 @@ const handleContinuePayment = (orderGroup) => {
         window.snap.pay(snapToken, {
             onSuccess: function (result) {
                 console.log("Payment success:", result);
-                setTimeout(() => {
-                    fetchTransactions();
-                }, 2000);
+                const oid = result.order_id || (orderGroup ? (orderGroup.order_id || orderGroup.id) : "");
+                window.location.href = `/order-confirmation?order_id=${oid}&transaction_status=settlement&status_code=200`;
             },
             onPending: function (result) {
                 console.log("Payment pending:", result);
@@ -1012,15 +1100,14 @@ const handleContinuePayment = (orderGroup) => {
     } else {
         const script = document.createElement("script");
         script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-        script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
+        script.setAttribute("data-client-key", "Mid-client-PWVFJy65rpPL1JmL");
         script.onload = () => {
             if (window.snap) {
                 window.snap.pay(snapToken, {
                     onSuccess: function (result) {
                         console.log("Payment success:", result);
-                        setTimeout(() => {
-                            fetchTransactions();
-                        }, 2000);
+                        const oid = result.order_id || (orderGroup ? (orderGroup.order_id || orderGroup.id) : "");
+                        window.location.href = `/order-confirmation?order_id=${oid}&transaction_status=settlement&status_code=200`;
                     },
                     onPending: function (result) {
                         console.log("Payment pending:", result);
@@ -1222,19 +1309,33 @@ const fetchUnreadOrdersCount = async () => {
     }
 };
 
+let ordersPollInterval = null;
+
 onMounted(async () => {
     await checkAuth();
     await fetchCartCount();
     await fetchUnreadOrdersCount();
-    await fetchTransactions();
-    window.addEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
+    await fetchTransactions(true);
+
+    // Polling berkala setiap 4 detik: perubahan status (cth: dikemas -> dikirim) langsung pindah tanpa reload!
+    ordersPollInterval = setInterval(async () => {
+        if (user.value && !loading.value) {
+            await fetchTransactions(false);
+            await fetchUnreadOrdersCount();
+        }
+    }, 4000);
+
+    window.addEventListener("sellerOrdersOptimized", () => {
+        fetchUnreadOrdersCount();
+        fetchTransactions(false);
+    });
 
     window.addEventListener("cartUpdated", fetchCartCount);
 
     if (!window.snap) {
         const script = document.createElement("script");
         script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-        script.setAttribute("data-client-key", "Mid-client-t4gCXBa6b1_ar6Ji");
+        script.setAttribute("data-client-key", "Mid-client-PWVFJy65rpPL1JmL");
         document.head.appendChild(script);
     }
 
@@ -1242,6 +1343,10 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+    if (ordersPollInterval) {
+        clearInterval(ordersPollInterval);
+        ordersPollInterval = null;
+    }
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
     window.removeEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);

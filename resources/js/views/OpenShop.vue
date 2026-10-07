@@ -444,6 +444,11 @@
                                         <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ store.visits || 0 }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total lihat toko</p>
                                     </div>
+                                    <div class="px-6 border-l border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 text-center hidden md:block">
+                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Voucher Toko</p>
+                                        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ sellerVouchers.length }}</p>
+                                        <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">{{ sellerVouchers.filter(v => v.is_active).length }} aktif</p>
+                                    </div>
                                     <button
                                         @click="showWithdrawModal = true"
                                         :disabled="
@@ -621,16 +626,25 @@
                                 </div>
 
                                 <div
-                                    v-if="order.shipping_address"
-                                    class="mb-3 p-2 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 rounded text-xs"
+                                    class="mb-3 p-3 bg-red-50/70 dark:bg-[#8E0D3C]/20 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg text-xs space-y-1"
                                 >
-                                    <p class="font-semibold text-[#8E0D3C] dark:text-[#FDA1A2] mb-1">Alamat Pengiriman:</p>
-                                    <p class="text-gray-700 dark:text-gray-300">
-                                        {{ order.shipping_address.name }} -
-                                        {{ order.shipping_address.phone }}
+                                    <div class="flex items-center justify-between">
+                                        <p class="font-bold text-[#8E0D3C] dark:text-[#FDA1A2] flex items-center gap-1.5">
+                                            <span>📍</span>
+                                            <span>Alamat Pengiriman Pembeli:</span>
+                                        </p>
+                                        <span v-if="order.destination_lat && order.destination_lng" class="text-[10px] font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <span>🗺️ Titik GPS Ada</span>
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-800 dark:text-gray-200 font-semibold">
+                                        {{ getShippingInfo(order).name }}
+                                        <span v-if="getShippingInfo(order).phone" class="text-gray-600 dark:text-gray-400 font-normal">
+                                            ({{ getShippingInfo(order).phone }})
+                                        </span>
                                     </p>
-                                    <p class="text-gray-600 dark:text-gray-400">
-                                        {{ order.shipping_address.address }}
+                                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        {{ getShippingInfo(order).address || 'Alamat tujuan belum dicantumkan' }}
                                     </p>
                                 </div>
 
@@ -677,6 +691,13 @@
                                         class="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner"
                                     >
                                         Tandai Dikirim
+                                    </button>
+                                    <button
+                                        v-if="order.status === 'processing' || order.status === 'shipping' || order.status === 'paid'"
+                                        @click="openTrackingSenderModal(order)"
+                                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:shadow-lg active:scale-95 active:shadow-inner flex items-center gap-1"
+                                    >
+                                        📍 Kirim / Lacak Lokasi
                                     </button>
                                     <button
                                         v-if="order.status === 'return_requested'"
@@ -914,6 +935,165 @@
                             </div>
                         </div>
                     </section>
+
+                    <!-- SECTION VOUCHER DISKON TOKO SAYA -->
+                    <section
+                        class="bg-white dark:bg-[#1D1842] rounded-xl border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 shadow-sm p-4 sm:p-6 space-y-4 w-full max-w-full overflow-hidden"
+                    >
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800 pb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-[#1D1842] dark:text-[#FDA1A2] flex items-center gap-2">
+                                    <span>🎟️ Voucher Diskon Toko Saya</span>
+                                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-[#EF3B33]/10 text-[#EF3B33] font-bold">
+                                        {{ sellerVouchers.length }} Voucher
+                                    </span>
+                                </h2>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Buat dan bagikan kode voucher diskon toko Anda sendiri. Pembeli dapat menggunakan voucher ini saat checkout belanja di tokomu.
+                                </p>
+                            </div>
+                            <button
+                                class="px-4 py-2 bg-[#EF3B33] text-white text-xs sm:text-sm font-bold rounded-lg shadow-md cursor-pointer transition-all duration-150 hover:bg-[#d92f25] hover:shadow-lg active:scale-95 flex items-center justify-center gap-1.5 self-start sm:self-auto whitespace-nowrap"
+                                @click="openCreateVoucherModal"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <span>+ Buat Voucher Baru</span>
+                            </button>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div v-if="loadingVouchers" class="text-center py-10 text-gray-500 text-sm">
+                            <svg class="animate-spin h-6 w-6 mx-auto text-[#EF3B33] mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Memuat daftar voucher toko...
+                        </div>
+
+                        <!-- Empty State -->
+                        <div
+                            v-else-if="sellerVouchers.length === 0"
+                            class="text-center py-10 px-4 border-2 border-dashed border-[#FDA1A2]/30 dark:border-[#8E0D3C]/40 rounded-xl bg-gradient-to-b from-[#FDA1A2]/5 to-transparent dark:from-[#8E0D3C]/10"
+                        >
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-red-100 dark:bg-red-950/60 flex items-center justify-center text-3xl shadow-sm mb-3">
+                                🎟️
+                            </div>
+                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Belum Ada Voucher Toko</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto mt-1 mb-4 leading-relaxed">
+                                Kamu belum memiliki voucher diskon toko. Buat voucher promo pertamamu sekarang untuk meningkatkan daya tarik produk dan volume penjualan!
+                            </p>
+                            <button
+                                @click="openCreateVoucherModal"
+                                class="px-4 py-2 bg-[#EF3B33] hover:bg-[#d92f25] text-white text-xs font-bold rounded-lg shadow-md transition-all active:scale-95 cursor-pointer"
+                            >
+                                + Buat Voucher Sekarang
+                            </button>
+                        </div>
+
+                        <!-- Voucher Cards Grid -->
+                        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                            <div
+                                v-for="v in sellerVouchers"
+                                :key="v.id"
+                                :class="[
+                                    'rounded-xl border p-4 transition-all duration-200 relative flex flex-col justify-between',
+                                    v.is_active
+                                        ? 'bg-gradient-to-br from-white via-white to-red-50/30 dark:from-[#1D1842] dark:to-[#8E0D3C]/20 border-red-200 dark:border-[#8E0D3C]/50 shadow-sm hover:shadow-md'
+                                        : 'bg-gray-50/80 dark:bg-gray-900/40 border-gray-200 dark:border-gray-800 opacity-70'
+                                ]"
+                            >
+                                <div>
+                                    <!-- Header: Code + Active Badge -->
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-1.5 bg-[#EF3B33] text-white px-2.5 py-1 rounded-md font-mono font-bold text-xs tracking-wider shadow-sm">
+                                            <span>{{ v.code }}</span>
+                                            <button
+                                                @click="copyVoucherCode(v.code)"
+                                                title="Salin Kode Voucher"
+                                                class="hover:opacity-80 active:scale-90 transition p-0.5 cursor-pointer"
+                                            >
+                                                📋
+                                            </button>
+                                        </div>
+                                        <span
+                                            :class="v.is_active
+                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700'
+                                                : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border border-gray-300 dark:border-gray-700'"
+                                            class="text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"
+                                        >
+                                            <span class="w-1.5 h-1.5 rounded-full" :class="v.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'"></span>
+                                            {{ v.is_active ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Promo Name & Description -->
+                                    <div class="mt-2.5">
+                                        <h4 class="font-bold text-gray-900 dark:text-white text-sm truncate" :title="v.name">
+                                            {{ v.name }}
+                                        </h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">
+                                            {{ v.description || 'Tidak ada deskripsi tambahan.' }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Promo Value Callout -->
+                                    <div class="mt-3 py-2 px-3 rounded-lg bg-[#FDA1A2]/15 dark:bg-[#8E0D3C]/30 flex items-center justify-between">
+                                        <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">Potongan Diskon:</span>
+                                        <span class="font-bold text-base text-[#EF3B33] dark:text-[#FDA1A2]">
+                                            {{ v.type === 'percentage' ? `${parseFloat(v.value)}%` : `Rp. ${formatPrice(v.value)}` }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Rules / Limits -->
+                                    <div class="mt-3 space-y-1.5 text-[11px] text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800/80 pt-2.5">
+                                        <div class="flex justify-between">
+                                            <span>Min. Belanja:</span>
+                                            <span class="font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ v.min_purchase > 0 ? `Rp. ${formatPrice(v.min_purchase)}` : 'Tanpa Minimum' }}
+                                            </span>
+                                        </div>
+                                        <div v-if="v.type === 'percentage' && v.max_discount" class="flex justify-between">
+                                            <span>Maks. Potongan:</span>
+                                            <span class="font-semibold text-gray-800 dark:text-gray-200">Rp. {{ formatPrice(v.max_discount) }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Pemakaian:</span>
+                                            <span class="font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ v.used_count || 0 }} {{ v.usage_limit ? `/ ${v.usage_limit} kuota` : 'kali (Bebas Kuota)' }}
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Berlaku Hingga:</span>
+                                            <span class="font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ v.expires_at ? formatDate(v.expires_at) : 'Selamanya' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="mt-4 pt-2.5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
+                                    <button
+                                        @click="toggleVoucherStatus(v)"
+                                        :class="v.is_active
+                                            ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20'
+                                            : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20'"
+                                        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                                    >
+                                        <span>{{ v.is_active ? '⏸️ Nonaktifkan' : '▶️ Aktifkan' }}</span>
+                                    </button>
+                                    <button
+                                        @click="confirmDeleteVoucher(v)"
+                                        class="text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                                    >
+                                        <span>🗑️ Hapus</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </main>
         </div>
@@ -1079,6 +1259,224 @@
             </div>
         </transition>
 
+        <!-- Modal Kirim Lokasi Real-time Seller -->
+        <transition name="modal">
+            <div
+                v-if="showTrackingSenderModal"
+                class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                @click.self="showTrackingSenderModal = false"
+            >
+                <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-xl w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 relative max-h-[90vh] overflow-y-auto">
+                    <button
+                        @click="showTrackingSenderModal = false"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors z-10"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <SellerLocationSender
+                        v-if="selectedTrackingOrder"
+                        :transaction-id="selectedTrackingOrder.id"
+                        :order-id="selectedTrackingOrder.order_id || `#${selectedTrackingOrder.id}`"
+                        @delivery-completed="onSellerDeliveryCompleted"
+                    />
+                </div>
+            </div>
+        </transition>
+
+        <!-- Modal Buat Voucher Toko -->
+        <transition name="modal">
+            <div
+                v-if="showCreateVoucherModal"
+                class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                @click.self="showCreateVoucherModal = false"
+            >
+                <div class="bg-white dark:bg-[#1D1842] rounded-2xl shadow-2xl max-w-lg w-full p-6 transform transition-all border border-[#FDA1A2]/30 dark:border-[#8E0D3C]/30 relative max-h-[90vh] overflow-y-auto">
+                    <button
+                        @click="showCreateVoucherModal = false"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                    >
+                        ✕
+                    </button>
+
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-950/60 text-[#EF3B33] flex items-center justify-center text-xl">
+                            🎟️
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Buat Voucher Toko</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Voucher ini berlaku eksklusif untuk produk di tokomu</p>
+                        </div>
+                    </div>
+
+                    <div v-if="voucherFormError" class="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-600 dark:text-red-400 font-medium">
+                        ⚠️ {{ voucherFormError }}
+                    </div>
+
+                    <form @submit.prevent="submitCreateVoucher" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Kode Voucher <span class="text-red-500">*</span>
+                            </label>
+                            <input
+                                v-model="voucherForm.code"
+                                type="text"
+                                placeholder="Contoh: TOKODISKON10, HEMAT5K"
+                                @input="voucherForm.code = voucherForm.code.toUpperCase().replace(/\s+/g, '')"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white font-mono font-bold tracking-wider uppercase focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                                required
+                            />
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Otomatis huruf kapital tanpa spasi (maksimal 50 karakter)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Nama Promo Voucher <span class="text-red-500">*</span>
+                            </label>
+                            <input
+                                v-model="voucherForm.name"
+                                type="text"
+                                placeholder="Contoh: Diskon Gajian Toko"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Deskripsi / Catatan Promo (Opsional)
+                            </label>
+                            <textarea
+                                v-model="voucherForm.description"
+                                rows="2"
+                                placeholder="Contoh: Berlaku untuk semua produk di toko kami"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                            ></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Tipe Potongan <span class="text-red-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label
+                                    :class="voucherForm.type === 'percentage' ? 'border-[#EF3B33] bg-[#EF3B33]/10 text-[#EF3B33]' : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
+                                    class="border rounded-lg p-2.5 flex items-center justify-center gap-2 cursor-pointer transition text-xs font-bold text-center"
+                                >
+                                    <input
+                                        type="radio"
+                                        value="percentage"
+                                        v-model="voucherForm.type"
+                                        class="hidden"
+                                    />
+                                    <span>📊 Persentase (%)</span>
+                                </label>
+                                <label
+                                    :class="voucherForm.type === 'fixed' ? 'border-[#EF3B33] bg-[#EF3B33]/10 text-[#EF3B33]' : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'"
+                                    class="border rounded-lg p-2.5 flex items-center justify-center gap-2 cursor-pointer transition text-xs font-bold text-center"
+                                >
+                                    <input
+                                        type="radio"
+                                        value="fixed"
+                                        v-model="voucherForm.type"
+                                        class="hidden"
+                                    />
+                                    <span>💵 Nominal Tetap (Rp)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    {{ voucherForm.type === 'percentage' ? 'Persen Diskon (%) *' : 'Nominal Diskon (Rp) *' }}
+                                </label>
+                                <input
+                                    v-model.number="voucherForm.value"
+                                    type="number"
+                                    :min="1"
+                                    :max="voucherForm.type === 'percentage' ? 100 : undefined"
+                                    :placeholder="voucherForm.type === 'percentage' ? '10' : '10000'"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                                    required
+                                />
+                            </div>
+
+                            <div v-if="voucherForm.type === 'percentage'">
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    Maks. Potongan (Rp)
+                                </label>
+                                <input
+                                    v-model.number="voucherForm.max_discount"
+                                    type="number"
+                                    min="0"
+                                    placeholder="Contoh: 20000"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                                />
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    Min. Belanja Produk (Rp)
+                                </label>
+                                <input
+                                    v-model.number="voucherForm.min_purchase"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0 untuk tanpa minimum"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                                />
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                    Batas Kuota Pemakaian
+                                </label>
+                                <input
+                                    v-model.number="voucherForm.usage_limit"
+                                    type="number"
+                                    min="1"
+                                    placeholder="Kosongkan jika tanpa batas"
+                                    class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                Tanggal Kadaluarsa (Opsional)
+                            </label>
+                            <input
+                                v-model="voucherForm.expires_at"
+                                type="datetime-local"
+                                class="w-full px-3 py-2 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-lg bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EF3B33]"
+                            />
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Biarkan kosong jika voucher tidak memiliki batas waktu kadaluarsa</p>
+                        </div>
+
+                        <div class="flex gap-3 pt-3">
+                            <button
+                                type="button"
+                                @click="showCreateVoucherModal = false"
+                                class="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium text-xs transition cursor-pointer"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                :disabled="creatingVoucher"
+                                class="flex-1 px-4 py-2.5 bg-[#EF3B33] hover:bg-[#d92f25] disabled:bg-gray-400 text-white rounded-lg font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                                <span v-if="creatingVoucher">Menyimpan...</span>
+                                <span v-else>Simpan & Terbitkan Voucher</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </transition>
+
         <ConfirmModal
             :visible="confirmModal.visible"
             :title="confirmModal.title"
@@ -1101,6 +1499,44 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ToastNotification from "../components/ToastNotification.vue";
+import SellerLocationSender from "../components/SellerLocationSender.vue";
+
+const showTrackingSenderModal = ref(false);
+const selectedTrackingOrder = ref(null);
+
+// Voucher State
+const sellerVouchers = ref([]);
+const loadingVouchers = ref(false);
+const showCreateVoucherModal = ref(false);
+const creatingVoucher = ref(false);
+const voucherFormError = ref("");
+const voucherForm = ref({
+    code: "",
+    name: "",
+    description: "",
+    type: "percentage",
+    value: "",
+    min_purchase: 0,
+    max_discount: null,
+    usage_limit: null,
+    per_user_limit: 1,
+    expires_at: "",
+});
+
+const openTrackingSenderModal = (order) => {
+    selectedTrackingOrder.value = order;
+    showTrackingSenderModal.value = true;
+};
+
+const onSellerDeliveryCompleted = async () => {
+    toast.value = {
+        visible: true,
+        message: "Pengiriman selesai! Pesanan telah sampai di tujuan.",
+        type: "success",
+    };
+    await fetchIncomingOrders();
+    await fetchSellerBalance();
+};
 
 const sidebarCollapsed = ref(window.innerWidth <= 768);
 const user = ref(null);
@@ -1320,9 +1756,13 @@ const getSectionTitle = (section) => {
     return titles[section] || "Pesanan";
 };
 
-const showOrdersSection = (section) => {
+const showOrdersSection = async (section) => {
     activeOrderSection.value =
         activeOrderSection.value === section ? null : section;
+    if (activeOrderSection.value) {
+        await fetchIncomingOrders();
+        await fetchSellerBalance();
+    }
 };
 
 const toggleSidebar = () => {
@@ -1791,6 +2231,39 @@ const fetchIncomingOrders = async () => {
     }
 };
 
+const getShippingInfo = (order) => {
+    if (!order) return { name: 'Pembeli', phone: '', address: '' };
+    
+    let name = order.shipping_name || order.user?.name || order.buyer_name || 'Pembeli';
+    let phone = order.shipping_phone || order.user?.phone || '';
+    let address = '';
+
+    if (order.shipping_address) {
+        if (typeof order.shipping_address === 'object') {
+            name = order.shipping_address.name || name;
+            phone = order.shipping_address.phone || phone;
+            address = order.shipping_address.address || '';
+        } else if (typeof order.shipping_address === 'string') {
+            try {
+                const parsed = JSON.parse(order.shipping_address);
+                if (typeof parsed === 'object' && parsed !== null) {
+                    name = parsed.name || name;
+                    phone = parsed.phone || phone;
+                    address = parsed.address || '';
+                } else {
+                    address = order.shipping_address;
+                }
+            } catch (e) {
+                address = order.shipping_address;
+            }
+        }
+    } else if (order.user?.address) {
+        address = order.user.address;
+    }
+
+    return { name, phone, address };
+};
+
 const updateOrderStatus = (orderId, newStatus) => {
     confirmModal.value = {
         visible: true,
@@ -1803,10 +2276,19 @@ const updateOrderStatus = (orderId, newStatus) => {
                 });
 
                 await fetchIncomingOrders();
+                await fetchSellerBalance();
+
+                if (newStatus === 'shipping') {
+                    activeOrderSection.value = 'shipping';
+                }
+
+                window.dispatchEvent(new CustomEvent('sellerOrdersOptimized'));
                 
                 toast.value = {
                     visible: true,
-                    message: "Status pesanan berhasil diupdate",
+                    message: newStatus === 'shipping'
+                        ? "Status pesanan diubah ke 'Dikirim' dan otomatis dibuka di tab Dikirim"
+                        : "Status pesanan berhasil diupdate",
                     type: "success"
                 };
             } catch (error) {
@@ -1833,6 +2315,7 @@ const handleApproveReturn = (order) => {
                 await axios.post(`/api/seller/orders/${order.id}/approve-return`);
                 
                 await fetchIncomingOrders();
+                await fetchSellerBalance();
                 
                 toast.value = {
                     visible: true,
@@ -1853,17 +2336,9 @@ const handleApproveReturn = (order) => {
 };
 
 const contactBuyer = (order) => {
-    let phoneNumber = null;
-    let buyerName = order.buyer_name || "Pembeli";
-
-    if (order.shipping_address?.phone) {
-        phoneNumber = order.shipping_address.phone;
-        buyerName = order.shipping_address.name || buyerName;
-    }
-    else if (order.user?.phone) {
-        phoneNumber = order.user.phone;
-        buyerName = order.user.name || buyerName;
-    }
+    const info = getShippingInfo(order);
+    let phoneNumber = info.phone || order.user?.phone;
+    let buyerName = info.name || order.buyer_name || "Pembeli";
 
     if (!phoneNumber) {
         toast.value = {
@@ -1920,6 +2395,7 @@ const confirmShipping = async () => {
         selectedOrderId.value = null;
 
         await fetchIncomingOrders();
+        await fetchSellerBalance();
         
         toast.value = {
             visible: true,
@@ -1986,7 +2462,7 @@ const confirmWithdraw = async () => {
             try {
                 withdrawProcessing.value = true;
 
-                const response = await axios.post("/seller-withdraw", {
+                const response = await axios.post("/api/seller-withdraw", {
                     amount: withdrawAmountNumber.value,
                     bank_account_id: withdrawBankId.value,
                 });
@@ -2023,7 +2499,7 @@ const fetchSellerBalance = async () => {
     if (!user.value) return;
 
     try {
-        const response = await axios.get("/seller-balance");
+        const response = await axios.get("/api/seller-balance");
         store.value.balance = response.data.balance || 0;
         store.value.totalSold = response.data.total_sold || 0;
         store.value.visits = response.data.total_visits || 0;
@@ -2039,12 +2515,157 @@ const fetchUserBanks = async () => {
     if (!user.value) return;
 
     try {
-        const response = await axios.get("/user-banks");
+        const response = await axios.get("/api/user-banks");
         userBanks.value = response.data || [];
     } catch (error) {
         console.error("Error fetching user banks:", error);
         userBanks.value = [];
     }
+};
+
+let shopRefreshInterval = null;
+
+const refreshAllShopData = async () => {
+    await fetchIncomingOrders();
+    await fetchSellerBalance();
+    await fetchUnreadOrdersCount();
+};
+
+// ============================================
+// VOUCHER DISKON TOKO METHODS
+// ============================================
+
+const fetchSellerVouchers = async () => {
+    try {
+        loadingVouchers.value = true;
+        const res = await axios.get("/api/seller/vouchers");
+        sellerVouchers.value = res.data || [];
+    } catch (err) {
+        console.error("Error fetching seller vouchers:", err);
+    } finally {
+        loadingVouchers.value = false;
+    }
+};
+
+const openCreateVoucherModal = () => {
+    voucherForm.value = {
+        code: "",
+        name: "",
+        description: "",
+        type: "percentage",
+        value: "",
+        min_purchase: 0,
+        max_discount: null,
+        usage_limit: null,
+        per_user_limit: 1,
+        expires_at: "",
+    };
+    voucherFormError.value = "";
+    showCreateVoucherModal.value = true;
+};
+
+const submitCreateVoucher = async () => {
+    voucherFormError.value = "";
+    if (!voucherForm.value.code.trim()) {
+        voucherFormError.value = "Kode voucher wajib diisi.";
+        return;
+    }
+    if (!voucherForm.value.name.trim()) {
+        voucherFormError.value = "Nama promo voucher wajib diisi.";
+        return;
+    }
+    if (!voucherForm.value.value || parseFloat(voucherForm.value.value) <= 0) {
+        voucherFormError.value = "Nilai potongan diskon harus lebih dari 0.";
+        return;
+    }
+    if (voucherForm.value.type === "percentage" && parseFloat(voucherForm.value.value) > 100) {
+        voucherFormError.value = "Diskon persentase tidak boleh lebih dari 100%.";
+        return;
+    }
+
+    try {
+        creatingVoucher.value = true;
+        const payload = {
+            code: voucherForm.value.code.trim().toUpperCase(),
+            name: voucherForm.value.name.trim(),
+            description: voucherForm.value.description ? voucherForm.value.description.trim() : null,
+            type: voucherForm.value.type,
+            value: parseFloat(voucherForm.value.value),
+            min_purchase: voucherForm.value.min_purchase ? parseFloat(voucherForm.value.min_purchase) : 0,
+            max_discount: (voucherForm.value.type === "percentage" && voucherForm.value.max_discount) ? parseFloat(voucherForm.value.max_discount) : null,
+            usage_limit: voucherForm.value.usage_limit ? parseInt(voucherForm.value.usage_limit) : null,
+            per_user_limit: voucherForm.value.per_user_limit ? parseInt(voucherForm.value.per_user_limit) : 1,
+            expires_at: voucherForm.value.expires_at || null,
+        };
+
+        const res = await axios.post("/api/seller/vouchers", payload);
+        toast.value = {
+            visible: true,
+            message: res.data.message || "Voucher toko berhasil dibuat!",
+            type: "success",
+        };
+        showCreateVoucherModal.value = false;
+        await fetchSellerVouchers();
+    } catch (err) {
+        console.error("Error creating voucher:", err);
+        voucherFormError.value = err.response?.data?.message || (err.response?.data?.errors ? Object.values(err.response.data.errors).flat().join(", ") : "Gagal membuat voucher.");
+    } finally {
+        creatingVoucher.value = false;
+    }
+};
+
+const toggleVoucherStatus = async (v) => {
+    try {
+        const res = await axios.post(`/api/seller/vouchers/${v.id}/toggle`);
+        v.is_active = res.data.voucher.is_active;
+        toast.value = {
+            visible: true,
+            message: `Status voucher ${v.code} berhasil ${v.is_active ? 'diaktifkan' : 'dinonaktifkan'}.`,
+            type: "success",
+        };
+    } catch (err) {
+        console.error("Error toggling voucher:", err);
+        toast.value = {
+            visible: true,
+            message: "Gagal mengubah status voucher.",
+            type: "error",
+        };
+    }
+};
+
+const confirmDeleteVoucher = (v) => {
+    confirmModal.value = {
+        visible: true,
+        title: "Hapus Voucher Toko",
+        message: `Apakah Anda yakin ingin menghapus voucher "${v.code}"? Voucher ini tidak akan bisa digunakan lagi oleh pembeli.`,
+        onConfirm: async () => {
+            try {
+                await axios.delete(`/api/seller/vouchers/${v.id}`);
+                toast.value = {
+                    visible: true,
+                    message: "Voucher berhasil dihapus.",
+                    type: "success",
+                };
+                await fetchSellerVouchers();
+            } catch (err) {
+                console.error("Error deleting voucher:", err);
+                toast.value = {
+                    visible: true,
+                    message: "Gagal menghapus voucher.",
+                    type: "error",
+                };
+            }
+        },
+    };
+};
+
+const copyVoucherCode = (code) => {
+    navigator.clipboard.writeText(code);
+    toast.value = {
+        visible: true,
+        message: `Kode voucher "${code}" berhasil disalin ke clipboard!`,
+        type: "success",
+    };
 };
 
 onMounted(async () => {
@@ -2057,20 +2678,34 @@ onMounted(async () => {
         await fetchSellerBalance();
         await fetchUserBanks();
         await fetchUnreadOrdersCount();
+        await fetchSellerVouchers();
         
         // Mark as read when shop page is accessed
         await markOrdersAsRead();
+
+        // Auto-refresh data toko & saldo setiap 10 detik agar sinkron real-time
+        shopRefreshInterval = setInterval(async () => {
+            if (user.value && !ordersLoading.value) {
+                await fetchIncomingOrders();
+                await fetchSellerBalance();
+                await fetchUnreadOrdersCount();
+            }
+        }, 10000);
     }
 
     window.addEventListener("cartUpdated", fetchCartCount);
-
     window.addEventListener("userUpdated", handleUserUpdated);
+    window.addEventListener("sellerOrdersOptimized", refreshAllShopData);
 });
 
 onBeforeUnmount(() => {
+    if (shopRefreshInterval) {
+        clearInterval(shopRefreshInterval);
+        shopRefreshInterval = null;
+    }
     window.removeEventListener("cartUpdated", fetchCartCount);
     window.removeEventListener("userUpdated", handleUserUpdated);
-    window.removeEventListener("sellerOrdersOptimized", fetchUnreadOrdersCount);
+    window.removeEventListener("sellerOrdersOptimized", refreshAllShopData);
 });
 </script>
 

@@ -62,7 +62,14 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between text-sm" v-if="order.shippingAddress">
                                     <span class="text-gray-600 dark:text-gray-400">Penerima</span>
-                                    <span class="font-medium text-[#1D1842] dark:text-[#FDA1A2] text-right truncate ml-4">{{ order.shippingAddress.name }}</span>
+                                    <span class="font-medium text-[#1D1842] dark:text-[#FDA1A2] text-right truncate ml-4">
+                                        {{ order.shippingAddress.name || 'Pembeli' }}
+                                        <span v-if="order.shippingAddress.phone" class="text-xs text-gray-500 font-normal">({{ order.shippingAddress.phone }})</span>
+                                    </span>
+                                </div>
+                                <div class="flex justify-between text-sm" v-if="order.shippingAddress && order.shippingAddress.address">
+                                    <span class="text-gray-600 dark:text-gray-400">Alamat</span>
+                                    <span class="font-medium text-[#1D1842] dark:text-[#FDA1A2] text-right line-clamp-2 ml-4 text-xs">{{ order.shippingAddress.address }}</span>
                                 </div>
                                 <div class="flex justify-between text-sm border-t border-[#FDA1A2]/20 dark:border-[#8E0D3C]/30 pt-2 mt-2">
                                     <span class="font-bold text-[#1D1842] dark:text-[#FDA1A2]">Total</span>
@@ -223,6 +230,7 @@ const fetchOrderData = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const idsParam = urlParams.get('transaction_ids');
         const singleIdParam = urlParams.get('transaction_id') || urlParams.get('id');
+        const orderIdParam = urlParams.get('order_id');
         let targetIds = [];
         if (idsParam) {
             targetIds = idsParam.split(',').filter(id => id);
@@ -232,64 +240,73 @@ const fetchOrderData = async () => {
         }
         targetIds = [...new Set(targetIds)];
 
+        const response = await axios.get(`/api/transactions`);
+        const allTransactions = response.data || [];
+        let matchingTransactions = [];
+
         if (targetIds.length > 0) {
-            const response = await axios.get(`/api/transactions`);
-            const allTransactions = response.data || [];
-            const matchingTransactions = allTransactions.filter(t => targetIds.some(id => id == t.id));
-            if (matchingTransactions.length > 0) {
-                confirmedOrders.value = matchingTransactions.map(t => {
-                    const items = (t.items || []).map(item => ({
-                        product_name: item.product?.name || 'Produk',
-                        product_description: item.product?.description || '',
-                        qty: item.qty || 1,
-                        price: item.price || item.product?.price || 0,
-                        image_url: item.product?.image_url || null,
-                    }));
-                    let address = null;
-                    if (t.shipping_address) {
-                        try {
-                            address = typeof t.shipping_address === 'string' ? JSON.parse(t.shipping_address) : t.shipping_address;
-                        } catch (e) {
-                            address = {
-                                address: t.shipping_address,
-                                name: t.shipping_name || '',
-                                phone: t.shipping_phone || '',
-                            };
-                        }
-                    } else if (t.shipping_name) {
+            matchingTransactions = allTransactions.filter(t => targetIds.some(id => id == t.id));
+        }
+        if (matchingTransactions.length === 0 && orderIdParam) {
+            matchingTransactions = allTransactions.filter(t => t.order_id === orderIdParam);
+        }
+        if (matchingTransactions.length === 0 && allTransactions.length > 0) {
+            matchingTransactions = [allTransactions[0]];
+        }
+
+        if (matchingTransactions.length > 0) {
+            confirmedOrders.value = matchingTransactions.map(t => {
+                const items = (t.items || []).map(item => ({
+                    product_name: item.product?.name || 'Produk',
+                    product_description: item.product?.description || '',
+                    qty: item.qty || 1,
+                    price: item.price || item.product?.price || 0,
+                    image_url: item.product?.image_url || null,
+                }));
+                let address = null;
+                if (t.shipping_address) {
+                    try {
+                        address = typeof t.shipping_address === 'string' ? JSON.parse(t.shipping_address) : t.shipping_address;
+                    } catch (e) {
                         address = {
-                            name: t.shipping_name,
+                            address: t.shipping_address,
+                            name: t.shipping_name || '',
                             phone: t.shipping_phone || '',
-                            address: t.shipping_address || '',
                         };
                     }
-                    let storeName = t.store_name || 'Toko';
-                    if (!t.store_name && t.items && t.items.length > 0) {
-                        storeName = t.items[0].product?.user?.name || 'Toko';
-                    }
-
-                    return {
-                        id: t.id,
-                        orderId: t.order_id || `ORDER-${t.id}`,
-                        date: t.created_at
-                            ? new Date(t.created_at).toLocaleDateString('id-ID', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                              })
-                            : '',
-                        totalPrice: t.total_price || 0,
-                        paymentMethod: t.payment_method || 'midtrans',
-                        status: t.status || 'pending',
-                        snapToken: t.snap_token || '',
-                        storeName: storeName,
-                        items: items,
-                        shippingAddress: address,
+                } else if (t.shipping_name) {
+                    address = {
+                        name: t.shipping_name,
+                        phone: t.shipping_phone || '',
+                        address: t.shipping_address || '',
                     };
-                });
-            }
+                }
+                let storeName = t.store_name || 'Toko';
+                if (!t.store_name && t.items && t.items.length > 0) {
+                    storeName = t.items[0].product?.user?.name || 'Toko';
+                }
+
+                return {
+                    id: t.id,
+                    orderId: t.order_id || `ORDER-${t.id}`,
+                    date: t.created_at
+                        ? new Date(t.created_at).toLocaleDateString('id-ID', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                          })
+                        : '',
+                    totalPrice: t.total_price || 0,
+                    paymentMethod: t.payment_method || 'midtrans',
+                    status: t.status || 'pending',
+                    snapToken: t.snap_token || '',
+                    storeName: storeName,
+                    items: items,
+                    shippingAddress: address,
+                };
+            });
         } else {
             const savedData = localStorage.getItem('order_confirmation');
             if (savedData) {

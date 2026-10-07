@@ -609,7 +609,7 @@ const showNotification = (message, type = "success") => {
 const fetchBanks = async () => {
     loadingBanks.value = true;
     try {
-        const response = await axios.get("/user-banks");
+        const response = await axios.get("/api/user-banks");
         banks.value = response.data;
     } catch (error) {
         console.error("Error fetching banks:", error);
@@ -625,7 +625,7 @@ const addBank = async () => {
     }
     submittingBank.value = true;
     try {
-        await axios.post("/user-banks", bankForm.value);
+        await axios.post("/api/user-banks", bankForm.value);
         showAddBankModal.value = false;
         bankForm.value = { bank_name: "", account_number: "", account_holder: "" };
         showNotification("Rekening berhasil ditambahkan");
@@ -640,7 +640,7 @@ const addBank = async () => {
 const deleteBank = async (id) => {
     if (!confirm("Hapus rekening ini?")) return;
     try {
-        await axios.delete(`/user-banks/${id}`);
+        await axios.delete(`/api/user-banks/${id}`);
         showNotification("Rekening berhasil dihapus");
         fetchBanks();
     } catch (error) {
@@ -651,7 +651,7 @@ const deleteBank = async (id) => {
 const fetchWithdrawals = async () => {
     loadingWithdrawals.value = true;
     try {
-        const response = await axios.get("/user-withdrawals");
+        const response = await axios.get("/api/user-withdrawals");
         withdrawals.value = response.data;
     } catch (error) {
         console.error("Error fetching withdrawals:", error);

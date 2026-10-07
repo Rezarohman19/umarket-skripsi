@@ -16,10 +16,19 @@ class Transaction extends Model
         'shipping_name',
         'shipping_phone',
         'shipping_address',
+        'destination_lat',
+        'destination_lng',
         'payment_method',
         'tracking_number',
         'shipping_courier',
         'order_id',
+        'voucher_code',
+        'discount_amount',
+    ];
+
+    protected $casts = [
+        'destination_lat' => 'decimal:7',
+        'destination_lng' => 'decimal:7',
     ];
 
     public function user()

@@ -486,7 +486,6 @@ const fetchSellerInfo = async () => {
     const phoneFromProduct = product.value?.user?.phone || product.value?.phone;
     if (phoneFromProduct) {
         sellerPhone.value = phoneFromProduct;
-        return;
     }
 
     try {

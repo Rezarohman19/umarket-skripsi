@@ -203,5 +203,22 @@
             Ingat kata sandi Anda? <a href="{{ route('login') }}">Masuk</a>
         </div>
     </div>
+
+    @if (session('reset_email'))
+    <script>
+        // Real-time synchronization: saat link email dibuka di HP, layar laptop otomatis berpindah ke form Atur Ulang Sandi!
+        const email = @json(session('reset_email'));
+        const checkInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/check-reset-redirect?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+                if (data.redirect && data.url) {
+                    clearInterval(checkInterval);
+                    window.location.href = data.url;
+                }
+            } catch (e) {}
+        }, 1500);
+    </script>
+    @endif
 </body>
 </html>

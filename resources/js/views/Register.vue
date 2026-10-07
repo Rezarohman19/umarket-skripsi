@@ -22,13 +22,21 @@
                 </div>
 
                 <div 
-                    v-if="laravelErrors.name || laravelErrors.email || laravelErrors.password || laravelErrors.password_confirmation" 
-                    class="mb-6 p-4 bg-[#FDA1A2]/20 dark:bg-[#8E0D3C]/20 border border-[#EF3B33]/40 dark:border-[#EF3B33]/40 rounded-lg"
+                    v-if="formNotification || laravelErrors.name || laravelErrors.email || laravelErrors.password || laravelErrors.password_confirmation" 
+                    class="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 rounded-2xl flex items-start gap-3 shadow-sm transition-all"
                 >
-                    <p v-if="laravelErrors.name" class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.name }}</p>
-                    <p v-if="laravelErrors.email" class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.email }}</p>
-                    <p v-if="laravelErrors.password" class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.password }}</p>
-                    <p v-if="laravelErrors.password_confirmation" class="text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">{{ laravelErrors.password_confirmation }}</p>
+                    <div class="p-1.5 bg-red-100 dark:bg-red-900/50 rounded-lg text-red-600 dark:text-red-400 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="text-sm text-red-800 dark:text-red-200 space-y-1">
+                        <p v-if="formNotification" class="font-medium">{{ formNotification }}</p>
+                        <p v-if="laravelErrors.name">{{ laravelErrors.name }}</p>
+                        <p v-if="laravelErrors.email">{{ laravelErrors.email }}</p>
+                        <p v-if="laravelErrors.password && !formNotification">{{ laravelErrors.password }}</p>
+                        <p v-if="laravelErrors.password_confirmation && !formNotification">{{ laravelErrors.password_confirmation }}</p>
+                    </div>
                 </div>
 
                 <div 
@@ -96,11 +104,16 @@
                         <div class="relative">
                             <input
                                 id="password"
+                                ref="passwordInputRef"
                                 name="password"
                                 :type="showPassword ? 'text' : 'password'"
+                                v-model="passwordValue"
+                                @blur="onPasswordBlur"
+                                @input="onPasswordInput"
                                 required
                                 autocomplete="new-password"
-                                class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-xl focus:outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                :class="passwordHasError ? 'border-red-500 bg-red-50/20 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-900 dark:text-red-100' : 'border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white'"
+                                class="w-full px-4 py-3 border rounded-xl focus:outline-none transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 pr-10"
                                 placeholder="Masukkan kata sandi"
                             />
                             <button
@@ -117,8 +130,17 @@
                                 </svg>
                             </button>
                         </div>
-                        <p v-if="laravelErrors.password" class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
-                            {{ laravelErrors.password }}
+                        
+                        <!-- Error Message when not meeting rules -->
+                        <div v-if="passwordErrorMessage" class="mt-1.5 flex items-start gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+                            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{{ passwordErrorMessage }}</span>
+                        </div>
+                        <!-- Clean helper hint -->
+                        <p v-else class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                            Wajib minimal 8 karakter, serta memiliki minimal 1 huruf kapital (A-Z) dan 1 angka (0-9).
                         </p>
                     </div>
 
@@ -129,12 +151,17 @@
                         <div class="relative">
                             <input
                                 id="password_confirmation"
+                                ref="passwordConfirmRef"
                                 name="password_confirmation"
                                 :type="showPasswordConfirmation ? 'text' : 'password'"
+                                v-model="passwordConfirmValue"
+                                @blur="onConfirmBlur"
+                                @input="onConfirmInput"
                                 required
                                 autocomplete="new-password"
-                                class="w-full px-4 py-3 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 rounded-xl focus:outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                                placeholder="Konfirmasi kata sandi"
+                                :class="confirmHasError ? 'border-red-500 bg-red-50/20 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-900 dark:text-red-100' : 'border-[#FDA1A2]/40 dark:border-[#8E0D3C]/40 bg-[#FDA1A2]/10 dark:bg-[#1D1842]/50 text-gray-900 dark:text-white'"
+                                class="w-full px-4 py-3 border rounded-xl focus:outline-none transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 pr-10"
+                                placeholder="Ulangi kata sandi"
                             />
                             <button
                                 type="button"
@@ -150,9 +177,14 @@
                                 </svg>
                             </button>
                         </div>
-                        <p v-if="laravelErrors.password_confirmation" class="mt-1 text-sm text-[#8E0D3C] dark:text-[#FDA1A2]">
-                            {{ laravelErrors.password_confirmation }}
-                        </p>
+                        
+                        <!-- Error Message if not matching -->
+                        <div v-if="confirmErrorMessage" class="mt-1.5 flex items-start gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+                            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{{ confirmErrorMessage }}</span>
+                        </div>
                     </div>
 
                     <input type="hidden" name="_token" :value="csrfToken" />
@@ -208,12 +240,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 
 const showPassword = ref(false);
 const showPasswordConfirmation = ref(false);
 const csrfToken = ref('');
 const success = ref('');
+const formNotification = ref('');
 const laravelErrors = reactive({
     name: '',
     email: '',
@@ -221,12 +254,104 @@ const laravelErrors = reactive({
     password_confirmation: ''
 });
 const isLoading = ref(false);
+const passwordValue = ref('');
+const passwordConfirmValue = ref('');
+const passwordTouched = ref(false);
+const confirmTouched = ref(false);
+const passwordInputRef = ref(null);
+const passwordConfirmRef = ref(null);
+
+// Password validation computed properties
+const hasMinLength = computed(() => passwordValue.value.length >= 8);
+const hasUppercase = computed(() => /[A-Z]/.test(passwordValue.value));
+const hasNumber = computed(() => /[0-9]/.test(passwordValue.value));
+const isPasswordValid = computed(() => hasMinLength.value && hasUppercase.value && hasNumber.value);
+const passwordsMatch = computed(() => passwordValue.value === passwordConfirmValue.value);
+
+const passwordErrorMessage = computed(() => {
+    if (laravelErrors.password) return laravelErrors.password;
+    if (passwordTouched.value && passwordValue.value.length > 0 && !isPasswordValid.value) {
+        if (!hasMinLength.value) {
+            return `Kata sandi minimal 8 karakter (saat ini baru ${passwordValue.value.length} karakter).`;
+        }
+        if (!hasUppercase.value && !hasNumber.value) {
+            return 'Kata sandi wajib mengandung minimal 1 huruf kapital dan 1 nomor.';
+        }
+        if (!hasUppercase.value) {
+            return 'Kata sandi wajib mengandung minimal 1 huruf kapital (A-Z).';
+        }
+        if (!hasNumber.value) {
+            return 'Kata sandi wajib mengandung minimal 1 nomor (0-9).';
+        }
+    }
+    return '';
+});
+
+const confirmErrorMessage = computed(() => {
+    if (laravelErrors.password_confirmation) return laravelErrors.password_confirmation;
+    if (confirmTouched.value && passwordConfirmValue.value.length > 0 && !passwordsMatch.value) {
+        return 'Konfirmasi kata sandi tidak cocok.';
+    }
+    return '';
+});
+
+const passwordHasError = computed(() => !!passwordErrorMessage.value);
+const confirmHasError = computed(() => !!confirmErrorMessage.value);
+
+const onPasswordBlur = () => {
+    if (passwordValue.value.length > 0) {
+        passwordTouched.value = true;
+    }
+};
+
+const onPasswordInput = () => {
+    laravelErrors.password = '';
+    formNotification.value = '';
+};
+
+const onConfirmBlur = () => {
+    if (passwordConfirmValue.value.length > 0) {
+        confirmTouched.value = true;
+    }
+};
+
+const onConfirmInput = () => {
+    laravelErrors.password_confirmation = '';
+    formNotification.value = '';
+};
 
 const handleSubmit = (e) => {
     if (isLoading.value) {
         e.preventDefault();
         return;
     }
+    
+    passwordTouched.value = true;
+    confirmTouched.value = true;
+    formNotification.value = '';
+    
+    // Client-side validation
+    if (!passwordValue.value) {
+        e.preventDefault();
+        formNotification.value = 'Silakan masukkan kata sandi Anda.';
+        passwordInputRef.value?.focus();
+        return;
+    }
+
+    if (!isPasswordValid.value) {
+        e.preventDefault();
+        formNotification.value = 'Kata sandi belum sesuai aturan. Silakan masukkan kata sandi minimal 8 karakter dengan minimal 1 huruf kapital dan 1 nomor.';
+        passwordInputRef.value?.focus();
+        return;
+    }
+    
+    if (!passwordsMatch.value) {
+        e.preventDefault();
+        formNotification.value = 'Konfirmasi kata sandi tidak cocok. Pastikan kedua kolom kata sandi sama.';
+        passwordConfirmRef.value?.focus();
+        return;
+    }
+    
     isLoading.value = true;
 };
 

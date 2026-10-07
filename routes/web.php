@@ -10,6 +10,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\OrderTrackingController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -38,11 +40,16 @@ Route::get('/contact-us', function () {
 Route::post('/contact-us', [ContactController::class, 'store']);
 
 // Halaman toko (public)
-Route::get('/store/{user_id}', function () {
+Route::get('/store/{user_id}', function (Request $request, $user_id) {
+    \App\Models\StoreVisit::recordVisit($user_id, $request);
     return view('store');
 })->name('store');
 
-Route::get('/product/{id}', function ($id) {
+Route::get('/product/{id}', function (Request $request, $id) {
+    $product = \App\Models\Product::find($id);
+    if ($product && $product->user_id) {
+        \App\Models\StoreVisit::recordVisit($product->user_id, $request);
+    }
     return view('product-detail');
 });
 
@@ -81,17 +88,17 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
     
-    // Forgot Password Routes
-    Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
-    
     // Redirect /admin/login ke /login untuk kompatibilitas
     Route::get('/admin/login', function () {
         return redirect('/login');
     });
 });
+
+// Forgot & Reset Password Routes (dapat diakses siapa pun yang memiliki token link, tanpa terhalang sesi login)
+Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // Logout route (authenticated users only)
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -101,28 +108,56 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 | EMAIL VERIFICATION ROUTES (Session-based)
 |--------------------------------------------------------------------------
 */
+// Link verifikasi email dari email (dapat diakses oleh user login maupun via browser eksternal di HP)
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    \Log::info('Verification request received for user: ' . $id);
+    
+    $user = \App\Models\User::find($id);
+    if (!$user) {
+        return redirect('/login')->withErrors(['email' => 'Pengguna tidak ditemukan.']);
+    }
+
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi email tidak valid atau telah kedaluwarsa.']);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+        event(new \Illuminate\Auth\Events\Verified($user));
+        \Log::info('Verification fulfilled successfully for user: ' . $id);
+    }
+
+    // Jika belum login di sesi browser ini (misal dibuka di HP), langsung login-kan user
+    if (!Auth::check()) {
+        Auth::login($user);
+    }
+
+    return redirect('/')->with('success', 'Selamat! Alamat email Anda telah berhasil diverifikasi.');
+})->middleware(['signed:relative'])->name('verification.verify');
+
 Route::middleware(['auth'])->group(function () {
     // Halaman notice verifikasi
-    Route::get('/email/verify', function () {
+    Route::get('/email/verify', function (Request $request) {
+        if ($request->user() && $request->user()->hasVerifiedEmail()) {
+            return redirect('/')->with('success', 'Email Anda sudah terverifikasi.');
+        }
         return view('verify-email');
     })->name('verification.notice');
 
-    // Link verifikasi email
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        \Log::info('Verification request received for user: ' . $request->route('id'));
-        try {
-            $request->fulfill();
-            \Log::info('Verification fulfilled successfully.');
-        } catch (\Exception $e) {
-            \Log::error('Verification failed: ' . $e->getMessage());
-        }
-        return redirect('/')->with('success', 'Email Anda telah terverifikasi.');
-    })->middleware(['signed'])->name('verification.verify');
-
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with('success', 'Link verifikasi telah dikirim ulang.');
+        $user = $request->user();
+        if ($user && $user->hasVerifiedEmail()) {
+            return redirect('/')->with('success', 'Email Anda sudah terverifikasi.');
+        }
+
+        try {
+            $user->sendEmailVerificationNotification();
+            return back()->with('success', 'Link verifikasi baru telah berhasil dikirim ke ' . $user->email . '. Silakan periksa Kotak Masuk (Inbox) atau folder Spam/Junk.');
+        } catch (\Throwable $e) {
+            \Log::error('Gagal mengirim ulang email verifikasi: ' . $e->getMessage());
+            return back()->with('error', 'Gagal mengirim email verifikasi: ' . $e->getMessage() . '. Pastikan koneksi internet stabil.');
+        }
     })->middleware(['throttle:6,1'])->name('verification.send');
 
     // Dev-only: langsung verifikasi tanpa email (hanya environment local)
@@ -163,7 +198,41 @@ Route::middleware(['auth'])->group(function () {
         return view('checkout');
     })->name('checkout');
 
-    Route::get('/order-confirmation/{id?}', function ($id = null) {
+    Route::get('/order-confirmation/{id?}', function (Request $request, $id = null) {
+        $orderId = $request->query('order_id');
+        $txStatus = $request->query('transaction_status');
+        $statusCode = $request->query('status_code');
+
+        if ($orderId && in_array($txStatus, ['settlement', 'capture']) && $statusCode == '200') {
+            $transaction = \App\Models\Transaction::where('order_id', $orderId)->first();
+            if ($transaction && $transaction->status !== 'paid') {
+                $oldStatus = $transaction->status;
+                $transaction->status = 'paid';
+                $transaction->reduceStock();
+                $transaction->save();
+
+                // Kirim notifikasi WhatsApp ke seller bahwa pembayaran berhasil
+                try {
+                    $wa = new \App\Services\WhatsAppService();
+                    if ($wa->isEnabled()) {
+                        $transaction->load(['items.product.user', 'user']);
+                        $firstItem = $transaction->items->first();
+                        $seller = $firstItem?->product?->user;
+                        $buyer = $transaction->user;
+                        if ($seller && $seller->phone) {
+                            $wa->notifySellerPaymentReceived(
+                                $seller->phone,
+                                $buyer->name ?? 'Pembeli',
+                                $transaction->order_id,
+                                $transaction->total_price
+                            );
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('WA redirect error: ' . $e->getMessage());
+                }
+            }
+        }
         return view('order-confirmation');
     })->name('order-confirmation');
 
@@ -274,13 +343,9 @@ Route::prefix('api')->group(function () {
 
         // Tracker kunjungan toko
         try {
-            \App\Models\StoreVisit::firstOrCreate([
-                'store_id' => $user->id,
-                'ip_address' => $request->ip(),
-                'visit_date' => now()->toDateString(),
-            ]);
+            \App\Models\StoreVisit::recordVisit($user->id, $request);
         } catch (\Exception $e) {
-            // Abaikan jika duplicate / gagal menyimpan
+            // Abaikan jika gagal menyimpan
         }
 
         return response()->json([
@@ -293,9 +358,19 @@ Route::prefix('api')->group(function () {
         ]);
     });
 
-    Route::get('/products/{id}', function ($id) {
-        $product = \App\Models\Product::with('user:id,name')->find($id);
+    Route::get('/products/{id}', function (Request $request, $id) {
+        $product = \App\Models\Product::with('user:id,name,phone')->find($id);
         if (!$product) return response()->json(['message' => 'Not found'], 404);
+
+        // Catat kunjungan ke toko pemilik produk
+        if ($product->user_id) {
+            try {
+                \App\Models\StoreVisit::recordVisit($product->user_id, $request);
+            } catch (\Exception $e) {
+                // Abaikan
+            }
+        }
+
         $product->image_url = $product->image ? Storage::url($product->image) : null;
         $product->store_name = $product->user->name ?? 'Toko';
         return response()->json($product);
@@ -325,11 +400,23 @@ Route::prefix('api')->group(function () {
         return response()->json(['authenticated' => false]);
     });
 
+    Route::get('/check-reset-redirect', function (Request $request) {
+        $email = $request->query('email');
+        if (!$email) {
+            return response()->json(['redirect' => false]);
+        }
+        $url = Cache::get('reset_redirect_' . md5($email));
+        return response()->json([
+            'redirect' => !empty($url),
+            'url' => $url,
+        ]);
+    });
+
     /* ---------- PROTECTED API ROUTES ---------- */
     Route::middleware(['auth'])->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'apiLogout']);
         Route::get('/user', function () {
-            $user = Auth::user();
+            $user = Auth::user()?->fresh();
             $userData = $user ? json_decode(json_encode($user), true) : [];
             if ($user) $userData['photo_url'] = $user->photo ? Storage::url($user->photo) : null;
             return response()->json($userData);
@@ -442,6 +529,21 @@ Route::prefix('api')->group(function () {
             return response()->json(['message' => 'Pesanan diterima']);
         });
 
+        Route::get('/transactions/{id}/status', function ($id) {
+            $transaction = \App\Models\Transaction::findOrFail($id);
+            if ($transaction->user_id !== Auth::id()) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+            return response()->json([
+                'id' => $transaction->id,
+                'order_id' => $transaction->order_id,
+                'status' => $transaction->status,
+                'total_price' => $transaction->total_price,
+                'discount_amount' => $transaction->discount_amount,
+                'voucher_code' => $transaction->voucher_code,
+            ]);
+        });
+
         Route::post('/transactions/{id}/request-return', [TransactionController::class, 'requestReturn']);
         Route::get('/seller/orders', [TransactionController::class, 'sellerOrders']);
         Route::get('/seller/unread-orders-count', [TransactionController::class, 'getUnreadOrdersCount']);
@@ -454,6 +556,21 @@ Route::prefix('api')->group(function () {
         Route::post('/products', [ProductController::class, 'store']);
         Route::post('/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+
+        /* ---------- ORDER TRACKING (Real-time Location) ---------- */
+        Route::post('/tracking/{transaction_id}/start', [OrderTrackingController::class, 'startDelivery']);
+        Route::post('/tracking/{transaction_id}/update', [OrderTrackingController::class, 'updateLocation']);
+        Route::post('/tracking/{transaction_id}/complete', [OrderTrackingController::class, 'completeDelivery']);
+        Route::post('/tracking/{transaction_id}/destination', [OrderTrackingController::class, 'updateDestination']);
+        Route::get('/tracking/{transaction_id}', [OrderTrackingController::class, 'getLocation']);
+
+        /* ---------- VOUCHERS ---------- */
+        Route::get('/vouchers', [VoucherController::class, 'index']);
+        Route::post('/vouchers/apply', [VoucherController::class, 'apply']);
+        Route::get('/seller/vouchers', [VoucherController::class, 'sellerIndex']);
+        Route::post('/seller/vouchers', [VoucherController::class, 'sellerStore']);
+        Route::post('/seller/vouchers/{id}/toggle', [VoucherController::class, 'sellerToggle']);
+        Route::delete('/seller/vouchers/{id}', [VoucherController::class, 'sellerDestroy']);
 
         /* ---------- ADMIN ---------- */
         Route::middleware([\App\Http\Middleware\Admin::class])->group(function () {
@@ -551,6 +668,12 @@ Route::prefix('api')->group(function () {
             Route::get('/admin/popular-products', function () {
                 return \App\Models\Product::withSum(['transactionItems' => function($q){ $q->whereHas('transaction', function($t){ $t->whereIn('status', ['paid','shipping','delivered']); }); }], 'qty')->orderByDesc('transaction_items_sum_qty')->take(10)->get();
             });
+
+            /* ---------- ADMIN VOUCHERS ---------- */
+            Route::get('/admin/vouchers', [VoucherController::class, 'adminIndex']);
+            Route::post('/admin/vouchers', [VoucherController::class, 'store']);
+            Route::post('/admin/vouchers/{id}/toggle', [VoucherController::class, 'toggle']);
+            Route::delete('/admin/vouchers/{id}', [VoucherController::class, 'destroy']);
         });
     });
 });

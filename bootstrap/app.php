@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(append: [
             \App\Http\Middleware\UserActivity::class,
         ]);
@@ -29,5 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
        // EnsureFrontendRequestsAreStateful::class,]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, \Illuminate\Http\Request $request) {
+            if (!$request->expectsJson()) {
+                return back()->with('error', 'Terlalu banyak permintaan pengiriman email. Mohon tunggu 1 menit sebelum mencoba lagi.');
+            }
+        });
     })->create();
