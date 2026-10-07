@@ -686,12 +686,27 @@ Route::prefix('api')->group(function () {
 
             Route::get('/admin/sales-data', function (Request $request) {
                 $days = (int) ($request->query('days', 30));
-                $sales = \App\Models\Transaction::where('status', 'paid')->where('created_at', '>=', now()->subDays($days))->selectRaw('DATE(created_at) as date, SUM(total_price) as total')->groupBy('date')->get()->pluck('total', 'date');
+                if ($days < 1) $days = 30;
+
+                $validStatuses = ['paid', 'processing', 'shipping', 'delivered', 'completed', 'settlement', 'capture'];
+                $startDate = now()->subDays($days - 1)->startOfDay();
+
+                $sales = \App\Models\Transaction::whereIn('status', $validStatuses)
+                    ->where('created_at', '>=', $startDate)
+                    ->selectRaw('DATE(created_at) as date, SUM(total_price) as total')
+                    ->groupBy('date')
+                    ->get()
+                    ->pluck('total', 'date');
+
                 $data = [];
                 for ($i = 0; $i < $days; $i++) {
                     $date = now()->subDays($days - 1 - $i)->format('Y-m-d');
-                    $data[] = ['date' => $date, 'total' => $sales->get($date, 0)];
+                    $data[] = [
+                        'date' => $date,
+                        'total' => (float) ($sales->get($date, 0)),
+                    ];
                 }
+
                 return response()->json($data);
             });
             Route::get('/admin/popular-products', function () {
