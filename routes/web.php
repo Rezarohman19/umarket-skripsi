@@ -313,6 +313,10 @@ Route::prefix('api')->group(function () {
         return response()->json($products);
     });
 
+    Route::get('/categories', function () {
+        return response()->json(\App\Models\Category::all());
+    });
+
     Route::get('/store/{user_id}/products', function ($user_id) {
         $products = \App\Models\Product::with('user:id,name,phone')
             ->where('user_id', $user_id)
@@ -519,6 +523,7 @@ Route::prefix('api')->group(function () {
 
         Route::get('/transactions', [TransactionController::class, 'index']);
         Route::post('/checkout', [TransactionController::class, 'checkout']);
+        Route::delete('/transactions/{id}', [TransactionController::class, 'deleteExpiredTransaction']);
         
         Route::post('/transactions/{id}/mark-delivered', function (Request $request, $id) {
             $transaction = \App\Models\Transaction::findOrFail($id);
