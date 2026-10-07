@@ -14,19 +14,13 @@ register_shutdown_function(function () {
     }
 });
 
-if (isset($_GET['debug_route']) || (isset($_SERVER['REQUEST_URI']) && str_starts_with($_SERVER['REQUEST_URI'], '/debug_route'))) {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null,
-        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? null,
-        'PHP_SELF' => $_SERVER['PHP_SELF'] ?? null,
-        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? null,
-        'QUERY_STRING' => $_SERVER['QUERY_STRING'] ?? null,
-        'SERVER_NAME' => $_SERVER['SERVER_NAME'] ?? null,
-        'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? null,
-    ], JSON_PRETTY_PRINT);
-    exit;
-}
+// Normalize PATH_INFO and SCRIPT_NAME for Vercel Serverless
+// In Vercel, requests to /api/... get PATH_INFO set to the suffix (e.g. /products instead of /api/products),
+// which causes Symfony / Laravel to strip the /api prefix and 404.
+// By unsetting PATH_INFO and normalizing SCRIPT_NAME to /index.php, Laravel accurately routes all /api/... and web requests.
+unset($_SERVER['PATH_INFO']);
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
 
 // Ensure /tmp directories exist for Laravel on Vercel's serverless environment
 $dirs = [
