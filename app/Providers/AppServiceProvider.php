@@ -118,19 +118,18 @@ class AppServiceProvider extends ServiceProvider
         // Customizing the email verification message
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
             $fromAddress = config('mail.from.address') ?: 'marketunila@gmail.com';
+            $fromName = config('mail.from.name') ?: 'U-Market';
             return (new MailMessage)
-                ->from($fromAddress, 'U-Market Unila')
-                ->replyTo($fromAddress, 'U-Market Unila')
-                ->subject('[U-Market] Verifikasi Alamat Email Anda')
-                ->greeting('Halo, ' . $notifiable->name . '!')
+                ->from($fromAddress, $fromName)
+                ->replyTo($fromAddress, $fromName)
+                ->subject('Verifikasi Email Akun U-Market')
+                ->greeting('Halo ' . $notifiable->name . ',')
                 ->line('Terima kasih telah mendaftar di U-Market (E-Commerce Universitas Lampung).')
-                ->line('Silakan klik tombol di bawah ini untuk memverifikasi dan mengaktifkan akun Anda:')
+                ->line('Silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda dan mengaktifkan akun:')
                 ->action('Verifikasi Email Saya', $url)
                 ->line('Tautan verifikasi ini berlaku selama 60 menit.')
-                ->line('Jika tombol di atas tidak dapat diklik pada aplikasi email Anda, silakan salin tautan berikut dan buka di peramban browser Anda:')
-                ->line($url)
                 ->line('Jika Anda tidak merasa mendaftar di U-Market, silakan abaikan email ini.')
-                ->salutation('Salam hangat, Tim Pengembang U-Market');
+                ->salutation('Salam hormat,' . "\n" . 'Tim U-Market');
         });
 
         // Custom URL for Reset Password (generates route attached to public base)

@@ -60,21 +60,6 @@
             </div>
         @endif
 
-        <!-- Informasi dan Tips Penting -->
-        <div class="mb-6 p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 text-xs text-amber-900 dark:text-amber-200 space-y-2">
-            <div class="flex items-center gap-1.5 font-semibold text-amber-800 dark:text-amber-300">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Tips jika email belum masuk:</span>
-            </div>
-            <ul class="list-disc list-inside space-y-1 text-amber-800/90 dark:text-amber-200/90 pl-1 leading-relaxed">
-                <li>Periksa folder <strong>Spam</strong> atau <strong>Junk</strong> di email Anda.</li>
-                <li>Email dikirim dari <strong>marketunila@gmail.com</strong> dengan nama <strong>U-Market</strong>.</li>
-                <li>Jika membuka link dari HP, pastikan HP terhubung ke internet.</li>
-            </ul>
-        </div>
-
         <form method="POST" action="{{ route('verification.send') }}" id="resend-form" class="space-y-4">
             @csrf
             <button
@@ -116,10 +101,10 @@
         // Live polling: jika email diverifikasi via browser HP / tab lain, langsung auto-redirect
         const checkVerification = setInterval(async () => {
             try {
-                const response = await fetch('/api/user');
+                const response = await fetch('/api/auth/check');
                 if (response.ok) {
-                    const user = await response.json();
-                    if (user && user.email_verified_at) {
+                    const data = await response.json();
+                    if (data && data.authenticated && data.user && data.user.email_verified_at) {
                         clearInterval(checkVerification);
                         window.location.href = '/?verified=1';
                     }

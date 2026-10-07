@@ -94,7 +94,7 @@ class AuthController extends Controller
         // Kirim email verifikasi
         try {
             $user->sendEmailVerificationNotification();
-            return redirect()->route('verification.notice')->with('success', 'Email verifikasi telah berhasil dikirim ke ' . $user->email . '! Silakan periksa Kotak Masuk (Inbox) atau folder Spam/Junk email Anda.');
+            return redirect()->route('verification.notice')->with('success', 'Email verifikasi telah berhasil dikirim ke ' . $user->email . '! Silakan periksa Kotak Masuk (Inbox) email Anda.');
         } catch (\Throwable $e) {
             \Log::error('Gagal mengirim email verifikasi: '.$e->getMessage());
             return redirect()->route('verification.notice')->with('error', 'Gagal mengirim email verifikasi otomatis: ' . $e->getMessage() . '. Silakan klik tombol "Kirim Ulang Email Verifikasi".');

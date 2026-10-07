@@ -122,7 +122,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
         if (!Auth::check() || Auth::id() != $user->id) {
             Auth::login($user);
         }
-        return redirect('/')->with('success', 'Email Anda sudah terverifikasi sebelumnya. Selamat datang kembali!');
+        return view('verify-success', ['user' => $user, 'already' => true]);
     }
 
     // 2. Validasi hash email kecocokan dengan email pemilik
@@ -143,7 +143,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
     // 5. Otomatis login-kan pengguna jika belum login atau login sebagai user lain
     Auth::login($user);
 
-    return redirect('/')->with('success', 'Selamat! Alamat email Anda (' . $user->email . ') telah berhasil diverifikasi. Akun Anda kini aktif sepenuhnya.');
+    return view('verify-success', ['user' => $user, 'already' => false]);
 })->name('verification.verify');
 
 Route::middleware(['auth'])->group(function () {
@@ -164,7 +164,7 @@ Route::middleware(['auth'])->group(function () {
 
         try {
             $user->sendEmailVerificationNotification();
-            return back()->with('success', 'Link verifikasi baru telah berhasil dikirim ke ' . $user->email . '. Silakan periksa Kotak Masuk (Inbox) atau folder Spam/Junk.');
+            return back()->with('success', 'Tautan verifikasi baru telah berhasil dikirim ke ' . $user->email . '. Silakan periksa Kotak Masuk (Inbox) email Anda.');
         } catch (\Throwable $e) {
             \Log::error('Gagal mengirim ulang email verifikasi: ' . $e->getMessage());
             return back()->with('error', 'Gagal mengirim email verifikasi: ' . $e->getMessage() . '. Pastikan koneksi internet stabil.');
