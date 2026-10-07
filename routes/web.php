@@ -110,14 +110,27 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 */
 // Link verifikasi email dari email (dapat diakses oleh user login maupun via browser eksternal di HP)
 Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
-    \Log::info('Verification request received for user: ' . $id);
+    \Log::info('Verification request received for user ID or hash: ' . $id . ' / ' . $hash);
     
+    // 1. Coba cari user berdasarkan ID terlebih dahulu
     $user = \App\Models\User::find($id);
+
+    // 2. Jika ID tidak ditemukan (misal pengguna sempat mendaftar ulang sehingga ID berubah di database),
+    // cari pengguna terbaru yang SHA1(email) cocok dengan hash verifikasi
     if (!$user) {
-        return redirect('/login')->withErrors(['email' => 'Pengguna tidak ditemukan. Silakan registrasi kembali.']);
+        $user = \App\Models\User::whereRaw('SHA1(email) = ?', [(string) $hash])->latest('id')->first();
     }
 
-    // 1. Jika sudah terverifikasi sebelumnya
+    // 3. Fallback jika ada parameter query email
+    if (!$user && $request->filled('email')) {
+        $user = \App\Models\User::where('email', $request->query('email'))->latest('id')->first();
+    }
+
+    if (!$user) {
+        return redirect('/login')->withErrors(['email' => 'Akun tidak ditemukan. Silakan masuk atau daftar kembali.']);
+    }
+
+    // 4. Jika sudah terverifikasi sebelumnya
     if ($user->hasVerifiedEmail()) {
         if (!Auth::check() || Auth::id() != $user->id) {
             Auth::login($user);
@@ -125,22 +138,22 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
         return view('verify-success', ['user' => $user, 'already' => true]);
     }
 
-    // 2. Validasi hash email kecocokan dengan email pemilik
+    // 5. Validasi hash email kecocokan dengan email pemilik
     if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi email tidak valid. Silakan masuk dan minta tautan verifikasi baru.']);
+        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi email tidak valid. Silakan minta tautan baru.']);
     }
 
-    // 3. Validasi waktu kedaluwarsa jika parameter expires ada
+    // 6. Validasi waktu kedaluwarsa jika parameter expires ada
     if ($request->has('expires') && now()->timestamp > (int) $request->query('expires')) {
         return redirect('/login')->withErrors(['email' => 'Tautan verifikasi telah kedaluwarsa. Silakan masuk ke akun Anda untuk mengirim ulang email verifikasi.']);
     }
 
-    // 4. Tandai email terverifikasi
+    // 7. Tandai email terverifikasi
     $user->markEmailAsVerified();
     event(new \Illuminate\Auth\Events\Verified($user));
-    \Log::info('Verification fulfilled successfully for user: ' . $id);
+    \Log::info('Verification fulfilled successfully for user: ' . $user->id);
 
-    // 5. Otomatis login-kan pengguna jika belum login atau login sebagai user lain
+    // 8. Otomatis login-kan pengguna jika belum login atau login sebagai user lain
     Auth::login($user);
 
     return view('verify-success', ['user' => $user, 'already' => false]);

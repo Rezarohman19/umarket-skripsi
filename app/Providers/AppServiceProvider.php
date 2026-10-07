@@ -108,6 +108,7 @@ class AppServiceProvider extends ServiceProvider
                 [
                     'id' => $notifiable->getKey(),
                     'hash' => sha1($notifiable->getEmailForVerification()),
+                    'email' => $notifiable->getEmailForVerification(),
                 ],
                 false // relative
             );
