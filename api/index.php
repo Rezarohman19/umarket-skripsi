@@ -14,6 +14,20 @@ register_shutdown_function(function () {
     }
 });
 
+if (isset($_GET['debug_route']) || (isset($_SERVER['REQUEST_URI']) && str_starts_with($_SERVER['REQUEST_URI'], '/debug_route'))) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null,
+        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? null,
+        'PHP_SELF' => $_SERVER['PHP_SELF'] ?? null,
+        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? null,
+        'QUERY_STRING' => $_SERVER['QUERY_STRING'] ?? null,
+        'SERVER_NAME' => $_SERVER['SERVER_NAME'] ?? null,
+        'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? null,
+    ], JSON_PRETTY_PRINT);
+    exit;
+}
+
 // Ensure /tmp directories exist for Laravel on Vercel's serverless environment
 $dirs = [
     '/tmp/storage',
