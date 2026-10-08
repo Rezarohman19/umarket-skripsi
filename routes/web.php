@@ -144,8 +144,14 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
     }
 
     // 6. Validasi waktu kedaluwarsa jika parameter expires ada
-    if ($request->has('expires') && now()->timestamp > (int) $request->query('expires')) {
-        return redirect('/login')->withErrors(['email' => 'Tautan verifikasi telah kedaluwarsa. Silakan masuk ke akun Anda untuk mengirim ulang email verifikasi.']);
+    // Beri toleransi 7 hari untuk kemudahan pengguna dan dosen, atau kirim ulang otomatis jika sudah terlalu lama
+    if ($request->has('expires') && now()->timestamp > (int) $request->query('expires') + (7 * 86400)) {
+        try {
+            $user->sendEmailVerificationNotification();
+            return redirect('/login')->withErrors(['email' => 'Tautan verifikasi telah kedaluwarsa. Tautan verifikasi baru telah otomatis dikirimkan ke ' . $user->email . '. Silakan periksa email Anda.']);
+        } catch (\Throwable $e) {
+            return redirect('/login')->withErrors(['email' => 'Tautan verifikasi telah kedaluwarsa. Silakan masuk untuk meminta tautan verifikasi baru.']);
+        }
     }
 
     // 7. Tandai email terverifikasi
@@ -159,14 +165,43 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
     return view('verify-success', ['user' => $user, 'already' => false]);
 })->name('verification.verify');
 
+// Kirim ulang email verifikasi publik (dapat diakses siapa pun tanpa harus login terlebih dahulu)
+Route::post('/email/resend-public', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+    ], [
+        'email.required' => 'Alamat email wajib diisi.',
+        'email.email' => 'Format email tidak valid.',
+    ]);
+
+    $user = \App\Models\User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return back()->with('error', 'Alamat email ' . $request->email . ' belum terdaftar. Silakan registrasi terlebih dahulu.');
+    }
+
+    if ($user->hasVerifiedEmail()) {
+        return redirect()->route('login')->with('success', 'Email ' . $user->email . ' sudah terverifikasi sebelumnya. Silakan masuk.');
+    }
+
+    try {
+        $user->sendEmailVerificationNotification();
+        return back()->with('success', 'Tautan verifikasi baru telah berhasil dikirim ke ' . $user->email . '! Silakan periksa Kotak Masuk (Inbox) atau folder Spam/Promosi email Anda.');
+    } catch (\Throwable $e) {
+        \Log::error('Gagal mengirim ulang email verifikasi publik: ' . $e->getMessage());
+        return back()->with('error', 'Gagal mengirim email verifikasi: ' . $e->getMessage() . '. Silakan coba beberapa saat lagi.');
+    }
+})->middleware(['throttle:6,1'])->name('verification.resend.public');
+
+// Halaman notice verifikasi (dapat diakses user yang sedang login atau guest yang membawa parameter email)
+Route::get('/email/verify', function (Request $request) {
+    if ($request->user() && $request->user()->hasVerifiedEmail()) {
+        return redirect('/')->with('success', 'Email Anda sudah terverifikasi.');
+    }
+    return view('verify-email');
+})->name('verification.notice');
+
 Route::middleware(['auth'])->group(function () {
-    // Halaman notice verifikasi
-    Route::get('/email/verify', function (Request $request) {
-        if ($request->user() && $request->user()->hasVerifiedEmail()) {
-            return redirect('/')->with('success', 'Email Anda sudah terverifikasi.');
-        }
-        return view('verify-email');
-    })->name('verification.notice');
 
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {

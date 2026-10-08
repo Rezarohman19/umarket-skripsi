@@ -74,7 +74,8 @@ $defaultEnv = [
     'MAIL_PASSWORD' => 'quix iowh xfnc wfjm',
     'MAIL_ENCRYPTION' => 'tls',
     'MAIL_FROM_ADDRESS' => 'marketunila@gmail.com',
-    'MAIL_FROM_NAME' => 'U-Market',
+    'MAIL_FROM_NAME' => 'U-Market Universitas Lampung',
+    'QUEUE_CONNECTION' => 'sync',
 ];
 
 foreach ($defaultEnv as $k => $v) {

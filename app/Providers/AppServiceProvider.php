@@ -99,12 +99,12 @@ class AppServiceProvider extends ServiceProvider
             return $transport;
         });
 
-        // Custom URL for Email Verification (generates signed relative URL attached to public base)
+        // Custom URL for Email Verification (generates signed relative URL attached to public base, valid for 3 days)
         VerifyEmail::createUrlUsing(function ($notifiable) {
             $base = self::getPublicBaseUrl();
             $relativeUrl = URL::temporarySignedRoute(
                 'verification.verify',
-                Carbon::now()->addMinutes(config('auth.verification.expire', 60)),
+                Carbon::now()->addDays(3),
                 [
                     'id' => $notifiable->getKey(),
                     'hash' => sha1($notifiable->getEmailForVerification()),
@@ -116,21 +116,31 @@ class AppServiceProvider extends ServiceProvider
             return rtrim($base, '/') . $relativeUrl;
         });
 
-        // Customizing the email verification message
+        // Customizing the email verification message for high deliverability (Inbox priority)
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
             $fromAddress = config('mail.from.address') ?: 'marketunila@gmail.com';
-            $fromName = config('mail.from.name') ?: 'U-Market';
+            $fromName = config('mail.from.name') ?: 'U-Market Universitas Lampung';
+            $userName = $notifiable->name ?? 'Pengguna U-Market';
+            $userEmail = $notifiable->getEmailForVerification();
+
             return (new MailMessage)
                 ->from($fromAddress, $fromName)
                 ->replyTo($fromAddress, $fromName)
-                ->subject('Verifikasi Email Akun U-Market')
-                ->greeting('Halo ' . $notifiable->name . ',')
-                ->line('Terima kasih telah mendaftar di U-Market (E-Commerce Universitas Lampung).')
-                ->line('Silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda dan mengaktifkan akun:')
-                ->action('Verifikasi Email Saya', $url)
-                ->line('Tautan verifikasi ini berlaku selama 60 menit.')
-                ->line('Jika Anda tidak merasa mendaftar di U-Market, silakan abaikan email ini.')
-                ->salutation('Salam hormat,' . "\n" . 'Tim U-Market');
+                ->subject('[U-Market Unila] Verifikasi Akun: ' . $userName)
+                ->greeting('Halo ' . $userName . ',')
+                ->line('Terima kasih telah mendaftar di U-Market, platform e-commerce resmi civitas akademika Universitas Lampung.')
+                ->line('Untuk mengaktifkan akun Anda (' . $userEmail . '), silakan klik tombol verifikasi di bawah ini:')
+                ->action('Aktivasi Akun Saya', $url)
+                ->line('Jika tombol di atas tidak dapat diklik atau Anda membuka email ini di smartphone, silakan salin dan buka tautan berikut langsung di browser Anda:')
+                ->line($url)
+                ->line('Tautan verifikasi ini berlaku selama 3 hari.')
+                ->line('Jika email ini masuk ke folder Spam atau tab Promosi/Pembaruan, silakan tandai sebagai "Bukan Spam" (Report Not Spam) agar tautan aktif normal.')
+                ->line('Jika Anda tidak merasa mendaftar di U-Market, silakan abaikan pesan ini.')
+                ->salutation("Salam hormat,\nTim Pengembang U-Market Universitas Lampung")
+                ->withSymfonyMessage(function ($message) {
+                    $message->getHeaders()->addTextHeader('Auto-Submitted', 'auto-generated');
+                    $message->getHeaders()->addTextHeader('X-Auto-Response-Suppress', 'All');
+                });
         });
 
         // Custom URL for Reset Password (generates route attached to public base)

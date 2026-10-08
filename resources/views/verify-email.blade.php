@@ -13,6 +13,11 @@
     @vite(['resources/css/app.css'])
 </head>
 <body class="bg-[#FDA1A2]/20 dark:bg-[#1D1842] min-h-screen flex items-center justify-center p-4">
+    @php
+        $targetEmail = auth()->user()->email ?? request('email') ?? session('registered_email');
+        $isLoggedIn = auth()->check();
+    @endphp
+
     <div class="w-full max-w-md bg-white/98 dark:bg-[#1D1842] rounded-3xl shadow-xl shadow-gray-300/30 dark:shadow-[#1D1842]/50 p-8 md:p-10 border border-[#FDA1A2]/40 dark:border-[#8E0D3C]/30">
         <div class="flex justify-center mb-6">
             <a href="/" class="cursor-pointer hover:opacity-80 transition-opacity">
@@ -32,9 +37,15 @@
             <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 Tautan verifikasi telah dikirim ke:
                 <br>
-                <span class="font-semibold text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg inline-block mt-1">
-                    {{ auth()->user()->email ?? 'email Anda' }}
-                </span>
+                @if ($targetEmail)
+                    <span class="font-semibold text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg inline-block mt-1">
+                        {{ $targetEmail }}
+                    </span>
+                @else
+                    <span class="font-semibold text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg inline-block mt-1">
+                        alamat email Anda
+                    </span>
+                @endif
             </p>
         </div>
 
@@ -60,8 +71,34 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('verification.send') }}" id="resend-form" class="space-y-4">
+        <form 
+            method="POST" 
+            action="{{ $isLoggedIn ? route('verification.send') : route('verification.resend.public') }}" 
+            id="resend-form" 
+            class="space-y-4"
+        >
             @csrf
+
+            @if (!$isLoggedIn)
+                @if ($targetEmail)
+                    <input type="hidden" name="email" value="{{ $targetEmail }}" />
+                @else
+                    <div>
+                        <label for="email" class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                            Alamat Email Anda:
+                        </label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            id="email" 
+                            required 
+                            placeholder="nama@email.com" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#8E0D3C]"
+                        />
+                    </div>
+                @endif
+            @endif
+
             <button
                 type="submit"
                 id="resend-btn"
@@ -74,14 +111,24 @@
             </button>
         </form>
 
+        <p class="mt-4 text-xs text-center text-gray-500 dark:text-gray-400 leading-relaxed">
+            Periksa Kotak Masuk Anda. Jika belum muncul, periksa juga tab Promosi atau folder Spam dan tandai sebagai "Bukan Spam".
+        </p>
+
         <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Salah alamat email?</span>
-            <form method="POST" action="{{ route('logout') }}" class="inline">
-                @csrf
-                <button type="submit" class="text-[#EF3B33] dark:text-[#FDA1A2] font-semibold hover:underline cursor-pointer">
-                    Keluar / Daftar Ulang
-                </button>
-            </form>
+            @if ($isLoggedIn)
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="text-[#EF3B33] dark:text-[#FDA1A2] font-semibold hover:underline cursor-pointer">
+                        Keluar / Daftar Ulang
+                    </button>
+                </form>
+            @else
+                <a href="/register" class="text-[#EF3B33] dark:text-[#FDA1A2] font-semibold hover:underline cursor-pointer">
+                    Daftar Ulang
+                </a>
+            @endif
         </div>
     </div>
 
